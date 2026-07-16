@@ -14,6 +14,21 @@
   --color-error: #8b3a3a;
   --color-warning: #8b6914;
   --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  
+  --color-f-bg: #FAFAF9;
+  --color-f-card: #FFFFFF;
+  --color-f-line: #ECEAE5;
+  --color-f-ink: #17161A;
+  --color-f-ink-2: #6E6D73;
+  --color-f-ink-3: #A6A5AB;
+  --color-f-accent: #E23A34;
+  --color-f-accent-bg: #FDEDEB;
+  --color-f-accent-ink: #A62018;
+  --color-f-ok: #1F9D6B;
+  --color-f-ok-bg: #E9F6EF;
+  --color-f-ok-ink: #166B49;
+  --color-f-warn-bg: #FBF1DE;
+  --color-f-warn-ink: #8A5A16;
 }
 
 * {
