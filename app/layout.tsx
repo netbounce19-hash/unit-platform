@@ -1,27 +1,11 @@
-import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { AppProvider } from "@/components/providers/AppProvider";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-export const metadata: Metadata = {
-  title: "UNIT — Label × Artist Operations",
-  description: "B2B SaaS platform optimizing interactions between Music Labels and Artists",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} h-full`}>
-      <body className="min-h-full flex flex-col font-sans antialiased">
+    <html lang="ru" className={GeistSans.className}>
+      <body className="bg-[#FAFAF9] text-[#17161A] antialiased">
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

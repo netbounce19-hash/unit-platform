@@ -43,9 +43,6 @@ html {
 }
 
 body {
-  background-color: var(--color-sapphire);
-  color: var(--color-alabaster);
-  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
