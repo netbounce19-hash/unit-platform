@@ -61,17 +61,21 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className={`min-h-screen bg-f-bg text-f-ink ${GeistSans.className} font-sans flex flex-col items-center`}>
+    <div className={`min-h-screen bg-f-bg text-f-ink ${GeistSans.className} flex flex-col items-center`}>
       {/* Layout Container */}
-      <div className="w-full max-w-[720px] px-6 py-10 flex flex-col gap-10">
+      <div className="w-full max-w-[720px] px-4 sm:px-6 py-6 sm:py-12 flex flex-col gap-8 sm:gap-10">
         
         {/* 1. Topbar */}
         <header className="flex items-center justify-between">
-          <div className="font-bold text-xl tracking-[0.2em]">UNIT</div>
-          <div className="flex items-center gap-5">
-            <div className="flex items-center gap-2 rounded-full bg-white border-[0.5px] border-f-line px-3 py-1.5 text-[13px] font-medium">
+          <div className="font-bold text-lg sm:text-xl tracking-[0.16em]">UNIT</div>
+          <div className="flex items-center gap-3 sm:gap-5">
+            <div className="hidden sm:flex items-center gap-2 rounded-full bg-white border-[0.5px] border-f-line px-3 py-1.5 text-[13px] font-medium">
               <span className="text-f-accent text-[10px]">●</span>
               Режим фокуса
+            </div>
+            {/* Mobile simplified pill */}
+            <div className="flex sm:hidden items-center justify-center w-8 h-8 rounded-full bg-white border-[0.5px] border-f-line">
+              <span className="text-f-accent text-[10px]">●</span>
             </div>
             <button className="text-f-ink-2 hover:text-f-ink transition-colors cursor-pointer">
               <BellIcon />
@@ -83,51 +87,51 @@ export default function DashboardPage() {
         </header>
 
         {/* 2. Greeting */}
-        <section className="flex flex-col gap-2">
-          <h1 className="text-3xl font-medium leading-tight tracking-tight">С возвращением, KXDE</h1>
-          <p className="text-f-ink-2 text-[15px]">Четверг, 16 июля · 2 задачи на сегодня</p>
+        <section className="flex flex-col gap-1 sm:gap-2">
+          <h1 className="text-2xl sm:text-3xl font-medium leading-tight tracking-tight">С возвращением, KXDE</h1>
+          <p className="text-f-ink-2 text-sm sm:text-[15px]">Четверг, 16 июля · 2 задачи на сегодня</p>
         </section>
 
         {/* 3. Active Release Card */}
-        <section className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-7 flex flex-col gap-6">
+        <section className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 sm:p-7 flex flex-col gap-5 sm:gap-6">
           <div className="flex justify-between items-start">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-f-ink-3 text-[13px] font-medium">Активный релиз</span>
-              <h2 className="text-2xl font-semibold leading-tight tracking-tight">Midnight Protocol</h2>
+            <div className="flex flex-col gap-1 sm:gap-1.5">
+              <span className="text-f-ink-3 text-xs sm:text-[13px] font-medium">Активный релиз</span>
+              <h2 className="text-xl sm:text-2xl font-semibold leading-tight tracking-tight">Midnight Protocol</h2>
             </div>
-            <span className="bg-f-accent-bg text-f-accent-ink text-xs px-3 py-1 rounded-full font-medium mt-1">
+            <span className="bg-f-accent-bg text-f-accent-ink text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full font-medium mt-1">
               В работе
             </span>
           </div>
           
-          <div className="flex flex-col gap-2 mt-2">
-            <div className="flex justify-between items-center text-[15px]">
+          <div className="flex flex-col gap-2 mt-1 sm:mt-2">
+            <div className="flex justify-between items-center text-sm sm:text-[15px]">
               <span className="text-f-ink-2 font-medium">Прогресс релиза</span>
               <span className="font-semibold text-f-ink">65%</span>
             </div>
-            <div className="w-full h-2 bg-[#F0EEEA] rounded-full overflow-hidden">
+            <div className="w-full h-1.5 sm:h-2 bg-[#F0EEEA] rounded-full overflow-hidden">
               <div className="h-full bg-f-accent w-[65%] rounded-full" />
             </div>
           </div>
 
-          <div className="flex justify-between items-center pt-5 border-t-[0.5px] border-f-line mt-2">
-            <p className="text-[14px] font-medium text-f-ink">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-4 sm:pt-5 border-t-[0.5px] border-f-line mt-1 sm:mt-2">
+            <p className="text-[13px] sm:text-[14px] font-medium text-f-ink leading-relaxed">
               Следующий шаг: <span className="text-f-ink-2 font-normal">загрузить финальный мастер · через 3 дня</span>
             </p>
-            <button className="bg-white border-[0.5px] border-f-line hover:bg-f-bg transition-colors text-f-ink px-5 py-2.5 rounded-[10px] text-[13px] font-semibold cursor-pointer">
+            <button className="bg-white border-[0.5px] border-f-line hover:bg-f-bg transition-colors text-f-ink px-5 py-2.5 rounded-[10px] text-[13px] font-semibold cursor-pointer w-full sm:w-auto text-center">
               Загрузить
             </button>
           </div>
         </section>
 
         {/* 4. Tasks Card */}
-        <section className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-7">
-          <h2 className="text-lg font-semibold mb-5">Задачи на сегодня</h2>
+        <section className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 sm:p-7">
+          <h2 className="text-[17px] sm:text-lg font-semibold mb-4 sm:mb-5">Задачи на сегодня</h2>
           <div className="flex flex-col">
             {tasks.map((task, index) => (
               <div 
                 key={task.id} 
-                className={`flex items-start gap-4 py-4 ${index !== tasks.length - 1 ? 'border-b-[0.5px] border-f-line' : ''}`}
+                className={`flex items-start gap-3 sm:gap-4 py-3 sm:py-4 ${index !== tasks.length - 1 ? 'border-b-[0.5px] border-f-line' : ''}`}
                 onClick={() => toggleTask(task.id)}
               >
                 <button 
@@ -139,10 +143,10 @@ export default function DashboardPage() {
                   {task.done && <CheckIcon />}
                 </button>
                 <div className="flex flex-col cursor-pointer select-none">
-                  <p className={`text-[15px] font-medium transition-colors ${task.done ? 'line-through text-f-ink-3' : 'text-f-ink'}`}>
+                  <p className={`text-[14px] sm:text-[15px] font-medium transition-colors leading-snug ${task.done ? 'line-through text-f-ink-3' : 'text-f-ink'}`}>
                     {task.title}
                   </p>
-                  <p className="text-[13px] text-f-ink-3 mt-1 font-normal">
+                  <p className="text-xs sm:text-[13px] text-f-ink-3 mt-1 font-normal">
                     {task.done && task.doneAt ? task.doneAt : task.meta}
                   </p>
                 </div>
@@ -152,45 +156,45 @@ export default function DashboardPage() {
         </section>
 
         {/* 5. Stat Cards */}
-        <section className="grid grid-cols-3 gap-5">
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
           {/* Card 1 */}
-          <div className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 flex flex-col justify-between gap-6">
-            <p className="text-[13px] text-f-ink-3 font-medium">Слушатели / месяц</p>
-            <div className="flex flex-col gap-1">
-              <p className="text-[26px] font-semibold leading-none tracking-tight">65k</p>
-              <p className="text-[13px] text-f-ink-3 mt-0.5">цель 100k</p>
+          <div className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 flex flex-col justify-between gap-4 sm:gap-6">
+            <p className="text-xs sm:text-[13px] text-f-ink-3 font-medium">Слушатели / месяц</p>
+            <div className="flex flex-col gap-0.5 sm:gap-1">
+              <p className="text-2xl sm:text-[26px] font-semibold leading-none tracking-tight">65k</p>
+              <p className="text-xs sm:text-[13px] text-f-ink-3 mt-0.5">цель 100k</p>
             </div>
           </div>
           {/* Card 2 */}
-          <div className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 flex flex-col justify-between gap-6">
-            <p className="text-[13px] text-f-ink-3 font-medium">Стримы / квартал</p>
-            <div className="flex flex-col gap-1">
-              <p className="text-[26px] font-semibold leading-none tracking-tight">1.2M</p>
-              <p className="text-[13px] text-f-ok mt-0.5 font-medium">+18%</p>
+          <div className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 flex flex-col justify-between gap-4 sm:gap-6">
+            <p className="text-xs sm:text-[13px] text-f-ink-3 font-medium">Стримы / квартал</p>
+            <div className="flex flex-col gap-0.5 sm:gap-1">
+              <p className="text-2xl sm:text-[26px] font-semibold leading-none tracking-tight">1.2M</p>
+              <p className="text-xs sm:text-[13px] text-f-ok mt-0.5 font-medium">+18%</p>
             </div>
           </div>
           {/* Card 3 */}
-          <div className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 flex flex-col justify-between gap-6">
-            <p className="text-[13px] text-f-ink-3 font-medium">Роялти (мои условия)</p>
-            <div className="flex flex-col gap-1">
-              <p className="text-[26px] font-semibold leading-none tracking-tight">70 / 30</p>
-              <p className="text-[13px] text-f-ink-3 mt-0.5">срок 24 мес.</p>
+          <div className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 flex flex-col justify-between gap-4 sm:gap-6">
+            <p className="text-xs sm:text-[13px] text-f-ink-3 font-medium">Роялти (мои условия)</p>
+            <div className="flex flex-col gap-0.5 sm:gap-1">
+              <p className="text-2xl sm:text-[26px] font-semibold leading-none tracking-tight">70 / 30</p>
+              <p className="text-xs sm:text-[13px] text-f-ink-3 mt-0.5">срок 24 мес.</p>
             </div>
           </div>
         </section>
 
         {/* 6. Finance Row */}
-        <section className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 flex items-center justify-between mb-10">
-          <div className="flex items-center gap-4">
+        <section className="bg-f-card border-[0.5px] border-f-line rounded-[16px] p-5 flex items-center justify-between mb-8 sm:mb-10">
+          <div className="flex items-center gap-3 sm:gap-4">
             <div className="text-f-ink-2">
               <WalletIcon />
             </div>
             <div className="flex flex-col gap-0.5">
-              <p className="text-[15px] font-medium">Заявка: сведение и мастеринг</p>
-              <p className="text-[13px] text-f-ink-3">25 000 ₽ · отправлена вчера</p>
+              <p className="text-[14px] sm:text-[15px] font-medium leading-snug">Заявка: сведение и мастеринг</p>
+              <p className="text-xs sm:text-[13px] text-f-ink-3">25 000 ₽ · отправлена вчера</p>
             </div>
           </div>
-          <span className="bg-f-warn-bg text-f-warn-ink text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap">
+          <span className="bg-f-warn-bg text-f-warn-ink text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium whitespace-nowrap">
             На рассмотрении
           </span>
         </section>
