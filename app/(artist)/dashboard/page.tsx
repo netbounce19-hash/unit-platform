@@ -8,6 +8,7 @@ import BudgetRequestModal, { NewBudgetRequest } from "@/components/artist/Budget
 import ArtistProfileModal, { ArtistProfile, defaultProfile } from "@/components/artist/ArtistProfileModal";
 import EventsFeed from "@/components/artist/EventsFeed";
 import SwipeToDelete from "@/components/artist/SwipeToDelete";
+import LabelNotice from "@/components/artist/LabelNotice";
 import { AnimatePresence, motion } from "framer-motion";
 
 // 65000 → «65k», 1200000 → «1.2M»
@@ -119,6 +120,9 @@ export default function Dashboard() {
         </span>
         <span className="text-[15px] font-medium">Добавить новый релиз</span>
       </button>
+
+      {/* Напоминание от лейбла */}
+      <LabelNotice />
 
       {/* Задачи */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[6px] pb-[14px] mb-4">

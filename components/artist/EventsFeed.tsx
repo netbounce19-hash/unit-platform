@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarDays, MapPin, Clock, Check, AlertTriangle } from "lucide-react";
+import { CalendarDays, MapPin, Clock, Check, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface FeedEvent {
   id: number;
@@ -23,10 +23,16 @@ const events: FeedEvent[] = [
   { id: 5, title: "Media Basket Финал", city: "Москва", venue: "ЦСКА Арена", day: "23", month: "авг", time: "17:00" },
 ];
 
+const PAGE_SIZE = 3;
+
 export default function EventsFeed() {
   // id мероприятий, по которым артист отправил запрос менеджеру
   const [requested, setRequested] = useState<number[]>([]);
   const [toast, setToast] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+
+  const totalPages = Math.ceil(events.length / PAGE_SIZE);
+  const visible = events.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
   useEffect(() => {
     if (!toast) return;
@@ -47,26 +53,30 @@ export default function EventsFeed() {
         <div className="flex items-center gap-2 mb-1">
           <CalendarDays className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
           <div className="text-[15px] font-medium">Лента</div>
-          <span className="text-[12px] text-[#A6A5AB]">мероприятия и новости от лейбла</span>
-        </div>
+          <span className="text-[12px] text-[#A6A5AB] flex-1">мероприятия от лейбла</span>
 
-        {/* Новость-напоминание от лейбла */}
-        <div className="mt-3 mb-1 rounded-[12px] border-[0.5px] border-[#F3C9C6] bg-[#FDEDEB] p-4">
-          <div className="flex items-center gap-2 mb-[6px]">
-            <span className="inline-flex items-center gap-[5px] text-[11px] font-semibold uppercase tracking-[0.04em] text-[#A62018] bg-white/70 rounded-full px-[9px] py-[3px]">
-              <AlertTriangle className="w-[12px] h-[12px]" strokeWidth={2.25} />
-              Важно
-            </span>
-            <span className="text-[12px] text-[#A62018]/70">напоминание от лейбла</span>
+          {/* Переключение страниц */}
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={page === 0}
+              aria-label="Предыдущие мероприятия"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            >
+              <ChevronLeft className="w-[17px] h-[17px]" strokeWidth={2} />
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={page >= totalPages - 1}
+              aria-label="Следующие мероприятия"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            >
+              <ChevronRight className="w-[17px] h-[17px]" strokeWidth={2} />
+            </button>
           </div>
-          <p className="text-[13.5px] leading-[1.5] text-[#17161A]">
-            Дорогие артисты, напоминаем, что все треки отгружаются за 3 недели до даты
-            релиза. Учитывайте это при подготовке. Если вам нужна срочная отгрузка —
-            напишите вашему менеджеру в мессенджере.
-          </p>
         </div>
 
-        {events.map((e, i) => {
+        {visible.map((e, i) => {
           const sent = requested.includes(e.id);
           return (
             <div
@@ -116,6 +126,20 @@ export default function EventsFeed() {
             </div>
           );
         })}
+
+        {/* Индикатор страниц */}
+        <div className="flex items-center justify-center gap-[6px] pt-3">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i)}
+              aria-label={`Страница ${i + 1}`}
+              className={`h-[6px] rounded-full transition-all ${
+                i === page ? "w-5 bg-[#17161A]" : "w-[6px] bg-[#D2D0CB] hover:bg-[#A6A5AB]"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Уведомление артисту */}
