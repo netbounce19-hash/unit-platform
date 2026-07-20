@@ -6,6 +6,9 @@ import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
 import BudgetRequestModal, { NewBudgetRequest } from "@/components/artist/BudgetRequestModal";
 import ArtistProfileModal, { ArtistProfile, defaultProfile } from "@/components/artist/ArtistProfileModal";
+import EventsFeed from "@/components/artist/EventsFeed";
+import SwipeToDelete from "@/components/artist/SwipeToDelete";
+import { AnimatePresence, motion } from "framer-motion";
 
 // 65000 → «65k», 1200000 → «1.2M»
 function formatListeners(n: number) {
@@ -27,16 +30,28 @@ const strategyPillars = [
   { title: "Коллаборация с артистом лейбла", meta: "кросс-промо на аудиторию · сентябрь" },
 ];
 
+type RequestStatus = "pending" | "approved" | "declined";
+
 type BudgetRequest = {
   id: number;
   purpose: string;
   amount: number;
   meta: string;
-  status: "pending";
+  status: RequestStatus;
+};
+
+const statusLabels: Record<RequestStatus, { label: string; cls: string }> = {
+  pending: { label: "На рассмотрении", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
+  approved: { label: "Одобрена", cls: "bg-[#E9F6EF] text-[#166B49]" },
+  declined: { label: "Отклонена", cls: "bg-[#FDEDEB] text-[#A62018]" },
 };
 
 const initialRequests: BudgetRequest[] = [
   { id: 1, purpose: "Сведение и мастеринг", amount: 25000, meta: "отправлена вчера", status: "pending" },
+  { id: 2, purpose: "Съёмка клипа на Midnight Protocol", amount: 350000, meta: "отправлена 12 июля", status: "pending" },
+  { id: 3, purpose: "Промо-кампания: TikTok и Reels", amount: 80000, meta: "одобрена 8 июля", status: "approved" },
+  { id: 4, purpose: "Фотосессия для пресс-кита", amount: 45000, meta: "одобрена 2 июля", status: "approved" },
+  { id: 5, purpose: "Аренда студии, 5 смен", amount: 60000, meta: "отклонена 28 июня", status: "declined" },
 ];
 
 export default function Dashboard() {
@@ -48,6 +63,9 @@ export default function Dashboard() {
   const [requests, setRequests] = useState<BudgetRequest[]>(initialRequests);
   const toggle = (id: number) =>
     setItems((p) => p.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+
+  const removeRequest = (id: number) =>
+    setRequests((prev) => prev.filter((r) => r.id !== id));
 
   const addRequest = (req: NewBudgetRequest) =>
     setRequests((prev) => [
@@ -63,7 +81,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-[14px]">
           <span className="inline-flex items-center gap-[6px] text-[12px] font-medium px-[10px] py-[4px] rounded-full bg-white border-[0.5px] border-[#ECEAE5] text-[#6E6D73]">
             <span className="w-[6px] h-[6px] rounded-full bg-[#E23A34]" />
-            Режим фокуса
+            Кабинет артиста
           </span>
           <Bell className="w-[19px] h-[19px] text-[#6E6D73]" strokeWidth={1.75} />
           <button
@@ -174,7 +192,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             <Wallet className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-            <div className="text-[15px] font-medium">Заявки</div>
+            <div className="text-[15px] font-medium">Заявки на финансирование</div>
           </div>
           <button
             onClick={() => setBudgetOpen(true)}
@@ -184,19 +202,41 @@ export default function Dashboard() {
             Сделать заявку
           </button>
         </div>
-        {requests.map((r, i) => (
-          <div
-            key={r.id}
-            className={`flex items-center justify-between gap-3 py-[13px] ${i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""}`}
-          >
-            <div className="min-w-0">
-              <div className="text-[14px] font-medium truncate">Заявка: {r.purpose}</div>
-              <div className="text-[12px] text-[#A6A5AB] mt-[2px]">{r.amount.toLocaleString("ru-RU")} ₽ · {r.meta}</div>
-            </div>
-            <span className="text-[12px] font-medium px-[10px] py-[4px] rounded-full bg-[#FBF1DE] text-[#8A5A16] shrink-0">На рассмотрении</span>
-          </div>
-        ))}
+        <AnimatePresence initial={false}>
+          {requests.map((r, i) => (
+            <motion.div
+              key={r.id}
+              layout
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <SwipeToDelete
+                onDelete={() => removeRequest(r.id)}
+                label={`Удалить заявку: ${r.purpose}`}
+              >
+                <div
+                  className={`flex items-center justify-between gap-3 py-[13px] ${i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""}`}
+                >
+                  <div className="min-w-0">
+                    <div className="text-[14px] font-medium truncate">Заявка: {r.purpose}</div>
+                    <div className="text-[12px] text-[#A6A5AB] mt-[2px]">{r.amount.toLocaleString("ru-RU")} ₽ · {r.meta}</div>
+                  </div>
+                  <span className={`text-[12px] font-medium px-[10px] py-[4px] rounded-full shrink-0 ${statusLabels[r.status].cls}`}>{statusLabels[r.status].label}</span>
+                </div>
+              </SwipeToDelete>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        {requests.length === 0 ? (
+          <div className="py-[18px] text-[13px] text-[#A6A5AB] text-center">Заявок нет</div>
+        ) : (
+          <div className="pt-[10px] text-[11px] text-[#A6A5AB] text-center">Смахните заявку влево, чтобы удалить</div>
+        )}
       </div>
+
+      {/* Лента мероприятий и новостей */}
+      <EventsFeed />
 
       <ReleaseUploadModal
         open={uploadRelease !== null}
