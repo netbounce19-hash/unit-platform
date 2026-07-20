@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="lo-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#415A77"/>
+      <stop offset="100%" stop-color="#17161A"/>
+    </linearGradient>
+    <radialGradient id="lo-planet" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0%" stop-color="#FBF1DE"/>
+      <stop offset="100%" stop-color="#D4AF37"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#lo-bg)"/>
+  <circle cx="200" cy="200" r="88" fill="url(#lo-planet)"/>
+  <ellipse cx="200" cy="200" rx="160" ry="46" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="4" transform="rotate(-22 200 200)"/>
+  <circle cx="322" cy="128" r="7" fill="#FFFFFF" fill-opacity="0.8"/>
+  <circle cx="78" cy="286" r="5" fill="#FFFFFF" fill-opacity="0.6"/>
+  <circle cx="96" cy="104" r="3" fill="#FFFFFF" fill-opacity="0.5"/>
+</svg>

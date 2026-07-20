@@ -2,8 +2,17 @@
 import { useState } from "react";
 import { Bell, Wallet, Check, Target, Plus } from "lucide-react";
 import ReleaseUploadModal from "@/components/artist/ReleaseUploadModal";
+import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
 import BudgetRequestModal, { NewBudgetRequest } from "@/components/artist/BudgetRequestModal";
+import ArtistProfileModal, { ArtistProfile, defaultProfile } from "@/components/artist/ArtistProfileModal";
+
+// 65000 → «65k», 1200000 → «1.2M»
+function formatListeners(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (n >= 1_000) return `${Math.round(n / 1_000)}k`;
+  return String(n);
+}
 
 const initial = [
   { id: 1, title: "Опубликовать промо-ролик в TikTok", meta: "Промо · дедлайн сегодня", done: false },
@@ -32,8 +41,10 @@ const initialRequests: BudgetRequest[] = [
 
 export default function Dashboard() {
   const [items, setItems] = useState(initial);
-  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadRelease, setUploadRelease] = useState<string | null>(null);
   const [budgetOpen, setBudgetOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [profile, setProfile] = useState<ArtistProfile>(defaultProfile);
   const [requests, setRequests] = useState<BudgetRequest[]>(initialRequests);
   const toggle = (id: number) =>
     setItems((p) => p.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
@@ -55,39 +66,30 @@ export default function Dashboard() {
             Режим фокуса
           </span>
           <Bell className="w-[19px] h-[19px] text-[#6E6D73]" strokeWidth={1.75} />
-          <div className="w-8 h-8 rounded-full bg-[#17161A] text-white flex items-center justify-center text-[13px] font-medium">K</div>
+          <button
+            onClick={() => setProfileOpen(true)}
+            aria-label="Редактировать профиль"
+            title="Редактировать профиль"
+            className="w-8 h-8 rounded-full overflow-hidden bg-[#17161A] text-white flex items-center justify-center text-[13px] font-medium hover:ring-2 hover:ring-[#E23A34]/30 transition"
+          >
+            {profile.photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={profile.photo} alt="Профиль" className="w-full h-full object-cover" />
+            ) : (
+              profile.name.charAt(0) || "?"
+            )}
+          </button>
         </div>
       </div>
 
       {/* Приветствие */}
       <div className="mb-[22px]">
-        <div className="text-[22px] font-medium tracking-[-0.01em]">С возвращением, KXDE</div>
+        <div className="text-[22px] font-medium tracking-[-0.01em]">С возвращением, {profile.name}</div>
         <div className="text-[14px] text-[#6E6D73] mt-[3px]">Четверг, 16 июля · 2 задачи на сегодня</div>
       </div>
 
-      {/* Активный релиз */}
-      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="text-[12px] text-[#A6A5AB] mb-1">Активный релиз</div>
-            <div className="text-[18px] font-medium tracking-[-0.01em]">Midnight Protocol</div>
-          </div>
-          <span className="text-[12px] font-medium px-[10px] py-[4px] rounded-full bg-[#FDEDEB] text-[#A62018]">В работе</span>
-        </div>
-        <div className="flex justify-between text-[13px] text-[#6E6D73] mb-2">
-          <span>Прогресс релиза</span>
-          <span className="font-medium text-[#17161A]">65%</span>
-        </div>
-        <div className="h-2 bg-[#F0EEEA] rounded-full overflow-hidden mb-[18px]">
-          <div className="h-full bg-[#E23A34] rounded-full" style={{ width: "65%" }} />
-        </div>
-        <div className="flex items-center justify-between gap-4">
-          <div className="text-[13px] text-[#6E6D73]">
-            <span className="text-[#17161A] font-medium">Следующий шаг:</span> загрузить финальный мастер · через 3 дня
-          </div>
-          <button onClick={() => setUploadOpen(true)} className="bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition shrink-0">Загрузить</button>
-        </div>
-      </div>
+      {/* Релизы */}
+      <ReleaseCarousel onUpload={setUploadRelease} />
 
       {/* Задачи */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[6px] pb-[14px] mb-4">
@@ -113,7 +115,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
           <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Слушатели / месяц</div>
-          <div className="text-[22px] font-medium">65k</div>
+          <div className="text-[22px] font-medium">{formatListeners(profile.listeners)}</div>
           <div className="text-[12px] text-[#6E6D73] mt-[2px]">цель 100k</div>
         </div>
         <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
@@ -186,15 +188,22 @@ export default function Dashboard() {
       </div>
 
       <ReleaseUploadModal
-        open={uploadOpen}
-        onClose={() => setUploadOpen(false)}
-        releaseTitle="Midnight Protocol"
+        open={uploadRelease !== null}
+        onClose={() => setUploadRelease(null)}
+        releaseTitle={uploadRelease ?? ""}
       />
 
       <BudgetRequestModal
         open={budgetOpen}
         onClose={() => setBudgetOpen(false)}
         onSubmit={addRequest}
+      />
+
+      <ArtistProfileModal
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        profile={profile}
+        onSave={setProfile}
       />
 
       <ManagerMessenger />
