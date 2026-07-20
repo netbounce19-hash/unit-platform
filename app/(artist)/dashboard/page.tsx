@@ -91,6 +91,17 @@ export default function Dashboard() {
       {/* Релизы */}
       <ReleaseCarousel onUpload={setUploadRelease} />
 
+      {/* Добавить новый релиз */}
+      <button
+        onClick={() => setUploadRelease("Новый релиз")}
+        className="w-full mb-4 flex items-center justify-center gap-3 rounded-[16px] border border-dashed border-[#D2D0CB] bg-white px-5 py-[18px] hover:border-[#E23A34] hover:bg-[#FDEDEB]/50 transition"
+      >
+        <span className="w-10 h-10 rounded-full bg-[#E23A34] text-white flex items-center justify-center shrink-0">
+          <Plus className="w-6 h-6" strokeWidth={2.5} />
+        </span>
+        <span className="text-[15px] font-medium">Добавить новый релиз</span>
+      </button>
+
       {/* Задачи */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[6px] pb-[14px] mb-4">
         <div className="text-[15px] font-medium pt-4 pb-1">Задачи на сегодня</div>
