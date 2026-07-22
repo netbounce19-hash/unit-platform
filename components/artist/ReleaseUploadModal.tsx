@@ -11,12 +11,16 @@ import {
   Users,
   Copyright,
   Check,
+  ImagePlus,
+  Paperclip,
 } from "lucide-react";
 
 interface ReleaseUploadModalProps {
   open: boolean;
   onClose: () => void;
   releaseTitle?: string;
+  /** сообщает наверх загруженные данные (обложку) после отправки */
+  onSubmit?: (data: { coverUrl: string | null }) => void;
 }
 
 interface CoAuthor {
@@ -104,17 +108,128 @@ function UploadField({
   );
 }
 
+// ── Multi-file upload (PDF-договора) ───────────────────────
+function MultiFileField({
+  files,
+  onAdd,
+  onRemove,
+}: {
+  files: File[];
+  onAdd: (files: File[]) => void;
+  onRemove: (index: number) => void;
+}) {
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="space-y-2">
+      <div
+        onClick={() => inputRef.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          setDragging(false);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          const dropped = Array.from(e.dataTransfer.files || []);
+          if (dropped.length) onAdd(dropped);
+        }}
+        className={`flex items-center gap-3 rounded-[12px] border border-dashed px-4 py-[14px] cursor-pointer transition ${
+          dragging
+            ? "border-[#E23A34] bg-[#FDEDEB]"
+            : "border-[#D2D0CB] hover:border-[#E23A34]/50 hover:bg-[#FAFAF9]"
+        }`}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".pdf,application/pdf"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            const picked = Array.from(e.target.files || []);
+            if (picked.length) onAdd(picked);
+            e.target.value = "";
+          }}
+        />
+        <span className="w-9 h-9 rounded-[10px] bg-[#F0EEEA] text-[#6E6D73] flex items-center justify-center shrink-0">
+          <Paperclip className="w-[18px] h-[18px]" strokeWidth={1.75} />
+        </span>
+        <div className="min-w-0">
+          <div className="text-[14px] font-medium text-[#17161A]">
+            Загрузить договора (PDF)
+          </div>
+          <div className="text-[12px] text-[#A6A5AB]">
+            Можно несколько файлов
+          </div>
+        </div>
+      </div>
+
+      {files.map((f, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-2 rounded-[10px] bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] px-3 py-[8px]"
+        >
+          <FileText className="w-[15px] h-[15px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
+          <span className="text-[13px] text-[#17161A] truncate flex-1">{f.name}</span>
+          <button
+            onClick={() => onRemove(i)}
+            aria-label="Удалить документ"
+            className="w-6 h-6 shrink-0 rounded-[6px] flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition"
+          >
+            <Trash2 className="w-[14px] h-[14px]" strokeWidth={1.75} />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function ReleaseUploadModal({
   open,
   onClose,
   releaseTitle = "Релиз",
+  onSubmit,
 }: ReleaseUploadModalProps) {
+  const [cover, setCover] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [audio, setAudio] = useState<File | null>(null);
   const [lyrics, setLyrics] = useState<File | null>(null);
   const [copyrightHolder, setCopyrightHolder] = useState("");
   const [coAuthors, setCoAuthors] = useState<CoAuthor[]>([
     { id: 1, name: "KXDE", role: "Автор музыки", share: "100" },
   ]);
+  const [docs, setDocs] = useState<File[]>([]);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  // Сброс полей при каждом открытии
+  useEffect(() => {
+    if (open) {
+      setCover(null);
+      setCoverPreview(null);
+      setAudio(null);
+      setLyrics(null);
+      setCopyrightHolder("");
+      setCoAuthors([{ id: 1, name: "KXDE", role: "Автор музыки", share: "100" }]);
+      setDocs([]);
+    }
+  }, [open]);
+
+  // Превью обложки (объектный URL живёт, пока выбран файл)
+  useEffect(() => {
+    if (!cover) {
+      setCoverPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(cover);
+    setCoverPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [cover]);
 
   // Close on Escape
   useEffect(() => {
@@ -147,7 +262,10 @@ export default function ReleaseUploadModal({
   const canSubmit = Boolean(audio) && shareOk;
 
   const handleSubmit = () => {
-    // Mock submit — в реальном приложении здесь загрузка на бэкенд
+    // Mock submit — в реальном приложении здесь загрузка на бэкенд.
+    // Обложке отдаём свежий объектный URL во владение родителю (не ревокаем).
+    const coverUrl = cover ? URL.createObjectURL(cover) : null;
+    onSubmit?.({ coverUrl });
     onClose();
   };
 
@@ -197,6 +315,41 @@ export default function ReleaseUploadModal({
               </div>
 
               <div className="px-[22px] py-5 space-y-6">
+                {/* Обложка */}
+                <section className="space-y-3">
+                  <div className="text-[13px] font-medium text-[#6E6D73]">
+                    Обложка релиза
+                  </div>
+                  <div
+                    onClick={() => coverInputRef.current?.click()}
+                    className="flex items-center gap-4 rounded-[12px] border border-dashed border-[#D2D0CB] hover:border-[#E23A34]/50 hover:bg-[#FAFAF9] p-3 cursor-pointer transition"
+                  >
+                    <input
+                      ref={coverInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,.jpg,.jpeg,.png"
+                      className="hidden"
+                      onChange={(e) => setCover(e.target.files?.[0] ?? null)}
+                    />
+                    <span className="w-[64px] h-[64px] rounded-[10px] shrink-0 overflow-hidden bg-[#F0EEEA] flex items-center justify-center">
+                      {coverPreview ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={coverPreview} alt="Обложка" className="w-full h-full object-cover" />
+                      ) : (
+                        <ImagePlus className="w-6 h-6 text-[#A6A5AB]" strokeWidth={1.5} />
+                      )}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-[14px] font-medium text-[#17161A]">
+                        {cover ? "Заменить обложку" : "Загрузить обложку"}
+                      </div>
+                      <div className="text-[12px] text-[#A6A5AB] truncate">
+                        {cover ? cover.name : "JPG или PNG · 3000×3000"}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
                 {/* Files */}
                 <section className="space-y-3">
                   <div className="text-[13px] font-medium text-[#6E6D73]">
@@ -317,6 +470,25 @@ export default function ReleaseUploadModal({
                     <Plus className="w-4 h-4" strokeWidth={2} />
                     Добавить со-автора
                   </button>
+                </section>
+
+                {/* Договора с со-авторами */}
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 text-[13px] font-medium text-[#6E6D73]">
+                    <FileText className="w-[15px] h-[15px]" strokeWidth={1.75} />
+                    Договора с со-авторами
+                  </div>
+                  <p className="text-[12px] leading-[1.45] text-[#A6A5AB]">
+                    Загрузите сюда подписанные договора с вашими со-авторами — авторами,
+                    битмейкерами, музыкантами, звукорежиссёрами и др. Формат PDF.
+                  </p>
+                  <MultiFileField
+                    files={docs}
+                    onAdd={(added) => setDocs((prev) => [...prev, ...added])}
+                    onRemove={(index) =>
+                      setDocs((prev) => prev.filter((_, i) => i !== index))
+                    }
+                  />
                 </section>
               </div>
 

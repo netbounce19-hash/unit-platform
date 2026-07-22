@@ -47,9 +47,11 @@ export const releases: Release[] = [
 interface ReleaseCarouselProps {
   /** вызывается для upcoming-релиза — открывает окно загрузки данных */
   onUpload: (releaseTitle: string) => void;
+  /** загруженные обложки по названию релиза */
+  coverOverrides?: Record<string, string>;
 }
 
-export default function ReleaseCarousel({ onUpload }: ReleaseCarouselProps) {
+export default function ReleaseCarousel({ onUpload, coverOverrides }: ReleaseCarouselProps) {
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState(1);
 
@@ -101,7 +103,7 @@ export default function ReleaseCarousel({ onUpload }: ReleaseCarouselProps) {
           {/* Обложка + название */}
           <div className="flex items-center gap-4 mb-[18px]">
             <img
-              src={release.cover}
+              src={coverOverrides?.[release.title] ?? release.cover}
               alt={`Обложка релиза ${release.title}`}
               width={72}
               height={72}

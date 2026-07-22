@@ -62,6 +62,7 @@ export default function Dashboard() {
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState<ArtistProfile>(defaultProfile);
+  const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
   const [requests, setRequests] = useState<BudgetRequest[]>(initialRequests);
   const toggle = (id: number) =>
     setItems((p) => p.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
@@ -109,7 +110,7 @@ export default function Dashboard() {
       </div>
 
       {/* Релизы */}
-      <ReleaseCarousel onUpload={setUploadRelease} />
+      <ReleaseCarousel onUpload={setUploadRelease} coverOverrides={coverOverrides} />
 
       {/* Добавить новый релиз */}
       <button
@@ -250,6 +251,11 @@ export default function Dashboard() {
         open={uploadRelease !== null}
         onClose={() => setUploadRelease(null)}
         releaseTitle={uploadRelease ?? ""}
+        onSubmit={({ coverUrl }) => {
+          if (coverUrl && uploadRelease) {
+            setCoverOverrides((prev) => ({ ...prev, [uploadRelease]: coverUrl }));
+          }
+        }}
       />
 
       <BudgetRequestModal
