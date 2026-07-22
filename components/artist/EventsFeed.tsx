@@ -52,7 +52,7 @@ export default function EventsFeed() {
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[14px] mt-4">
         <div className="flex items-center gap-2 mb-1">
           <CalendarDays className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-          <div className="text-[15px] font-medium">Лента</div>
+          <div className="text-[18px] font-semibold tracking-[-0.01em]">Лента</div>
           <span className="text-[12px] text-[#A6A5AB] flex-1">мероприятия от лейбла</span>
 
           {/* Переключение страниц */}

@@ -9,6 +9,7 @@ import ArtistProfileModal, { ArtistProfile, defaultProfile } from "@/components/
 import EventsFeed from "@/components/artist/EventsFeed";
 import SwipeToDelete from "@/components/artist/SwipeToDelete";
 import LabelNotice from "@/components/artist/LabelNotice";
+import FaqSection from "@/components/artist/FaqSection";
 import { AnimatePresence, motion } from "framer-motion";
 
 // 65000 → «65k», 1200000 → «1.2M»
@@ -126,7 +127,7 @@ export default function Dashboard() {
 
       {/* Задачи */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[6px] pb-[14px] mb-4">
-        <div className="text-[15px] font-medium pt-4 pb-1">Задачи на сегодня</div>
+        <div className="text-[18px] font-semibold tracking-[-0.01em] pt-4 pb-1">Задачи на сегодня</div>
         {items.map((t, i) => (
           <button
             key={t.id}
@@ -168,7 +169,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             <Target className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-            <div className="text-[15px] font-medium">Стратегия</div>
+            <div className="text-[18px] font-semibold tracking-[-0.01em]">Стратегия</div>
             <span className="text-[12px] font-medium px-[9px] py-[3px] rounded-full bg-[#F0EEEA] text-[#6E6D73]">III квартал 2026</span>
           </div>
           <span className="inline-flex items-center gap-[5px] text-[12px] font-medium px-[10px] py-[4px] rounded-full bg-[#E9F6EF] text-[#166B49]">
@@ -196,7 +197,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             <Wallet className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-            <div className="text-[15px] font-medium">Заявки на финансирование</div>
+            <div className="text-[18px] font-semibold tracking-[-0.01em]">Заявки на финансирование</div>
           </div>
           <button
             onClick={() => setBudgetOpen(true)}
@@ -241,6 +242,9 @@ export default function Dashboard() {
 
       {/* Лента мероприятий и новостей */}
       <EventsFeed />
+
+      {/* FAQ */}
+      <FaqSection />
 
       <ReleaseUploadModal
         open={uploadRelease !== null}
