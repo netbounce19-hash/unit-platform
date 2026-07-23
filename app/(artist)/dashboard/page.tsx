@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Bell, Wallet, Check, Target, Plus } from "lucide-react";
+import { Bell, Wallet, Check, Target, Plus, ChevronDown } from "lucide-react";
 import ReleaseUploadModal from "@/components/artist/ReleaseUploadModal";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
@@ -63,6 +63,7 @@ export default function Dashboard() {
   const [items, setItems] = useState(initial);
   const [uploadRelease, setUploadRelease] = useState<string | null>(null);
   const [budgetOpen, setBudgetOpen] = useState(false);
+  const [requestsOpen, setRequestsOpen] = useState(true);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState<ArtistProfile>(defaultProfile);
   const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
@@ -198,50 +199,68 @@ export default function Dashboard() {
 
       {/* Заявки */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[14px]">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setRequestsOpen((v) => !v)}
+            aria-expanded={requestsOpen}
+            className="flex items-center gap-2 -my-1 py-1"
+          >
             <Wallet className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
             <div className="text-[18px] font-semibold tracking-[-0.01em]">Заявки на финансирование</div>
-          </div>
-          <button
-            onClick={() => setBudgetOpen(true)}
-            className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#E23A34] hover:opacity-80 transition"
-          >
-            <Plus className="w-4 h-4" strokeWidth={2} />
-            Сделать заявку
-          </button>
-        </div>
-        <AnimatePresence initial={false}>
-          {requests.map((r, i) => (
-            <motion.div
-              key={r.id}
-              layout
-              exit={{ opacity: 0, height: 0 }}
+            <motion.span
+              animate={{ rotate: requestsOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="overflow-hidden"
+              className="text-[#A6A5AB]"
             >
-              <SwipeToDelete
-                onDelete={() => removeRequest(r.id)}
-                label={`Удалить заявку: ${r.purpose}`}
-              >
-                <div
-                  className={`flex items-center justify-between gap-3 py-[13px] ${i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""}`}
-                >
-                  <div className="min-w-0">
-                    <div className="text-[14px] font-medium truncate">Заявка: {r.purpose}</div>
-                    <div className="text-[12px] text-[#A6A5AB] mt-[2px]">{r.amount.toLocaleString("ru-RU")} ₽ · {r.meta}</div>
-                  </div>
-                  <span className={`text-[12px] font-medium px-[10px] py-[4px] rounded-full shrink-0 ${statusLabels[r.status].cls}`}>{statusLabels[r.status].label}</span>
-                </div>
-              </SwipeToDelete>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-        {requests.length === 0 ? (
-          <div className="py-[18px] text-[13px] text-[#A6A5AB] text-center">Заявок нет</div>
-        ) : (
-          <div className="pt-[10px] text-[11px] text-[#A6A5AB] text-center">Смахните заявку влево, чтобы удалить</div>
-        )}
+              <ChevronDown className="w-[18px] h-[18px]" strokeWidth={2} />
+            </motion.span>
+          </button>
+          {requestsOpen && (
+            <button
+              onClick={() => setBudgetOpen(true)}
+              className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#E23A34] hover:opacity-80 transition"
+            >
+              <Plus className="w-4 h-4" strokeWidth={2} />
+              Сделать заявку
+            </button>
+          )}
+        </div>
+        <div className="grid" style={{ gridTemplateRows: requestsOpen ? "1fr" : "0fr" }}>
+          <div className="overflow-hidden min-h-0">
+            <div className={`pt-1 transition-opacity duration-200 ${requestsOpen ? "opacity-100" : "opacity-0"}`}>
+                <AnimatePresence initial={false}>
+                  {requests.map((r, i) => (
+                    <motion.div
+                      key={r.id}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <SwipeToDelete
+                        onDelete={() => removeRequest(r.id)}
+                        label={`Удалить заявку: ${r.purpose}`}
+                      >
+                        <div
+                          className={`flex items-center justify-between gap-3 py-[13px] ${i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""}`}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-[14px] font-medium truncate">Заявка: {r.purpose}</div>
+                            <div className="text-[12px] text-[#A6A5AB] mt-[2px]">{r.amount.toLocaleString("ru-RU")} ₽ · {r.meta}</div>
+                          </div>
+                          <span className={`text-[12px] font-medium px-[10px] py-[4px] rounded-full shrink-0 ${statusLabels[r.status].cls}`}>{statusLabels[r.status].label}</span>
+                        </div>
+                      </SwipeToDelete>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                {requests.length === 0 ? (
+                  <div className="py-[18px] text-[13px] text-[#A6A5AB] text-center">Заявок нет</div>
+                ) : (
+                  <div className="pt-[10px] text-[11px] text-[#A6A5AB] text-center">Смахните заявку влево, чтобы удалить</div>
+                )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Лента мероприятий и новостей */}

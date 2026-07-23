@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarDays, MapPin, Clock, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, MapPin, Clock, Check, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 
 interface FeedEvent {
   id: number;
@@ -30,6 +30,7 @@ export default function EventsFeed() {
   const [requested, setRequested] = useState<number[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [page, setPage] = useState(0);
+  const [open, setOpen] = useState(true);
 
   const totalPages = Math.ceil(events.length / PAGE_SIZE);
   const visible = events.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
@@ -50,97 +51,118 @@ export default function EventsFeed() {
   return (
     <>
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[14px] mt-4">
-        <div className="flex items-center gap-2 mb-1">
-          <CalendarDays className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-          <div className="text-[18px] font-semibold tracking-[-0.01em]">Лента</div>
-          <span className="text-[12px] text-[#A6A5AB] flex-1">мероприятия от лейбла</span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            className="flex items-center gap-2 flex-1 min-w-0 -my-1 py-1 text-left"
+          >
+            <CalendarDays className="w-[17px] h-[17px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
+            <div className="text-[18px] font-semibold tracking-[-0.01em] shrink-0">Лента</div>
+            <motion.span
+              animate={{ rotate: open ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-[#A6A5AB] shrink-0"
+            >
+              <ChevronDown className="w-[18px] h-[18px]" strokeWidth={2} />
+            </motion.span>
+            <span className="text-[12px] text-[#A6A5AB] truncate">мероприятия от лейбла</span>
+          </button>
 
           {/* Переключение страниц */}
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
-              aria-label="Предыдущие мероприятия"
-              className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-            >
-              <ChevronLeft className="w-[17px] h-[17px]" strokeWidth={2} />
-            </button>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              disabled={page >= totalPages - 1}
-              aria-label="Следующие мероприятия"
-              className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-            >
-              <ChevronRight className="w-[17px] h-[17px]" strokeWidth={2} />
-            </button>
-          </div>
-        </div>
-
-        {visible.map((e, i) => {
-          const sent = requested.includes(e.id);
-          return (
-            <div
-              key={e.id}
-              className={`flex items-center gap-3 py-[13px] ${i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""}`}
-            >
-              {/* Дата */}
-              <div className="w-[46px] shrink-0 rounded-[10px] bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] py-[6px] text-center">
-                <div className="text-[16px] font-medium leading-none">{e.day}</div>
-                <div className="text-[11px] text-[#A6A5AB] mt-[3px]">{e.month}</div>
-              </div>
-
-              {/* Инфо */}
-              <div className="min-w-0 flex-1">
-                <div className="text-[14px] font-medium leading-[1.3]">{e.title}</div>
-                <div className="flex items-center gap-[10px] text-[12px] text-[#A6A5AB] mt-[3px] flex-wrap">
-                  <span className="inline-flex items-center gap-[4px]">
-                    <MapPin className="w-[12px] h-[12px]" strokeWidth={1.75} />
-                    {e.city} · {e.venue}
-                  </span>
-                  <span className="inline-flex items-center gap-[4px]">
-                    <Clock className="w-[12px] h-[12px]" strokeWidth={1.75} />
-                    {e.time}
-                  </span>
-                </div>
-              </div>
-
-              {/* Действие */}
+          {open && (
+            <div className="flex items-center gap-1 shrink-0">
               <button
-                onClick={() => wantToGo(e)}
-                disabled={sent}
-                className={`shrink-0 text-[13px] font-medium px-[14px] py-[8px] rounded-[10px] transition ${
-                  sent
-                    ? "bg-[#E9F6EF] text-[#166B49] cursor-default"
-                    : "bg-[#17161A] text-white hover:brightness-125"
-                }`}
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={page === 0}
+                aria-label="Предыдущие мероприятия"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
               >
-                {sent ? (
-                  <span className="inline-flex items-center gap-[5px]">
-                    <Check className="w-[14px] h-[14px]" strokeWidth={2.5} />
-                    Запрос отправлен
-                  </span>
-                ) : (
-                  "Хочу пойти"
-                )}
+                <ChevronLeft className="w-[17px] h-[17px]" strokeWidth={2} />
+              </button>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                aria-label="Следующие мероприятия"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+              >
+                <ChevronRight className="w-[17px] h-[17px]" strokeWidth={2} />
               </button>
             </div>
-          );
-        })}
-
-        {/* Индикатор страниц */}
-        <div className="flex items-center justify-center gap-[6px] pt-3">
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setPage(i)}
-              aria-label={`Страница ${i + 1}`}
-              className={`h-[6px] rounded-full transition-all ${
-                i === page ? "w-5 bg-[#17161A]" : "w-[6px] bg-[#D2D0CB] hover:bg-[#A6A5AB]"
-              }`}
-            />
-          ))}
+          )}
         </div>
-      </div>
+
+        <div className="grid" style={{ gridTemplateRows: open ? "1fr" : "0fr" }}>
+          <div className="overflow-hidden min-h-0">
+            <div className={`pt-1 transition-opacity duration-200 ${open ? "opacity-100" : "opacity-0"}`}>
+                {visible.map((e, i) => {
+                  const sent = requested.includes(e.id);
+                  return (
+                    <div
+                      key={e.id}
+                      className={`flex items-center gap-3 py-[13px] ${i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""}`}
+                    >
+                      {/* Дата */}
+                      <div className="w-[46px] shrink-0 rounded-[10px] bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] py-[6px] text-center">
+                        <div className="text-[16px] font-medium leading-none">{e.day}</div>
+                        <div className="text-[11px] text-[#A6A5AB] mt-[3px]">{e.month}</div>
+                      </div>
+
+                      {/* Инфо */}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[14px] font-medium leading-[1.3]">{e.title}</div>
+                        <div className="flex items-center gap-[10px] text-[12px] text-[#A6A5AB] mt-[3px] flex-wrap">
+                          <span className="inline-flex items-center gap-[4px]">
+                            <MapPin className="w-[12px] h-[12px]" strokeWidth={1.75} />
+                            {e.city} · {e.venue}
+                          </span>
+                          <span className="inline-flex items-center gap-[4px]">
+                            <Clock className="w-[12px] h-[12px]" strokeWidth={1.75} />
+                            {e.time}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Действие */}
+                      <button
+                        onClick={() => wantToGo(e)}
+                        disabled={sent}
+                        className={`shrink-0 text-[13px] font-medium px-[14px] py-[8px] rounded-[10px] transition ${
+                          sent
+                            ? "bg-[#E9F6EF] text-[#166B49] cursor-default"
+                            : "bg-[#17161A] text-white hover:brightness-125"
+                        }`}
+                      >
+                        {sent ? (
+                          <span className="inline-flex items-center gap-[5px]">
+                            <Check className="w-[14px] h-[14px]" strokeWidth={2.5} />
+                            Запрос отправлен
+                          </span>
+                        ) : (
+                          "Хочу пойти"
+                        )}
+                      </button>
+                    </div>
+                  );
+                })}
+
+                {/* Индикатор страниц */}
+                <div className="flex items-center justify-center gap-[6px] pt-3">
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setPage(i)}
+                      aria-label={`Страница ${i + 1}`}
+                      className={`h-[6px] rounded-full transition-all ${
+                        i === page ? "w-5 bg-[#17161A]" : "w-[6px] bg-[#D2D0CB] hover:bg-[#A6A5AB]"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
       {/* Уведомление артисту */}
       <AnimatePresence>
