@@ -25,6 +25,9 @@ const initial = [
   { id: 3, title: "Загрузить обложку альбома", meta: "Выполнено в 11:20", done: true },
 ];
 
+// Количество выпущенных треков — задаёт менеджер из своего кабинета
+const releasedTracks = 12;
+
 // Утверждённая стратегия на ближайший квартал
 const strategyPillars = [
   { title: "Выпустить Midnight Protocol", meta: "релиз + питчинг в плейлисты · июль" },
@@ -159,19 +162,19 @@ export default function Dashboard() {
           <div className="text-[12px] text-[#1F9D6B] mt-[2px]">+18%</div>
         </div>
         <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
-          <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Роялти (мои условия)</div>
-          <div className="text-[22px] font-medium">70 / 30</div>
-          <div className="text-[12px] text-[#6E6D73] mt-[2px]">срок 24 мес.</div>
+          <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Количество треков</div>
+          <div className="text-[22px] font-medium">{releasedTracks}</div>
+          <div className="text-[12px] text-[#6E6D73] mt-[2px]">выпущено</div>
         </div>
       </div>
 
       {/* Стратегия */}
-      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">
+      <div className="bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[16px] p-[22px] mb-4">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
-            <Target className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
+            <Target className="w-[17px] h-[17px] text-[#8A5A16]" strokeWidth={1.75} />
             <div className="text-[18px] font-semibold tracking-[-0.01em]">Стратегия</div>
-            <span className="text-[12px] font-medium px-[9px] py-[3px] rounded-full bg-[#F0EEEA] text-[#6E6D73]">III квартал 2026</span>
+            <span className="text-[12px] font-medium px-[9px] py-[3px] rounded-full bg-white/60 text-[#8A5A16]">III квартал 2026</span>
           </div>
           <span className="inline-flex items-center gap-[5px] text-[12px] font-medium px-[10px] py-[4px] rounded-full bg-[#E9F6EF] text-[#166B49]">
             <Check className="w-3 h-3" strokeWidth={3} />
@@ -190,7 +193,7 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-        <div className="text-[12px] text-[#A6A5AB] mt-4 pt-3 border-t-[0.5px] border-[#ECEAE5]">Согласована с A&R · Анна Ковалёва · 14 июля</div>
+        <div className="text-[12px] text-[#8A5A16]/60 mt-4 pt-3 border-t-[0.5px] border-[#F0E2BF]">Согласована с A&R · Анна Ковалёва · 14 июля</div>
       </div>
 
       {/* Заявки */}

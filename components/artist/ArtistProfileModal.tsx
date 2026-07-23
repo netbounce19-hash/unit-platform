@@ -191,23 +191,18 @@ export default function ArtistProfileModal({
                   </span>
                 </label>
 
-                {/* Слушатели */}
-                <label className="block">
-                  <span className="block text-[13px] font-medium text-[#6E6D73] mb-[8px]">
-                    Ежемесячные слушатели
-                  </span>
-                  <input
-                    value={draft.listeners.toLocaleString("ru-RU")}
-                    onChange={(e) =>
-                      setDraft((d) => ({
-                        ...d,
-                        listeners: Number(e.target.value.replace(/\D/g, "").slice(0, 9)) || 0,
-                      }))
-                    }
-                    inputMode="numeric"
-                    className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition"
-                  />
-                </label>
+                {/* Слушатели — только просмотр, значение обновляет менеджер */}
+                <div>
+                  <div className="flex items-center justify-between mb-[8px]">
+                    <span className="text-[13px] font-medium text-[#6E6D73]">
+                      Ежемесячные слушатели
+                    </span>
+                    <span className="text-[11px] text-[#A6A5AB]">обновляет менеджер</span>
+                  </div>
+                  <div className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-[#FAFAF9] px-3 py-[10px] text-[#6E6D73]">
+                    {draft.listeners.toLocaleString("ru-RU")}
+                  </div>
+                </div>
 
                 {/* Статус */}
                 <div>
@@ -217,18 +212,20 @@ export default function ArtistProfileModal({
                   <div className="grid grid-cols-2 gap-2">
                     {(
                       [
-                        { key: "contract", label: "Контракт" },
-                        { key: "independent", label: "Независимый артист" },
-                      ] as { key: ArtistStatus; label: string }[]
+                        { key: "contract", label: "Контракт", disabled: false },
+                        { key: "independent", label: "Независимый артист", disabled: true },
+                      ] as { key: ArtistStatus; label: string; disabled: boolean }[]
                     ).map((opt) => (
                       <button
                         key={opt.key}
-                        onClick={() => setDraft((d) => ({ ...d, status: opt.key }))}
+                        onClick={() => !opt.disabled && setDraft((d) => ({ ...d, status: opt.key }))}
+                        disabled={opt.disabled}
+                        title={opt.disabled ? "Недоступно — изменяет менеджер" : undefined}
                         className={`text-[13px] font-medium rounded-[10px] px-3 py-[10px] border transition ${
                           draft.status === opt.key
                             ? "border-[#E23A34] bg-[#FDEDEB] text-[#A62018]"
                             : "border-[#E5E3DE] bg-white text-[#6E6D73] hover:border-[#D2D0CB]"
-                        }`}
+                        } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#E5E3DE]`}
                       >
                         {opt.label}
                       </button>
