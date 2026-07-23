@@ -10,6 +10,7 @@ import EventsFeed from "@/components/artist/EventsFeed";
 import SwipeToDelete from "@/components/artist/SwipeToDelete";
 import LabelNotice from "@/components/artist/LabelNotice";
 import FaqSection from "@/components/artist/FaqSection";
+import DemoSection from "@/components/artist/DemoSection";
 import { AnimatePresence, motion } from "framer-motion";
 
 // 65000 → «65k», 1200000 → «1.2M»
@@ -197,6 +198,9 @@ export default function Dashboard() {
         <div className="text-[12px] text-[#8A5A16]/60 mt-4 pt-3 border-t-[0.5px] border-[#F0E2BF]">Согласована с A&R · Анна Ковалёва · 14 июля</div>
       </div>
 
+      {/* Демо */}
+      <DemoSection />
+
       {/* Заявки */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[14px]">
         <div className="flex items-center justify-between">
@@ -206,7 +210,7 @@ export default function Dashboard() {
             className="flex items-center gap-2 -my-1 py-1"
           >
             <Wallet className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-            <div className="text-[18px] font-semibold tracking-[-0.01em]">Заявки на финансирование</div>
+            <div className="text-[15px] font-semibold tracking-[-0.01em]">Заявки на финансирование</div>
             <motion.span
               animate={{ rotate: requestsOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
