@@ -35,6 +35,7 @@ interface DemoContextValue {
   replaceAudio: (id: string, file: File) => void;
   setImage: (id: string, file: File) => void;
   updateTitle: (id: string, title: string) => void;
+  moveDemo: (id: string, dir: -1 | 1) => void;
 }
 
 const DemoContext = createContext<DemoContextValue | undefined>(undefined);
@@ -73,9 +74,19 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const updateTitle = (id: string, title: string) =>
     setDemos((prev) => prev.map((d) => (d.id === id ? { ...d, title } : d)));
 
+  const moveDemo = (id: string, dir: -1 | 1) =>
+    setDemos((prev) => {
+      const i = prev.findIndex((d) => d.id === id);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= prev.length) return prev;
+      const copy = [...prev];
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+      return copy;
+    });
+
   return (
     <DemoContext.Provider
-      value={{ demos, addDemo, removeDemo, replaceAudio, setImage, updateTitle }}
+      value={{ demos, addDemo, removeDemo, replaceAudio, setImage, updateTitle, moveDemo }}
     >
       {children}
     </DemoContext.Provider>

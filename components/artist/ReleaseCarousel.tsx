@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, BarChart3, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, ArrowRight, X, Trash2 } from "lucide-react";
 
 export interface Release {
   id: string;
@@ -16,7 +16,7 @@ export interface Release {
   nextStep?: string;
 }
 
-export const releases: Release[] = [
+const defaultReleases: Release[] = [
   {
     id: "midnight-protocol",
     title: "Midnight Protocol",
@@ -52,30 +52,39 @@ interface ReleaseCarouselProps {
 }
 
 export default function ReleaseCarousel({ onUpload, coverOverrides }: ReleaseCarouselProps) {
+  const [releases, setReleases] = useState<Release[]>(defaultReleases);
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState(1);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const release = releases[index];
+  const safeIndex = Math.min(index, releases.length - 1);
+  const release = releases[safeIndex];
   const isLive = release.status === "live";
 
   const go = (delta: number) => {
-    const next = index + delta;
+    const next = safeIndex + delta;
     if (next < 0 || next >= releases.length) return;
     setDir(delta);
     setIndex(next);
   };
 
+  const deleteRelease = () => {
+    setReleases((prev) => prev.filter((r) => r.id !== release.id));
+    setIndex((i) => Math.max(0, i - 1));
+    setConfirmOpen(false);
+  };
+
   return (
-    <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4 overflow-hidden">
+    <div className="relative bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4 overflow-hidden">
       {/* Заголовок секции + навигация */}
       <div className="flex items-center justify-between mb-4">
         <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#17161A]">
-          {isLive ? "Активный релиз" : `Следующий релиз · ${index} из ${releases.length - 1}`}
+          {isLive ? "Активный релиз" : `Следующий релиз · ${safeIndex} из ${releases.length - 1}`}
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={() => go(-1)}
-            disabled={index === 0}
+            disabled={safeIndex === 0}
             aria-label="Предыдущий релиз"
             className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           >
@@ -83,7 +92,7 @@ export default function ReleaseCarousel({ onUpload, coverOverrides }: ReleaseCar
           </button>
           <button
             onClick={() => go(1)}
-            disabled={index === releases.length - 1}
+            disabled={safeIndex === releases.length - 1}
             aria-label="Следующие релизы"
             className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           >
@@ -125,6 +134,16 @@ export default function ReleaseCarousel({ onUpload, coverOverrides }: ReleaseCar
               </div>
               <div className="text-[13px] text-[#6E6D73]">{release.date}</div>
             </div>
+            {!isLive && (
+              <button
+                onClick={() => setConfirmOpen(true)}
+                aria-label="Удалить релиз"
+                title="Удалить релиз"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition shrink-0 self-start"
+              >
+                <X className="w-[18px] h-[18px]" strokeWidth={2} />
+              </button>
+            )}
           </div>
 
           {isLive ? (
@@ -173,12 +192,12 @@ export default function ReleaseCarousel({ onUpload, coverOverrides }: ReleaseCar
           <button
             key={r.id}
             onClick={() => {
-              setDir(i > index ? 1 : -1);
+              setDir(i > safeIndex ? 1 : -1);
               setIndex(i);
             }}
             aria-label={`Релиз ${r.title}`}
             className={`h-[6px] rounded-full transition-all ${
-              i === index ? "w-5 bg-[#17161A]" : "w-[6px] bg-[#D2D0CB] hover:bg-[#A6A5AB]"
+              i === safeIndex ? "w-5 bg-[#17161A]" : "w-[6px] bg-[#D2D0CB] hover:bg-[#A6A5AB]"
             }`}
           />
         ))}
@@ -194,6 +213,50 @@ export default function ReleaseCarousel({ onUpload, coverOverrides }: ReleaseCar
           <ArrowRight className="w-[13px] h-[13px]" strokeWidth={2} />
         </button>
       )}
+
+      {/* Подтверждение удаления */}
+      <AnimatePresence>
+        {confirmOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 backdrop-blur-sm p-5"
+          >
+            <motion.div
+              initial={{ scale: 0.96, y: 8 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.96, y: 8 }}
+              transition={{ type: "spring", damping: 26, stiffness: 320 }}
+              className="w-full max-w-[360px] rounded-[16px] border-[0.5px] border-[#ECEAE5] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] p-5 text-center"
+            >
+              <span className="w-11 h-11 rounded-full bg-[#FDEDEB] text-[#A62018] flex items-center justify-center mx-auto mb-3">
+                <Trash2 className="w-5 h-5" strokeWidth={1.75} />
+              </span>
+              <div className="text-[15px] font-semibold tracking-[-0.01em]">
+                Удалить релиз?
+              </div>
+              <div className="text-[13px] text-[#6E6D73] mt-1">
+                «{release.title}» будет удалён из списка релизов.
+              </div>
+              <div className="flex items-center gap-2 mt-4">
+                <button
+                  onClick={() => setConfirmOpen(false)}
+                  className="flex-1 text-[14px] font-medium text-[#17161A] px-4 py-[10px] rounded-[10px] border border-[#E5E3DE] hover:bg-[#F0EEEA] transition"
+                >
+                  Нет
+                </button>
+                <button
+                  onClick={deleteRelease}
+                  className="flex-1 text-[14px] font-medium text-white bg-[#E23A34] px-4 py-[10px] rounded-[10px] hover:brightness-95 transition"
+                >
+                  Да, удалить
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

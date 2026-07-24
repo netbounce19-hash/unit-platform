@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Plus, Trash2, ImagePlus, RefreshCw, Disc3, Music } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, ImagePlus, RefreshCw, Disc3, Music, ChevronUp, ChevronDown } from "lucide-react";
 import { useDemos } from "@/components/artist/DemoContext";
 
 // Открывает системный выбор файла и резолвит выбранный File
@@ -16,7 +16,7 @@ function pickFile(accept: string): Promise<File | null> {
 }
 
 export default function DemoEditPage() {
-  const { demos, addDemo, removeDemo, replaceAudio, setImage, updateTitle } = useDemos();
+  const { demos, addDemo, removeDemo, replaceAudio, setImage, updateTitle, moveDemo } = useDemos();
 
   const onUpload = async () => {
     const file = await pickFile("audio/*,.wav,.mp3,.flac,.aiff");
@@ -72,11 +72,31 @@ export default function DemoEditPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {demos.map((d) => (
+          {demos.map((d, i) => (
             <div
               key={d.id}
               className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-3 flex items-center gap-3"
             >
+              {/* Порядок */}
+              <div className="flex flex-col shrink-0">
+                <button
+                  onClick={() => moveDemo(d.id, -1)}
+                  disabled={i === 0}
+                  aria-label="Выше"
+                  className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                >
+                  <ChevronUp className="w-[16px] h-[16px]" strokeWidth={2} />
+                </button>
+                <button
+                  onClick={() => moveDemo(d.id, 1)}
+                  disabled={i === demos.length - 1}
+                  aria-label="Ниже"
+                  className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                >
+                  <ChevronDown className="w-[16px] h-[16px]" strokeWidth={2} />
+                </button>
+              </div>
+
               {/* Обложка */}
               <button
                 onClick={() => onSetImage(d.id)}

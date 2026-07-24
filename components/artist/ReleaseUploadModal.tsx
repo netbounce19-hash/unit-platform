@@ -13,7 +13,10 @@ import {
   Check,
   ImagePlus,
   Paperclip,
+  Disc3,
+  Music,
 } from "lucide-react";
+import { useDemos } from "@/components/artist/DemoContext";
 
 interface ReleaseUploadModalProps {
   open: boolean;
@@ -205,7 +208,9 @@ export default function ReleaseUploadModal({
     { id: 1, name: "KXDE", role: "Автор музыки", share: "100" },
   ]);
   const [docs, setDocs] = useState<File[]>([]);
+  const [demoIds, setDemoIds] = useState<string[]>([]);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const { demos } = useDemos();
 
   // Сброс полей при каждом открытии
   useEffect(() => {
@@ -217,8 +222,14 @@ export default function ReleaseUploadModal({
       setCopyrightHolder("");
       setCoAuthors([{ id: 1, name: "KXDE", role: "Автор музыки", share: "100" }]);
       setDocs([]);
+      setDemoIds([]);
     }
   }, [open]);
+
+  const toggleDemo = (id: string) =>
+    setDemoIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
 
   // Превью обложки (объектный URL живёт, пока выбран файл)
   useEffect(() => {
@@ -259,7 +270,8 @@ export default function ReleaseUploadModal({
   const removeAuthor = (id: number) =>
     setCoAuthors((prev) => prev.filter((a) => a.id !== id));
 
-  const canSubmit = Boolean(audio) && shareOk;
+  const hasAudio = Boolean(audio) || demoIds.length > 0;
+  const canSubmit = hasAudio && shareOk;
 
   const handleSubmit = () => {
     // Mock submit — в реальном приложении здесь загрузка на бэкенд.
@@ -371,6 +383,65 @@ export default function ReleaseUploadModal({
                     file={lyrics}
                     onFile={setLyrics}
                   />
+                </section>
+
+                {/* Треки из демо */}
+                <section className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-[13px] font-medium text-[#6E6D73]">
+                      <Music className="w-[15px] h-[15px]" strokeWidth={1.75} />
+                      Треки из демо
+                    </div>
+                    {demoIds.length > 0 && (
+                      <span className="text-[12px] font-medium text-[#166B49]">
+                        Выбрано: {demoIds.length}
+                      </span>
+                    )}
+                  </div>
+                  {demos.length === 0 ? (
+                    <p className="text-[12px] text-[#A6A5AB]">
+                      Демо пока нет — добавьте их на странице ДЕМО.
+                    </p>
+                  ) : (
+                    <div className="space-y-2 max-h-[188px] overflow-y-auto pr-1">
+                      {demos.map((d) => {
+                        const on = demoIds.includes(d.id);
+                        return (
+                          <button
+                            key={d.id}
+                            onClick={() => toggleDemo(d.id)}
+                            className={`w-full flex items-center gap-3 rounded-[12px] border px-3 py-[9px] transition text-left ${
+                              on
+                                ? "border-[#1F9D6B]/50 bg-[#E9F6EF]"
+                                : "border-[#E5E3DE] bg-white hover:border-[#D2D0CB]"
+                            }`}
+                          >
+                            <span
+                              className="relative w-9 h-9 rounded-[8px] shrink-0 overflow-hidden flex items-center justify-center"
+                              style={{ background: d.gradient }}
+                            >
+                              {d.image ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={d.image} alt={d.title} className="absolute inset-0 w-full h-full object-cover" />
+                              ) : (
+                                <Disc3 className="w-[18px] h-[18px] text-white/75" strokeWidth={1.5} />
+                              )}
+                            </span>
+                            <span className="text-[13.5px] font-medium text-[#17161A] truncate flex-1">
+                              {d.title}
+                            </span>
+                            <span
+                              className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                                on ? "bg-[#1F9D6B] text-white" : "border border-[#D2D0CB] text-transparent"
+                              }`}
+                            >
+                              {on ? <Check className="w-[14px] h-[14px]" strokeWidth={2.5} /> : <Plus className="w-[14px] h-[14px] text-[#A6A5AB]" strokeWidth={2} />}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </section>
 
                 {/* Copyright holder */}
@@ -495,8 +566,8 @@ export default function ReleaseUploadModal({
               {/* Footer */}
               <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm flex items-center justify-between gap-3 px-[22px] py-[16px] border-t-[0.5px] border-[#ECEAE5]">
                 <span className="text-[12px] text-[#A6A5AB]">
-                  {!audio
-                    ? "Добавьте аудиофайл"
+                  {!hasAudio
+                    ? "Добавьте аудио или выберите демо"
                     : !shareOk
                     ? "Доли должны составлять 100%"
                     : "Готово к загрузке"}
