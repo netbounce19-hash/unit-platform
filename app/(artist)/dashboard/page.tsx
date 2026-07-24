@@ -64,7 +64,7 @@ export default function Dashboard() {
   const [items, setItems] = useState(initial);
   const [uploadRelease, setUploadRelease] = useState<string | null>(null);
   const [budgetOpen, setBudgetOpen] = useState(false);
-  const [requestsOpen, setRequestsOpen] = useState(true);
+  const [requestsOpen, setRequestsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState<ArtistProfile>(defaultProfile);
   const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
@@ -267,7 +267,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Лента мероприятий и новостей */}
+      {/* Новости и мероприятия */}
       <EventsFeed />
 
       {/* FAQ */}

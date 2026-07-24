@@ -30,7 +30,7 @@ export default function EventsFeed() {
   const [requested, setRequested] = useState<number[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [page, setPage] = useState(0);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const totalPages = Math.ceil(events.length / PAGE_SIZE);
   const visible = events.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
@@ -58,7 +58,7 @@ export default function EventsFeed() {
             className="flex items-center gap-2 flex-1 min-w-0 -my-1 py-1 text-left"
           >
             <CalendarDays className="w-[17px] h-[17px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
-            <div className="text-[18px] font-semibold tracking-[-0.01em] shrink-0">Лента</div>
+            <div className="text-[15px] font-semibold tracking-[-0.01em] truncate">Новости и мероприятия</div>
             <motion.span
               animate={{ rotate: open ? 180 : 0 }}
               transition={{ duration: 0.2 }}
@@ -66,7 +66,6 @@ export default function EventsFeed() {
             >
               <ChevronDown className="w-[18px] h-[18px]" strokeWidth={2} />
             </motion.span>
-            <span className="text-[12px] text-[#A6A5AB] truncate">мероприятия от лейбла</span>
           </button>
 
           {/* Переключение страниц */}

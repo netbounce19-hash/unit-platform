@@ -118,7 +118,7 @@ export default function DemoSection() {
           className="flex items-center gap-2 flex-1 min-w-0 -my-1 py-1 text-left"
         >
           <Headphones className="w-[17px] h-[17px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
-          <div className="text-[18px] font-semibold tracking-[-0.01em] shrink-0">ДЕМО</div>
+          <div className="text-[15px] font-semibold tracking-[-0.01em] shrink-0">ДЕМО</div>
           <motion.span
             animate={{ rotate: open ? 180 : 0 }}
             transition={{ duration: 0.2 }}
@@ -126,7 +126,6 @@ export default function DemoSection() {
           >
             <ChevronDown className="w-[18px] h-[18px]" strokeWidth={2} />
           </motion.span>
-          <span className="text-[12px] text-[#A6A5AB] truncate">черновики и наброски</span>
         </button>
 
         {open && totalPages > 1 && (
