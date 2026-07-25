@@ -58,7 +58,7 @@ export default function EventsFeed() {
             className="flex items-center gap-2 flex-1 min-w-0 -my-1 py-1 text-left"
           >
             <CalendarDays className="w-[17px] h-[17px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
-            <div className="text-[15px] font-semibold tracking-[-0.01em] truncate">Новости и мероприятия</div>
+            <div className="text-[16px] font-semibold tracking-[-0.01em] truncate">Новости и мероприятия</div>
             <motion.span
               animate={{ rotate: open ? 180 : 0 }}
               transition={{ duration: 0.2 }}

@@ -78,7 +78,7 @@ export default function ReleaseCarousel({ onUpload, coverOverrides }: ReleaseCar
     <div className="relative bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4 overflow-hidden">
       {/* Заголовок секции + навигация */}
       <div className="flex items-center justify-between mb-4">
-        <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#17161A]">
+        <div className="text-[16px] font-semibold tracking-[-0.01em] text-[#17161A]">
           {isLive ? "Активный релиз" : `Следующий релиз · ${safeIndex} из ${releases.length - 1}`}
         </div>
         <div className="flex items-center gap-1">

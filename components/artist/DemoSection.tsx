@@ -118,7 +118,7 @@ export default function DemoSection() {
           className="flex items-center gap-2 flex-1 min-w-0 -my-1 py-1 text-left"
         >
           <Headphones className="w-[17px] h-[17px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
-          <div className="text-[15px] font-semibold tracking-[-0.01em] shrink-0">ДЕМО</div>
+          <div className="text-[16px] font-semibold tracking-[-0.01em] shrink-0">Демо</div>
           <motion.span
             animate={{ rotate: open ? 180 : 0 }}
             transition={{ duration: 0.2 }}
@@ -127,6 +127,16 @@ export default function DemoSection() {
             <ChevronDown className="w-[18px] h-[18px]" strokeWidth={2} />
           </motion.span>
         </button>
+
+        {open && (
+          <Link
+            href="/demo/edit"
+            className="inline-flex items-center gap-[5px] text-[13px] font-medium text-[#E23A34] hover:opacity-80 transition shrink-0"
+          >
+            <Pencil className="w-[14px] h-[14px]" strokeWidth={2} />
+            Редактировать
+          </Link>
+        )}
 
         {open && totalPages > 1 && (
           <div className="flex items-center gap-1 shrink-0">
@@ -281,16 +291,6 @@ export default function DemoSection() {
               </div>
             )}
 
-            {/* Редактировать */}
-            <div className="flex justify-end pt-3">
-              <Link
-                href="/demo/edit"
-                className="inline-flex items-center gap-[5px] text-[12px] font-medium text-[#6E6D73] hover:text-[#17161A] transition"
-              >
-                <Pencil className="w-[13px] h-[13px]" strokeWidth={1.75} />
-                Редактировать
-              </Link>
-            </div>
           </div>
         </div>
       </div>

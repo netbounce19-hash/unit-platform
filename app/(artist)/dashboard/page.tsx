@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { Bell, Wallet, Check, Target, Plus, ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Wallet, Check, Target, Plus, ChevronDown, Trash2, ListChecks } from "lucide-react";
 import ReleaseUploadModal from "@/components/artist/ReleaseUploadModal";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
@@ -20,6 +20,20 @@ function formatListeners(n: number) {
   return String(n);
 }
 
+// «Четверг, 16 июля» — с заглавной буквы
+function formatToday(d: Date) {
+  const s = d.toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function plural(n: number, one: string, few: string, many: string) {
+  const m10 = n % 10;
+  const m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+}
+
 const initial = [
   { id: 1, title: "Опубликовать промо-ролик в TikTok", meta: "Промо · дедлайн сегодня", done: false },
   { id: 2, title: "Проверить финальный мастер", meta: "Релиз · дедлайн сегодня", done: false },
@@ -28,6 +42,9 @@ const initial = [
 
 // Количество выпущенных треков — задаёт менеджер из своего кабинета
 const releasedTracks = 12;
+
+// Цель по слушателям из утверждённой стратегии
+const LISTENERS_GOAL = 100_000;
 
 // Утверждённая стратегия на ближайший квартал
 const strategyPillars = [
@@ -60,6 +77,16 @@ const initialRequests: BudgetRequest[] = [
   { id: 5, purpose: "Аренда студии, 5 смен", amount: 60000, meta: "отклонена 28 июня", status: "declined" },
 ];
 
+// Быстрый переход по разделам
+const navItems = [
+  { id: "tasks", label: "Задачи" },
+  { id: "releases", label: "Релизы" },
+  { id: "demo", label: "Демо" },
+  { id: "requests", label: "Заявки" },
+  { id: "stats", label: "Показатели" },
+  { id: "news", label: "Новости" },
+];
+
 export default function Dashboard() {
   const [items, setItems] = useState(initial);
   const [uploadRelease, setUploadRelease] = useState<string | null>(null);
@@ -69,17 +96,35 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<ArtistProfile>(defaultProfile);
   const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
   const [requests, setRequests] = useState<BudgetRequest[]>(initialRequests);
+  const [toast, setToast] = useState<string | null>(null);
+  const [today, setToday] = useState<string | null>(null);
+
+  // Дата считается на клиенте, чтобы не расходиться с версией сервера
+  useEffect(() => setToday(formatToday(new Date())), []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const openTasks = items.filter((t) => !t.done).length;
+  const listenersProgress = Math.min(100, Math.round((profile.listeners / LISTENERS_GOAL) * 100));
+
   const toggle = (id: number) =>
     setItems((p) => p.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
 
   const removeRequest = (id: number) =>
     setRequests((prev) => prev.filter((r) => r.id !== id));
 
-  const addRequest = (req: NewBudgetRequest) =>
+  const addRequest = (req: NewBudgetRequest) => {
     setRequests((prev) => [
       { id: Date.now(), purpose: req.purpose, amount: req.amount, meta: "отправлена только что", status: "pending" },
       ...prev,
     ]);
+    setRequestsOpen(true);
+    setToast(`Заявка отправлена менеджеру · ${req.purpose}`);
+  };
 
   return (
     <div className="max-w-[720px] mx-auto px-5 py-7">
@@ -87,11 +132,9 @@ export default function Dashboard() {
       <div className="flex items-center justify-between mb-6">
         <div className="font-semibold tracking-[0.16em] text-[17px]">UNIT</div>
         <div className="flex items-center gap-[14px]">
-          <span className="inline-flex items-center gap-[6px] text-[12px] font-medium px-[10px] py-[4px] rounded-full bg-white border-[0.5px] border-[#ECEAE5] text-[#6E6D73]">
-            <span className="w-[6px] h-[6px] rounded-full bg-[#E23A34]" />
+          <span className="text-[12px] font-medium px-[10px] py-[4px] rounded-full bg-white border-[0.5px] border-[#ECEAE5] text-[#6E6D73]">
             Кабинет артиста
           </span>
-          <Bell className="w-[19px] h-[19px] text-[#6E6D73]" strokeWidth={1.75} />
           <button
             onClick={() => setProfileOpen(true)}
             aria-label="Редактировать профиль"
@@ -109,31 +152,37 @@ export default function Dashboard() {
       </div>
 
       {/* Приветствие */}
-      <div className="mb-[22px]">
+      <div className="mb-4">
         <div className="text-[22px] font-medium tracking-[-0.01em]">С возвращением, {profile.name}</div>
-        <div className="text-[14px] text-[#6E6D73] mt-[3px]">Четверг, 16 июля · 2 задачи на сегодня</div>
+        <div className="text-[14px] text-[#6E6D73] mt-[3px]">
+          {today ?? " "}
+          {openTasks > 0
+            ? ` · ${openTasks} ${plural(openTasks, "задача", "задачи", "задач")} на сегодня`
+            : " · задачи на сегодня выполнены"}
+        </div>
       </div>
 
-      {/* Релизы */}
-      <ReleaseCarousel onUpload={setUploadRelease} coverOverrides={coverOverrides} />
+      {/* Быстрый переход */}
+      <nav className="sticky top-0 z-30 -mx-5 px-5 py-2 mb-4 bg-[#FAFAF9]/90 backdrop-blur-sm">
+        <div className="flex items-center gap-[6px] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {navItems.map((n) => (
+            <a
+              key={n.id}
+              href={`#${n.id}`}
+              className="shrink-0 text-[12px] font-medium text-[#6E6D73] bg-white border-[0.5px] border-[#ECEAE5] rounded-full px-[11px] py-[5px] hover:text-[#17161A] hover:border-[#D2D0CB] transition"
+            >
+              {n.label}
+            </a>
+          ))}
+        </div>
+      </nav>
 
-      {/* Добавить новый релиз */}
-      <button
-        onClick={() => setUploadRelease("Новый релиз")}
-        className="w-full mb-4 flex items-center justify-center gap-3 rounded-[16px] border border-dashed border-[#D2D0CB] bg-white px-5 py-[18px] hover:border-[#E23A34] hover:bg-[#FDEDEB]/50 transition"
-      >
-        <span className="w-10 h-10 rounded-full bg-[#E23A34] text-white flex items-center justify-center shrink-0">
-          <Plus className="w-6 h-6" strokeWidth={2.5} />
-        </span>
-        <span className="text-[15px] font-medium">Добавить новый релиз</span>
-      </button>
-
-      {/* Напоминание от лейбла */}
-      <LabelNotice />
-
-      {/* Задачи */}
-      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[6px] pb-[14px] mb-4">
-        <div className="text-[18px] font-semibold tracking-[-0.01em] pt-4 pb-1">Задачи на сегодня</div>
+      {/* Задачи — главное действие дня */}
+      <div id="tasks" className="scroll-mt-[60px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[6px] pb-[14px] mb-4">
+        <div className="flex items-center gap-2 pt-4 pb-1">
+          <ListChecks className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
+          <div className="text-[16px] font-semibold tracking-[-0.01em]">Задачи на сегодня</div>
+        </div>
         {items.map((t, i) => (
           <button
             key={t.id}
@@ -151,58 +200,32 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Метрики */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
-          <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Слушатели / месяц</div>
-          <div className="text-[22px] font-medium">{formatListeners(profile.listeners)}</div>
-          <div className="text-[12px] text-[#6E6D73] mt-[2px]">цель 100k</div>
-        </div>
-        <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
-          <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Стримы / квартал</div>
-          <div className="text-[22px] font-medium">1.2M</div>
-          <div className="text-[12px] text-[#1F9D6B] mt-[2px]">+18%</div>
-        </div>
-        <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
-          <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Количество треков</div>
-          <div className="text-[22px] font-medium">{releasedTracks}</div>
-          <div className="text-[12px] text-[#6E6D73] mt-[2px]">выпущено</div>
-        </div>
+      {/* Релизы */}
+      <div id="releases" className="scroll-mt-[60px]">
+        <ReleaseCarousel onUpload={setUploadRelease} coverOverrides={coverOverrides} />
       </div>
 
-      {/* Стратегия */}
-      <div className="bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[16px] p-[22px] mb-4">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <Target className="w-[17px] h-[17px] text-[#8A5A16]" strokeWidth={1.75} />
-            <div className="text-[18px] font-semibold tracking-[-0.01em]">Стратегия</div>
-            <span className="text-[12px] font-medium px-[9px] py-[3px] rounded-full bg-white/60 text-[#8A5A16]">III квартал 2026</span>
-          </div>
-          <span className="inline-flex items-center gap-[5px] text-[12px] font-medium px-[10px] py-[4px] rounded-full bg-[#E9F6EF] text-[#166B49]">
-            <Check className="w-3 h-3" strokeWidth={3} />
-            Утверждена
-          </span>
-        </div>
-        <div className="text-[13px] text-[#6E6D73] mb-4">Фокус квартала — вывести Midnight Protocol и вырасти в аудитории</div>
-        <div className="space-y-[10px]">
-          {strategyPillars.map((p, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <span className="w-[22px] h-[22px] rounded-full bg-[#FDEDEB] text-[#A62018] text-[12px] font-semibold flex items-center justify-center shrink-0 mt-[1px]">{i + 1}</span>
-              <div>
-                <div className="text-[14px] text-[#17161A] leading-[1.35]">{p.title}</div>
-                <div className="text-[12px] text-[#A6A5AB] mt-[1px]">{p.meta}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="text-[12px] text-[#8A5A16]/60 mt-4 pt-3 border-t-[0.5px] border-[#F0E2BF]">Согласована с A&R · Анна Ковалёва · 14 июля</div>
-      </div>
+      {/* Добавить новый релиз */}
+      <button
+        onClick={() => setUploadRelease("Новый релиз")}
+        className="w-full mb-4 flex items-center justify-center gap-3 rounded-[16px] border border-dashed border-[#D2D0CB] bg-white px-5 py-[18px] hover:border-[#E23A34] hover:bg-[#FDEDEB]/50 transition"
+      >
+        <span className="w-10 h-10 rounded-full bg-[#E23A34] text-white flex items-center justify-center shrink-0">
+          <Plus className="w-6 h-6" strokeWidth={2.5} />
+        </span>
+        <span className="text-[15px] font-medium">Добавить новый релиз</span>
+      </button>
+
+      {/* Напоминание от лейбла */}
+      <LabelNotice />
 
       {/* Демо */}
-      <DemoSection />
+      <div id="demo" className="scroll-mt-[60px]">
+        <DemoSection />
+      </div>
 
       {/* Заявки */}
-      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[14px]">
+      <div id="requests" className="scroll-mt-[60px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[14px] mb-4">
         <div className="flex items-center justify-between">
           <button
             onClick={() => setRequestsOpen((v) => !v)}
@@ -210,7 +233,7 @@ export default function Dashboard() {
             className="flex items-center gap-2 -my-1 py-1"
           >
             <Wallet className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-            <div className="text-[15px] font-semibold tracking-[-0.01em]">Заявки на финансирование</div>
+            <div className="text-[16px] font-semibold tracking-[-0.01em]">Заявки на финансирование</div>
             <motion.span
               animate={{ rotate: requestsOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
@@ -245,30 +268,90 @@ export default function Dashboard() {
                         label={`Удалить заявку: ${r.purpose}`}
                       >
                         <div
-                          className={`flex items-center justify-between gap-3 py-[13px] ${i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""}`}
+                          className={`group flex items-center justify-between gap-3 py-[13px] ${i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""}`}
                         >
                           <div className="min-w-0">
                             <div className="text-[14px] font-medium truncate">Заявка: {r.purpose}</div>
                             <div className="text-[12px] text-[#A6A5AB] mt-[2px]">{r.amount.toLocaleString("ru-RU")} ₽ · {r.meta}</div>
                           </div>
-                          <span className={`text-[12px] font-medium px-[10px] py-[4px] rounded-full shrink-0 ${statusLabels[r.status].cls}`}>{statusLabels[r.status].label}</span>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <span className={`text-[12px] font-medium px-[10px] py-[4px] rounded-full ${statusLabels[r.status].cls}`}>{statusLabels[r.status].label}</span>
+                            <button
+                              onClick={() => removeRequest(r.id)}
+                              aria-label={`Удалить заявку: ${r.purpose}`}
+                              title="Удалить заявку"
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-[#C4C3C8] hover:text-[#A62018] hover:bg-[#FDEDEB] transition"
+                            >
+                              <Trash2 className="w-4 h-4" strokeWidth={1.75} />
+                            </button>
+                          </div>
                         </div>
                       </SwipeToDelete>
                     </motion.div>
                   ))}
                 </AnimatePresence>
-                {requests.length === 0 ? (
+                {requests.length === 0 && (
                   <div className="py-[18px] text-[13px] text-[#A6A5AB] text-center">Заявок нет</div>
-                ) : (
-                  <div className="pt-[10px] text-[11px] text-[#A6A5AB] text-center">Смахните заявку влево, чтобы удалить</div>
                 )}
             </div>
           </div>
         </div>
       </div>
 
+      {/* Показатели */}
+      <div id="stats" className="scroll-mt-[60px] grid grid-cols-3 gap-3 mb-4">
+        <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
+          <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Слушатели / месяц</div>
+          <div className="text-[22px] font-medium">{formatListeners(profile.listeners)}</div>
+          <div className="h-[4px] bg-[#F0EEEA] rounded-full overflow-hidden mt-[7px] mb-[5px]">
+            <div className="h-full bg-[#E23A34] rounded-full transition-all" style={{ width: `${listenersProgress}%` }} />
+          </div>
+          <div className="text-[12px] text-[#6E6D73]">{listenersProgress}% до цели 100k</div>
+        </div>
+        <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
+          <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Стримы / квартал</div>
+          <div className="text-[22px] font-medium">1.2M</div>
+          <div className="text-[12px] text-[#1F9D6B] mt-[2px]">+18%</div>
+        </div>
+        <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
+          <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Треков выпущено</div>
+          <div className="text-[22px] font-medium">{releasedTracks}</div>
+          <div className="text-[12px] text-[#6E6D73] mt-[2px]">за всё время</div>
+        </div>
+      </div>
+
+      {/* Стратегия */}
+      <div className="bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[16px] p-[22px] mb-4">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <Target className="w-[17px] h-[17px] text-[#8A5A16]" strokeWidth={1.75} />
+            <div className="text-[16px] font-semibold tracking-[-0.01em]">Стратегия</div>
+            <span className="text-[12px] font-medium px-[9px] py-[3px] rounded-full bg-white/60 text-[#8A5A16]">III квартал 2026</span>
+          </div>
+          <span className="inline-flex items-center gap-[5px] text-[12px] font-medium px-[10px] py-[4px] rounded-full bg-[#E9F6EF] text-[#166B49]">
+            <Check className="w-3 h-3" strokeWidth={3} />
+            Утверждена
+          </span>
+        </div>
+        <div className="text-[13px] text-[#6E6D73] mb-4">Фокус квартала — вывести Midnight Protocol и вырасти в аудитории</div>
+        <div className="space-y-[10px]">
+          {strategyPillars.map((p, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <span className="w-[22px] h-[22px] rounded-full bg-[#FDEDEB] text-[#A62018] text-[12px] font-semibold flex items-center justify-center shrink-0 mt-[1px]">{i + 1}</span>
+              <div>
+                <div className="text-[14px] text-[#17161A] leading-[1.35]">{p.title}</div>
+                <div className="text-[12px] text-[#A6A5AB] mt-[1px]">{p.meta}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="text-[12px] text-[#8A5A16]/60 mt-4 pt-3 border-t-[0.5px] border-[#F0E2BF]">Согласована с A&R · Анна Ковалёва · 14 июля</div>
+      </div>
+
       {/* Новости и мероприятия */}
-      <EventsFeed />
+      <div id="news" className="scroll-mt-[60px]">
+        <EventsFeed />
+      </div>
 
       {/* FAQ */}
       <FaqSection />
@@ -298,6 +381,25 @@ export default function Dashboard() {
       />
 
       <ManagerMessenger />
+
+      {/* Уведомление */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ type: "spring", damping: 24, stiffness: 320 }}
+            role="status"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-[10px] bg-[#17161A] text-white text-[13px] font-medium pl-[14px] pr-[18px] py-[11px] rounded-full shadow-[0_12px_36px_rgba(0,0,0,0.28)] max-w-[calc(100vw-2rem)]"
+          >
+            <span className="w-5 h-5 rounded-full bg-[#1F9D6B] flex items-center justify-center shrink-0">
+              <Check className="w-[13px] h-[13px]" strokeWidth={3} />
+            </span>
+            <span className="truncate">{toast}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

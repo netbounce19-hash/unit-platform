@@ -15,7 +15,7 @@ const faqs: FaqItem[] = [
     a: "Соберите финальный мастер (WAV или FLAC), обложку, текст песни и данные об авторах. На карточке релиза нажмите «Загрузить данные» либо «Добавить новый релиз», прикрепите аудио и текст, укажите правообладателя и со-авторов с долями — сумма долей должна составлять 100%. Учитывайте, что все треки отгружаются за 3 недели до даты релиза.",
   },
   {
-    q: "Выполнение задач",
+    q: "Как работать с задачами?",
     a: "В разделе «Задачи на сегодня» собраны конкретные шаги по вашим релизам и промо согласно утверждённому плану. Отмечайте выполненное, нажимая на кружок слева. Задачи ставит ваш менеджер; по срочным вопросам пишите ему в мессенджере.",
   },
   {
@@ -39,7 +39,7 @@ export default function FaqSection() {
     <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[6px] mt-4">
       <div className="flex items-center gap-2 mb-1">
         <HelpCircle className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-        <div className="text-[18px] font-semibold tracking-[-0.01em]">FAQ</div>
+        <div className="text-[15px] font-semibold tracking-[-0.01em]">FAQ</div>
         <span className="text-[12px] text-[#A6A5AB]">частые вопросы</span>
       </div>
 
