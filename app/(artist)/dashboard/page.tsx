@@ -11,6 +11,7 @@ import SwipeToDelete from "@/components/artist/SwipeToDelete";
 import LabelNotice from "@/components/artist/LabelNotice";
 import FaqSection from "@/components/artist/FaqSection";
 import DemoSection from "@/components/artist/DemoSection";
+import ArtistFilesSection from "@/components/artist/ArtistFilesSection";
 import { AnimatePresence, motion } from "framer-motion";
 
 // 65000 → «65k», 1200000 → «1.2M»
@@ -82,6 +83,7 @@ const navItems = [
   { id: "tasks", label: "Задачи" },
   { id: "releases", label: "Релизы" },
   { id: "demo", label: "Демо" },
+  { id: "files", label: "Файлы" },
   { id: "requests", label: "Заявки" },
   { id: "stats", label: "Показатели" },
   { id: "news", label: "Новости" },
@@ -222,6 +224,11 @@ export default function Dashboard() {
       {/* Демо */}
       <div id="demo" className="scroll-mt-[60px]">
         <DemoSection />
+      </div>
+
+      {/* Файлы артиста */}
+      <div id="files" className="scroll-mt-[60px]">
+        <ArtistFilesSection />
       </div>
 
       {/* Заявки */}
