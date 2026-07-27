@@ -13,6 +13,8 @@ import FaqSection from "@/components/artist/FaqSection";
 import DemoSection from "@/components/artist/DemoSection";
 import ArtistFilesSection from "@/components/artist/ArtistFilesSection";
 import { AnimatePresence, motion } from "framer-motion";
+import AuthGate from "@/components/auth/AuthGate";
+import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
 
 // 65000 → «65k», 1200000 → «1.2M»
 function formatListeners(n: number) {
@@ -35,11 +37,9 @@ function plural(n: number, one: string, few: string, many: string) {
   return many;
 }
 
-const initial = [
-  { id: 1, title: "Опубликовать промо-ролик в TikTok", meta: "Промо · дедлайн сегодня", done: false },
-  { id: 2, title: "Проверить финальный мастер", meta: "Релиз · дедлайн сегодня", done: false },
-  { id: 3, title: "Загрузить обложку альбома", meta: "Выполнено в 11:20", done: true },
-];
+// Задачи ставит менеджер — у нового артиста список пуст.
+type Task = { id: number; title: string; meta: string; done: boolean };
+const initial: Task[] = [];
 
 // Количество выпущенных треков — задаёт менеджер из своего кабинета
 const releasedTracks = 12;
@@ -49,9 +49,9 @@ const LISTENERS_GOAL = 100_000;
 
 // Утверждённая стратегия на ближайший квартал
 const strategyPillars = [
-  { title: "Выпустить Midnight Protocol", meta: "релиз + питчинг в плейлисты · июль" },
-  { title: "Разогнать до 100k слушателей / мес", meta: "3 промо-ролика: TikTok + Reels" },
-  { title: "Коллаборация с артистом лейбла", meta: "кросс-промо на аудиторию · сентябрь" },
+  { title: "Выпуск сингла", meta: "мастер, обложка и питчинг в плейлисты" },
+  { title: "Выпуск EP", meta: "сведение, тексты и данные об авторах" },
+  { title: "Презентация EP", meta: "шоукейс и промо-кампания" },
 ];
 
 type RequestStatus = "pending" | "approved" | "declined";
@@ -70,13 +70,8 @@ const statusLabels: Record<RequestStatus, { label: string; cls: string }> = {
   declined: { label: "Отклонена", cls: "bg-[#FDEDEB] text-[#A62018]" },
 };
 
-const initialRequests: BudgetRequest[] = [
-  { id: 1, purpose: "Сведение и мастеринг", amount: 25000, meta: "отправлена вчера", status: "pending" },
-  { id: 2, purpose: "Съёмка клипа на Midnight Protocol", amount: 350000, meta: "отправлена 12 июля", status: "pending" },
-  { id: 3, purpose: "Промо-кампания: TikTok и Reels", amount: 80000, meta: "одобрена 8 июля", status: "approved" },
-  { id: 4, purpose: "Фотосессия для пресс-кита", amount: 45000, meta: "одобрена 2 июля", status: "approved" },
-  { id: 5, purpose: "Аренда студии, 5 смен", amount: 60000, meta: "отклонена 28 июня", status: "declined" },
-];
+// Новый кабинет пуст — артист заводит заявки сам.
+const initialRequests: BudgetRequest[] = [];
 
 // Быстрый переход по разделам
 const navItems = [
@@ -89,13 +84,14 @@ const navItems = [
   { id: "news", label: "Новости" },
 ];
 
-export default function Dashboard() {
+function DashboardInner() {
   const [items, setItems] = useState(initial);
   const [uploadRelease, setUploadRelease] = useState<string | null>(null);
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [requestsOpen, setRequestsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [profile, setProfile] = useState<ArtistProfile>(defaultProfile);
+  // Имя подставится из профиля; до загрузки — нейтральное
+  const [profile, setProfile] = useState<ArtistProfile>({ ...defaultProfile, name: "Артист" });
   const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
   const [requests, setRequests] = useState<BudgetRequest[]>(initialRequests);
   const [toast, setToast] = useState<string | null>(null);
@@ -103,6 +99,22 @@ export default function Dashboard() {
 
   // Дата считается на клиенте, чтобы не расходиться с версией сервера
   useEffect(() => setToday(formatToday(new Date())), []);
+
+  // Имя берём из профиля, созданного при регистрации
+  useEffect(() => {
+    let cancelled = false;
+    fetchMyProfile()
+      .then((p) => {
+        if (cancelled || !p) return;
+        setProfile((prev) => ({ ...prev, name: displayNameOf(p) }));
+      })
+      .catch(() => {
+        /* профиль недоступен — оставляем значение по умолчанию */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!toast) return;
@@ -185,6 +197,11 @@ export default function Dashboard() {
           <ListChecks className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
           <div className="text-[16px] font-semibold tracking-[-0.01em]">Задачи на сегодня</div>
         </div>
+        {items.length === 0 && (
+          <div className="py-[18px] text-[13px] text-[#A6A5AB] text-center">
+            Ожидаются от менеджера
+          </div>
+        )}
         {items.map((t, i) => (
           <button
             key={t.id}
@@ -340,7 +357,7 @@ export default function Dashboard() {
             Утверждена
           </span>
         </div>
-        <div className="text-[13px] text-[#6E6D73] mb-4">Фокус квартала — вывести Midnight Protocol и вырасти в аудитории</div>
+        <div className="text-[13px] text-[#6E6D73] mb-4">Фокус квартала — выпустить первый сингл и EP</div>
         <div className="space-y-[10px]">
           {strategyPillars.map((p, i) => (
             <div key={i} className="flex items-start gap-3">
@@ -408,5 +425,13 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <AuthGate>
+      <DashboardInner />
+    </AuthGate>
   );
 }
