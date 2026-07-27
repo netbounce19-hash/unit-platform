@@ -16,33 +16,8 @@ export interface Release {
   nextStep?: string;
 }
 
-const defaultReleases: Release[] = [
-  {
-    id: "midnight-protocol",
-    title: "Midnight Protocol",
-    cover: "/covers/midnight-protocol.svg",
-    status: "live",
-    date: "Вышел 27 июня 2026",
-  },
-  {
-    id: "phantom-signal",
-    title: "Phantom Signal",
-    cover: "/covers/phantom-signal.svg",
-    status: "upcoming",
-    date: "Плановый релиз · 15 августа 2026",
-    progress: 40,
-    nextStep: "загрузить демо и данные об авторах",
-  },
-  {
-    id: "low-orbit",
-    title: "Low Orbit",
-    cover: "/covers/low-orbit.svg",
-    status: "upcoming",
-    date: "Плановый релиз · 30 сентября 2026",
-    progress: 10,
-    nextStep: "загрузить аудио",
-  },
-];
+// У нового артиста релизов ещё нет — добавляются через «Добавить новый релиз».
+const defaultReleases: Release[] = [];
 
 interface ReleaseCarouselProps {
   /** вызывается для upcoming-релиза — открывает окно загрузки данных */
@@ -57,9 +32,8 @@ export default function ReleaseCarousel({ onUpload, coverOverrides }: ReleaseCar
   const [dir, setDir] = useState(1);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const safeIndex = Math.min(index, releases.length - 1);
+  const safeIndex = Math.max(0, Math.min(index, releases.length - 1));
   const release = releases[safeIndex];
-  const isLive = release.status === "live";
 
   const go = (delta: number) => {
     const next = safeIndex + delta;
@@ -69,10 +43,25 @@ export default function ReleaseCarousel({ onUpload, coverOverrides }: ReleaseCar
   };
 
   const deleteRelease = () => {
+    if (!release) return;
     setReleases((prev) => prev.filter((r) => r.id !== release.id));
     setIndex((i) => Math.max(0, i - 1));
     setConfirmOpen(false);
   };
+
+  // Пока релизов нет — показываем приглашение вместо карусели
+  if (!release) {
+    return (
+      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">
+        <div className="text-[16px] font-semibold tracking-[-0.01em] text-[#17161A]">Релизы</div>
+        <p className="text-[13px] text-[#6E6D73] mt-2">
+          Релизов пока нет. Добавьте первый — загрузите аудио, обложку и данные об авторах.
+        </p>
+      </div>
+    );
+  }
+
+  const isLive = release.status === "live";
 
   return (
     <div className="relative bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4 overflow-hidden">

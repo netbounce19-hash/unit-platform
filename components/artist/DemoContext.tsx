@@ -19,14 +19,8 @@ const GRADIENTS = [
   "linear-gradient(135deg,#4e6a8a,#17161A)",
 ];
 
-const defaultDemos: DemoTrack[] = [
-  { id: "d1", title: "Neon Drift", src: "/demo/neon-drift.wav", gradient: GRADIENTS[0], image: null },
-  { id: "d2", title: "Afterglow", src: "/demo/afterglow.wav", gradient: GRADIENTS[1], image: null },
-  { id: "d3", title: "Static Bloom", src: "/demo/static-bloom.wav", gradient: GRADIENTS[2], image: null },
-  { id: "d4", title: "Low Orbit", src: "/demo/low-orbit.wav", gradient: GRADIENTS[3], image: null },
-  { id: "d5", title: "Midnight Run", src: "/demo/midnight-run.wav", gradient: GRADIENTS[4], image: null },
-  { id: "d6", title: "Phantom", src: "/demo/phantom.wav", gradient: GRADIENTS[5], image: null },
-];
+// У нового артиста демо ещё нет — добавляются на странице «Редактировать».
+const defaultDemos: DemoTrack[] = [];
 
 interface DemoContextValue {
   demos: DemoTrack[];

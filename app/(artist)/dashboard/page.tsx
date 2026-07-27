@@ -42,7 +42,7 @@ type Task = { id: number; title: string; meta: string; done: boolean };
 const initial: Task[] = [];
 
 // Количество выпущенных треков — задаёт менеджер из своего кабинета
-const releasedTracks = 12;
+const releasedTracks = 0;
 
 // Цель по слушателям из утверждённой стратегии
 const LISTENERS_GOAL = 100_000;
@@ -334,8 +334,8 @@ function DashboardInner() {
         </div>
         <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
           <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Стримы / квартал</div>
-          <div className="text-[22px] font-medium">1.2M</div>
-          <div className="text-[12px] text-[#1F9D6B] mt-[2px]">+18%</div>
+          <div className="text-[22px] font-medium">0</div>
+          <div className="text-[12px] text-[#6E6D73] mt-[2px]">пока нет данных</div>
         </div>
         <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[14px]">
           <div className="text-[12px] text-[#A6A5AB] mb-[6px]">Треков выпущено</div>

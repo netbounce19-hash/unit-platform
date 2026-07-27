@@ -15,10 +15,10 @@ export interface ArtistProfile {
 }
 
 export const defaultProfile: ArtistProfile = {
-  name: "KXDE",
+  name: "Артист",
   photo: null,
-  bio: "Электронный продюсер из Санкт-Петербурга. Тёмный синти-поп и хаус.",
-  listeners: 65000,
+  bio: "",
+  listeners: 0,
   status: "contract",
 };
 
