@@ -29,6 +29,21 @@
   --color-f-ok-ink: #166B49;
   --color-f-warn-bg: #FBF1DE;
   --color-f-warn-ink: #8A5A16;
+
+  /* Токены для примитивов components/ui (Card и т.п.),
+     привязаны к той же палитре, что и остальной кабинет. */
+  --color-background: #FAFAF9;
+  --color-foreground: #17161A;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #17161A;
+  --color-muted: #F0EEEA;
+  --color-muted-foreground: #6E6D73;
+  --color-border: #ECEAE5;
+}
+
+/* CardTitle ожидает этот класс; в кабинете заголовки идут тем же шрифтом. */
+.cn-font-heading {
+  letter-spacing: -0.01em;
 }
 
 @layer base {
@@ -36,6 +51,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    border-color: var(--color-border);
   }
 }
 

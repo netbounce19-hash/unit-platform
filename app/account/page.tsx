@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, LogOut, Loader2 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import { getSupabase } from "@/lib/supabase/client";
-import SignUpForm from "@/components/auth/SignUpForm";
+import AuthPanel from "@/components/auth/AuthPanel";
 import AssetManager from "@/components/artist/AssetManager";
 
 export default function AccountPage() {
@@ -79,7 +79,9 @@ export default function AccountPage() {
       ) : session ? (
         <AssetManager />
       ) : (
-        <SignUpForm />
+        <div className="flex justify-center">
+          <AuthPanel />
+        </div>
       )}
     </div>
   );
