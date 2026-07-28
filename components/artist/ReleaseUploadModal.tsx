@@ -15,15 +15,17 @@ import {
   Paperclip,
   Disc3,
   Music,
+  Loader2,
 } from "lucide-react";
 import { useDemos } from "@/components/artist/DemoContext";
+import { createRelease } from "@/lib/supabase/cabinet";
 
 interface ReleaseUploadModalProps {
   open: boolean;
   onClose: () => void;
   releaseTitle?: string;
-  /** сообщает наверх загруженные данные (обложку) после отправки */
-  onSubmit?: (data: { coverUrl: string | null }) => void;
+  /** релиз создан и сохранён — родитель перезагружает список */
+  onSubmit?: () => void;
 }
 
 interface CoAuthor {
@@ -199,6 +201,7 @@ export default function ReleaseUploadModal({
   releaseTitle = "Релиз",
   onSubmit,
 }: ReleaseUploadModalProps) {
+  const [title, setTitle] = useState("");
   const [cover, setCover] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [audio, setAudio] = useState<File | null>(null);
@@ -209,12 +212,16 @@ export default function ReleaseUploadModal({
   ]);
   const [docs, setDocs] = useState<File[]>([]);
   const [demoIds, setDemoIds] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const { demos } = useDemos();
 
   // Сброс полей при каждом открытии
   useEffect(() => {
     if (open) {
+      setTitle(releaseTitle && releaseTitle !== "Новый релиз" ? releaseTitle : "");
       setCover(null);
       setCoverPreview(null);
       setAudio(null);
@@ -223,6 +230,9 @@ export default function ReleaseUploadModal({
       setCoAuthors([{ id: 1, name: "KXDE", role: "Автор музыки", share: "100" }]);
       setDocs([]);
       setDemoIds([]);
+      setBusy(false);
+      setProgress(null);
+      setUploadError(null);
     }
   }, [open]);
 
@@ -271,14 +281,28 @@ export default function ReleaseUploadModal({
     setCoAuthors((prev) => prev.filter((a) => a.id !== id));
 
   const hasAudio = Boolean(audio) || demoIds.length > 0;
-  const canSubmit = hasAudio && shareOk;
+  const canSubmit = title.trim().length > 0 && hasAudio && shareOk;
 
-  const handleSubmit = () => {
-    // Mock submit — в реальном приложении здесь загрузка на бэкенд.
-    // Обложке отдаём свежий объектный URL во владение родителю (не ревокаем).
-    const coverUrl = cover ? URL.createObjectURL(cover) : null;
-    onSubmit?.({ coverUrl });
-    onClose();
+  const handleSubmit = async () => {
+    if (busy) return;
+    setBusy(true);
+    setUploadError(null);
+    if (audio) setProgress(0);
+    try {
+      await createRelease({
+        title,
+        cover,
+        audio,
+        onProgress: audio ? setProgress : undefined,
+      });
+      onSubmit?.();
+      onClose();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Не удалось создать релиз");
+    } finally {
+      setBusy(false);
+      setProgress(null);
+    }
   };
 
   return (
@@ -314,7 +338,7 @@ export default function ReleaseUploadModal({
                 <div>
                   <div className="text-[12px] text-[#A6A5AB]">Загрузка релиза</div>
                   <div className="text-[17px] font-medium tracking-[-0.01em]">
-                    {releaseTitle}
+                    {title.trim() || "Новый релиз"}
                   </div>
                 </div>
                 <button
@@ -327,6 +351,21 @@ export default function ReleaseUploadModal({
               </div>
 
               <div className="px-[22px] py-5 space-y-6">
+                {/* Название */}
+                <section className="space-y-3">
+                  <label className="block">
+                    <span className="block text-[13px] font-medium text-[#6E6D73] mb-[7px]">
+                      Название релиза
+                    </span>
+                    <input
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Например, Midnight Protocol"
+                      className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                    />
+                  </label>
+                </section>
+
                 {/* Обложка */}
                 <section className="space-y-3">
                   <div className="text-[13px] font-medium text-[#6E6D73]">
@@ -564,28 +603,48 @@ export default function ReleaseUploadModal({
               </div>
 
               {/* Footer */}
-              <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm flex items-center justify-between gap-3 px-[22px] py-[16px] border-t-[0.5px] border-[#ECEAE5]">
-                <span className="text-[12px] text-[#A6A5AB]">
-                  {!hasAudio
-                    ? "Добавьте аудио или выберите демо"
-                    : !shareOk
-                    ? "Доли должны составлять 100%"
-                    : "Готово к загрузке"}
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={onClose}
-                    className="text-[14px] font-medium text-[#6E6D73] px-[14px] py-[10px] rounded-[10px] hover:bg-[#F0EEEA] transition"
-                  >
-                    Отмена
-                  </button>
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!canSubmit}
-                    className="bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Загрузить релиз
-                  </button>
+              <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm px-[22px] py-[16px] border-t-[0.5px] border-[#ECEAE5]">
+                {uploadError && (
+                  <div className="text-[12px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[8px] mb-3">
+                    {uploadError}
+                  </div>
+                )}
+                {progress !== null && (
+                  <div className="h-[6px] bg-[#F0EEEA] rounded-full overflow-hidden mb-3">
+                    <div className="h-full bg-[#E23A34] rounded-full transition-all" style={{ width: `${progress}%` }} />
+                  </div>
+                )}
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[12px] text-[#A6A5AB]">
+                    {busy
+                      ? progress !== null
+                        ? `Загрузка… ${progress}%`
+                        : "Сохраняем…"
+                      : !title.trim()
+                      ? "Впишите название релиза"
+                      : !hasAudio
+                      ? "Добавьте аудио или выберите демо"
+                      : !shareOk
+                      ? "Доли должны составлять 100%"
+                      : "Готово к загрузке"}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={onClose}
+                      disabled={busy}
+                      className="text-[14px] font-medium text-[#6E6D73] px-[14px] py-[10px] rounded-[10px] hover:bg-[#F0EEEA] transition disabled:opacity-40"
+                    >
+                      Отмена
+                    </button>
+                    <button
+                      onClick={handleSubmit}
+                      disabled={!canSubmit || busy}
+                      className="inline-flex items-center gap-2 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
+                      Загрузить релиз
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>

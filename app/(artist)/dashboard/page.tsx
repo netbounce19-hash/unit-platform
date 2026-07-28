@@ -15,6 +15,13 @@ import ArtistFilesSection from "@/components/artist/ArtistFilesSection";
 import { AnimatePresence, motion } from "framer-motion";
 import AuthGate from "@/components/auth/AuthGate";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
+import {
+  listBudgetRequests,
+  createBudgetRequest,
+  deleteBudgetRequest,
+  type BudgetRequestRow,
+  type RequestStatus,
+} from "@/lib/supabase/cabinet";
 
 // 65000 → «65k», 1200000 → «1.2M»
 function formatListeners(n: number) {
@@ -54,24 +61,26 @@ const strategyPillars = [
   { title: "Презентация EP", meta: "шоукейс и промо-кампания" },
 ];
 
-type RequestStatus = "pending" | "approved" | "declined";
-
-type BudgetRequest = {
-  id: number;
-  purpose: string;
-  amount: number;
-  meta: string;
-  status: RequestStatus;
-};
-
 const statusLabels: Record<RequestStatus, { label: string; cls: string }> = {
   pending: { label: "На рассмотрении", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
   approved: { label: "Одобрена", cls: "bg-[#E9F6EF] text-[#166B49]" },
   declined: { label: "Отклонена", cls: "bg-[#FDEDEB] text-[#A62018]" },
 };
 
-// Новый кабинет пуст — артист заводит заявки сам.
-const initialRequests: BudgetRequest[] = [];
+// «отправлена сегодня / вчера / 5 июля»
+function formatSince(iso: string) {
+  const d = new Date(iso);
+  const today = new Date();
+  const day = 24 * 60 * 60 * 1000;
+  const diff = Math.floor(
+    (new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() -
+      new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()) /
+      day
+  );
+  if (diff <= 0) return "отправлена сегодня";
+  if (diff === 1) return "отправлена вчера";
+  return "отправлена " + d.toLocaleDateString("ru-RU", { day: "numeric", month: "long" });
+}
 
 // Быстрый переход по разделам
 const navItems = [
@@ -92,8 +101,8 @@ function DashboardInner() {
   const [profileOpen, setProfileOpen] = useState(false);
   // Имя подставится из профиля; до загрузки — нейтральное
   const [profile, setProfile] = useState<ArtistProfile>({ ...defaultProfile, name: "Артист" });
-  const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
-  const [requests, setRequests] = useState<BudgetRequest[]>(initialRequests);
+  const [releasesVersion, setReleasesVersion] = useState(0);
+  const [requests, setRequests] = useState<BudgetRequestRow[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [today, setToday] = useState<string | null>(null);
 
@@ -122,22 +131,45 @@ function DashboardInner() {
     return () => clearTimeout(t);
   }, [toast]);
 
+  // Заявки — из БД, переживают перезагрузку
+  useEffect(() => {
+    let cancelled = false;
+    listBudgetRequests()
+      .then((rows) => !cancelled && setRequests(rows))
+      .catch(() => {
+        /* не залогинен или сеть — оставляем пустой список */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const openTasks = items.filter((t) => !t.done).length;
   const listenersProgress = Math.min(100, Math.round((profile.listeners / LISTENERS_GOAL) * 100));
 
   const toggle = (id: number) =>
     setItems((p) => p.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
 
-  const removeRequest = (id: number) =>
-    setRequests((prev) => prev.filter((r) => r.id !== id));
+  const removeRequest = async (id: string) => {
+    const prev = requests;
+    setRequests((r) => r.filter((x) => x.id !== id)); // оптимистично
+    try {
+      await deleteBudgetRequest(id);
+    } catch {
+      setRequests(prev); // откат
+      setToast("Не удалось удалить заявку");
+    }
+  };
 
-  const addRequest = (req: NewBudgetRequest) => {
-    setRequests((prev) => [
-      { id: Date.now(), purpose: req.purpose, amount: req.amount, meta: "отправлена только что", status: "pending" },
-      ...prev,
-    ]);
-    setRequestsOpen(true);
-    setToast(`Заявка отправлена менеджеру · ${req.purpose}`);
+  const addRequest = async (req: NewBudgetRequest) => {
+    try {
+      const row = await createBudgetRequest(req.purpose, req.amount);
+      setRequests((prev) => [row, ...prev]);
+      setRequestsOpen(true);
+      setToast(`Заявка отправлена менеджеру · ${req.purpose}`);
+    } catch {
+      setToast("Не удалось отправить заявку");
+    }
   };
 
   return (
@@ -221,7 +253,7 @@ function DashboardInner() {
 
       {/* Релизы */}
       <div id="releases" className="scroll-mt-[60px]">
-        <ReleaseCarousel onUpload={setUploadRelease} coverOverrides={coverOverrides} />
+        <ReleaseCarousel refreshKey={releasesVersion} />
       </div>
 
       {/* Добавить новый релиз */}
@@ -296,7 +328,7 @@ function DashboardInner() {
                         >
                           <div className="min-w-0">
                             <div className="text-[14px] font-medium truncate">Заявка: {r.purpose}</div>
-                            <div className="text-[12px] text-[#A6A5AB] mt-[2px]">{r.amount.toLocaleString("ru-RU")} ₽ · {r.meta}</div>
+                            <div className="text-[12px] text-[#A6A5AB] mt-[2px]">{r.amount.toLocaleString("ru-RU")} ₽ · {formatSince(r.created_at)}</div>
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
                             <span className={`text-[12px] font-medium px-[10px] py-[4px] rounded-full ${statusLabels[r.status].cls}`}>{statusLabels[r.status].label}</span>
@@ -384,10 +416,9 @@ function DashboardInner() {
         open={uploadRelease !== null}
         onClose={() => setUploadRelease(null)}
         releaseTitle={uploadRelease ?? ""}
-        onSubmit={({ coverUrl }) => {
-          if (coverUrl && uploadRelease) {
-            setCoverOverrides((prev) => ({ ...prev, [uploadRelease]: coverUrl }));
-          }
+        onSubmit={() => {
+          setReleasesVersion((v) => v + 1);
+          setToast("Релиз создан");
         }}
       />
 
