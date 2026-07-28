@@ -13,7 +13,7 @@ import {
 import { getSupabase } from "@/lib/supabase/client";
 import { SOCIAL_PROVIDERS, startSocialAuth, type SocialProvider } from "@/lib/supabase/social";
 
-type Mode = "signin" | "signup";
+type Mode = "signin" | "signup" | "reset";
 export type AccountRole = "artist" | "label";
 
 const ROLES: { key: AccountRole; label: string; hint: string; icon: React.ReactNode }[] = [
@@ -50,11 +50,12 @@ export default function AuthPanel() {
   const [done, setDone] = useState(false);
 
   const isSignup = mode === "signup";
+  const isReset = mode === "reset";
   const isArtist = role === "artist";
 
   const canSubmit =
     email.trim().length > 3 &&
-    password.length >= 6 &&
+    (isReset || password.length >= 6) &&
     (!isSignup || displayName.trim().length > 0) &&
     !busy;
 
@@ -62,6 +63,7 @@ export default function AuthPanel() {
     setMode(next);
     setError(null);
     setNotice(null);
+    setDone(false);
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -75,7 +77,14 @@ export default function AuthPanel() {
     try {
       const supabase = getSupabase();
 
-      if (isSignup) {
+      if (isReset) {
+        // Письмо со ссылкой на страницу установки нового пароля.
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setDone(true);
+      } else if (isSignup) {
         // Метаданные читает триггер handle_new_user() и раскладывает по profiles.
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -124,26 +133,39 @@ export default function AuthPanel() {
           <span className="w-11 h-11 rounded-full bg-[#E9F6EF] text-[#166B49] flex items-center justify-center mx-auto mb-3">
             <Check className="w-5 h-5" strokeWidth={2.5} />
           </span>
-          <CardTitle>Аккаунт создан</CardTitle>
+          <CardTitle>{isReset ? "Письмо отправлено" : "Аккаунт создан"}</CardTitle>
           <CardDescription className="mt-1">
-            Если в проекте включено подтверждение почты — проверьте письмо на {email}.
+            {isReset
+              ? `Проверьте почту ${email} — там ссылка для установки нового пароля.`
+              : "Если в проекте включено подтверждение почты — проверьте письмо на " + email + "."}
           </CardDescription>
+          {isReset && (
+            <button
+              type="button"
+              onClick={() => switchMode("signin")}
+              className="mt-4 text-[13px] font-medium text-[#E23A34] hover:opacity-80 transition"
+            >
+              Вернуться ко входу
+            </button>
+          )}
         </CardContent>
       </Card>
     );
   }
 
+  const title = isSignup ? "Создать аккаунт" : isReset ? "Восстановить пароль" : "Вход в UNIT";
+  const desc = isSignup
+    ? "Выберите, кем вы работаете на платформе"
+    : isReset
+    ? "Пришлём ссылку для сброса на вашу почту"
+    : "Рады видеть снова";
+  const submitLabel = isSignup ? "Зарегистрироваться" : isReset ? "Отправить ссылку" : "Войти";
+
   return (
     <Card className="w-full max-w-[420px]">
       <CardHeader>
-        <CardTitle className="text-[18px]">
-          {isSignup ? "Создать аккаунт" : "Вход в UNIT"}
-        </CardTitle>
-        <CardDescription>
-          {isSignup
-            ? "Выберите, кем вы работаете на платформе"
-            : "Рады видеть снова"}
-        </CardDescription>
+        <CardTitle className="text-[18px]">{title}</CardTitle>
+        <CardDescription>{desc}</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -223,17 +245,30 @@ export default function AuthPanel() {
             </label>
           )}
 
-          <label className="block">
-            <span className={labelCls}>Пароль</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete={isSignup ? "new-password" : "current-password"}
-              placeholder={isSignup ? "Минимум 6 символов" : "Ваш пароль"}
-              className={inputCls}
-            />
-          </label>
+          {!isReset && (
+            <label className="block">
+              <div className="flex items-center justify-between mb-[7px]">
+                <span className="text-[13px] font-medium text-[#6E6D73]">Пароль</span>
+                {mode === "signin" && (
+                  <button
+                    type="button"
+                    onClick={() => switchMode("reset")}
+                    className="text-[12px] font-medium text-[#E23A34] hover:opacity-80 transition"
+                  >
+                    Забыли пароль?
+                  </button>
+                )}
+              </div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete={isSignup ? "new-password" : "current-password"}
+                placeholder={isSignup ? "Минимум 6 символов" : "Ваш пароль"}
+                className={inputCls}
+              />
+            </label>
+          )}
 
           {error && (
             <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px]">
@@ -247,30 +282,34 @@ export default function AuthPanel() {
             className="w-full inline-flex items-center justify-center gap-2 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
-            {busy ? "Секунду…" : isSignup ? "Зарегистрироваться" : "Войти"}
+            {busy ? "Секунду…" : submitLabel}
           </button>
         </form>
 
-        {/* Соцпровайдеры */}
-        <div className="flex items-center gap-3 pt-1">
-          <span className="h-px flex-1 bg-[#ECEAE5]" />
-          <span className="text-[12px] text-[#A6A5AB]">или</span>
-          <span className="h-px flex-1 bg-[#ECEAE5]" />
-        </div>
+        {/* Соцпровайдеры — не в режиме сброса */}
+        {!isReset && (
+          <>
+            <div className="flex items-center gap-3 pt-1">
+              <span className="h-px flex-1 bg-[#ECEAE5]" />
+              <span className="text-[12px] text-[#A6A5AB]">или</span>
+              <span className="h-px flex-1 bg-[#ECEAE5]" />
+            </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          {SOCIAL_PROVIDERS.map((p) => (
-            <button
-              key={p.key}
-              type="button"
-              onClick={() => onSocial(p.key)}
-              className="inline-flex items-center justify-center gap-2 text-[13.5px] font-medium rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] hover:border-[#D2D0CB] hover:bg-[#FAFAF9] transition"
-            >
-              <span style={{ color: p.brand }}>{p.icon}</span>
-              {p.label}
-            </button>
-          ))}
-        </div>
+            <div className="grid grid-cols-2 gap-2">
+              {SOCIAL_PROVIDERS.map((p) => (
+                <button
+                  key={p.key}
+                  type="button"
+                  onClick={() => onSocial(p.key)}
+                  className="inline-flex items-center justify-center gap-2 text-[13.5px] font-medium rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] hover:border-[#D2D0CB] hover:bg-[#FAFAF9] transition"
+                >
+                  <span style={{ color: p.brand }}>{p.icon}</span>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
         {notice && (
           <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[10px] px-3 py-[9px]">
@@ -281,16 +320,29 @@ export default function AuthPanel() {
       </CardContent>
 
       <CardFooter className="justify-center">
-        <span className="text-[13px] text-[#6E6D73]">
-          {isSignup ? "Уже есть аккаунт?" : "Ещё нет аккаунта?"}{" "}
-          <button
-            type="button"
-            onClick={() => switchMode(isSignup ? "signin" : "signup")}
-            className="font-medium text-[#E23A34] hover:opacity-80 transition"
-          >
-            {isSignup ? "Войти" : "Зарегистрироваться"}
-          </button>
-        </span>
+        {isReset ? (
+          <span className="text-[13px] text-[#6E6D73]">
+            Вспомнили пароль?{" "}
+            <button
+              type="button"
+              onClick={() => switchMode("signin")}
+              className="font-medium text-[#E23A34] hover:opacity-80 transition"
+            >
+              Войти
+            </button>
+          </span>
+        ) : (
+          <span className="text-[13px] text-[#6E6D73]">
+            {isSignup ? "Уже есть аккаунт?" : "Ещё нет аккаунта?"}{" "}
+            <button
+              type="button"
+              onClick={() => switchMode(isSignup ? "signin" : "signup")}
+              className="font-medium text-[#E23A34] hover:opacity-80 transition"
+            >
+              {isSignup ? "Войти" : "Зарегистрироваться"}
+            </button>
+          </span>
+        )}
       </CardFooter>
     </Card>
   );
