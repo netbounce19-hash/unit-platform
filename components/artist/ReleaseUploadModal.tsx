@@ -293,6 +293,7 @@ export default function ReleaseUploadModal({
         title,
         cover,
         audio,
+        demoAssetIds: demoIds,
         onProgress: audio ? setProgress : undefined,
       });
       onSubmit?.();

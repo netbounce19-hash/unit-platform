@@ -1,86 +1,108 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from "react";
+import { getSupabase } from "@/lib/supabase/client";
+import {
+  listDemos,
+  addDemo as addDemoApi,
+  removeDemo as removeDemoApi,
+  renameDemo,
+  replaceDemoAudio,
+  type Demo,
+} from "@/lib/supabase/demos";
 
-export interface DemoTrack {
-  id: string;
-  title: string;
-  src: string; // audio URL (путь или blob)
-  gradient: string; // запасная обложка
-  image: string | null; // обложка-изображение
-}
-
-const GRADIENTS = [
-  "linear-gradient(135deg,#E23A34,#8b1e1a)",
-  "linear-gradient(135deg,#415A77,#17161A)",
-  "linear-gradient(135deg,#8A5A16,#3a2606)",
-  "linear-gradient(135deg,#1F9D6B,#0d3d2a)",
-  "linear-gradient(135deg,#6E4AA6,#241640)",
-  "linear-gradient(135deg,#4e6a8a,#17161A)",
-];
-
-// У нового артиста демо ещё нет — добавляются на странице «Редактировать».
-const defaultDemos: DemoTrack[] = [];
+// Тип оставляем совместимым с прежним (image зарезервирован, сейчас всегда null).
+export type DemoTrack = Demo;
 
 interface DemoContextValue {
   demos: DemoTrack[];
-  addDemo: (file: File, title?: string) => void;
-  removeDemo: (id: string) => void;
-  replaceAudio: (id: string, file: File) => void;
-  setImage: (id: string, file: File) => void;
-  updateTitle: (id: string, title: string) => void;
-  moveDemo: (id: string, dir: -1 | 1) => void;
+  loading: boolean;
+  refresh: () => Promise<void>;
+  addDemo: (file: File, onProgress?: (p: number) => void) => Promise<void>;
+  removeDemo: (id: string) => Promise<void>;
+  replaceAudio: (id: string, file: File) => Promise<void>;
+  updateTitle: (id: string, title: string) => Promise<void>;
 }
 
 const DemoContext = createContext<DemoContextValue | undefined>(undefined);
 
-let seq = 100;
-const nextId = () => `d${++seq}`;
-
 export function DemoProvider({ children }: { children: ReactNode }) {
-  const [demos, setDemos] = useState<DemoTrack[]>(defaultDemos);
+  const [demos, setDemos] = useState<DemoTrack[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const addDemo = (file: File, title?: string) =>
-    setDemos((prev) => [
-      {
-        id: nextId(),
-        title: title?.trim() || file.name.replace(/\.[^.]+$/, ""),
-        src: URL.createObjectURL(file),
-        gradient: GRADIENTS[prev.length % GRADIENTS.length],
-        image: null,
-      },
-      ...prev,
-    ]);
+  const refresh = useCallback(async () => {
+    try {
+      setDemos(await listDemos());
+    } catch {
+      /* не залогинен / сеть — оставляем пусто */
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const removeDemo = (id: string) =>
-    setDemos((prev) => prev.filter((d) => d.id !== id));
+  // Провайдер живёт в корневом layout и монтируется до входа, поэтому
+  // перезапрашиваем список при каждой смене сессии, а не только на маунте.
+  useEffect(() => {
+    refresh();
 
-  const replaceAudio = (id: string, file: File) =>
-    setDemos((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, src: URL.createObjectURL(file) } : d))
-    );
+    let supabase;
+    try {
+      supabase = getSupabase();
+    } catch {
+      return; // Supabase не настроен — списка просто не будет
+    }
 
-  const setImage = (id: string, file: File) =>
-    setDemos((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, image: URL.createObjectURL(file) } : d))
-    );
-
-  const updateTitle = (id: string, title: string) =>
-    setDemos((prev) => prev.map((d) => (d.id === id ? { ...d, title } : d)));
-
-  const moveDemo = (id: string, dir: -1 | 1) =>
-    setDemos((prev) => {
-      const i = prev.findIndex((d) => d.id === id);
-      const j = i + dir;
-      if (i < 0 || j < 0 || j >= prev.length) return prev;
-      const copy = [...prev];
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-      return copy;
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "TOKEN_REFRESHED") {
+        refresh();
+      }
     });
+
+    return () => subscription.unsubscribe();
+  }, [refresh]);
+
+  const addDemo = useCallback(
+    async (file: File, onProgress?: (p: number) => void) => {
+      await addDemoApi(file, onProgress);
+      await refresh();
+    },
+    [refresh]
+  );
+
+  const removeDemo = useCallback(
+    async (id: string) => {
+      setDemos((prev) => prev.filter((d) => d.id !== id)); // оптимистично
+      try {
+        await removeDemoApi(id);
+      } finally {
+        await refresh();
+      }
+    },
+    [refresh]
+  );
+
+  const replaceAudio = useCallback(
+    async (id: string, file: File) => {
+      await replaceDemoAudio(id, file);
+      await refresh();
+    },
+    [refresh]
+  );
+
+  const updateTitle = useCallback(
+    async (id: string, title: string) => {
+      // оптимистично, чтобы поле не «моргало»
+      setDemos((prev) => prev.map((d) => (d.id === id ? { ...d, title } : d)));
+      await renameDemo(id, title);
+    },
+    []
+  );
 
   return (
     <DemoContext.Provider
-      value={{ demos, addDemo, removeDemo, replaceAudio, setImage, updateTitle, moveDemo }}
+      value={{ demos, loading, refresh, addDemo, removeDemo, replaceAudio, updateTitle }}
     >
       {children}
     </DemoContext.Provider>
