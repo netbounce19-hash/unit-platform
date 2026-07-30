@@ -1,16 +1,26 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import { getSupabase } from "@/lib/supabase/client";
+import { fetchMyOrg } from "@/lib/supabase/label";
 import AuthPanel from "@/components/auth/AuthPanel";
 
 /**
  * Пускает дальше только с активной сессией.
  * Пока сессии нет — показывает окно входа/регистрации.
  */
-export default function AuthGate({ children }: { children: ReactNode }) {
+export default function AuthGate({
+  children,
+  /** Увести сотрудника лейбла в его кабинет (артистские страницы не для него). */
+  redirectLabelToOwnCabinet = true,
+}: {
+  children: ReactNode;
+  redirectLabelToOwnCabinet?: boolean;
+}) {
+  const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [configError, setConfigError] = useState<string | null>(null);
@@ -25,17 +35,38 @@ export default function AuthGate({ children }: { children: ReactNode }) {
       return;
     }
 
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setReady(true);
-    });
+    let cancelled = false;
+
+    const resolve = async (s: Session | null) => {
+      if (cancelled) return;
+      setSession(s);
+
+      // Сотрудник лейбла в артистском кабинете делать нечего — уводим к себе.
+      if (s && redirectLabelToOwnCabinet) {
+        try {
+          const org = await fetchMyOrg();
+          if (!cancelled && org) {
+            router.replace("/label/roster");
+            return;
+          }
+        } catch {
+          /* не удалось проверить — оставляем в артистском кабинете */
+        }
+      }
+      if (!cancelled) setReady(true);
+    };
+
+    supabase.auth.getSession().then(({ data }) => resolve(data.session));
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_e, next) => setSession(next));
+    } = supabase.auth.onAuthStateChange((_e, next) => resolve(next));
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
+  }, [redirectLabelToOwnCabinet, router]);
 
   if (configError) {
     return (
