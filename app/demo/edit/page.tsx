@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Plus, Trash2, RefreshCw, Disc3, Music, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, RefreshCw, Disc3, Music, Loader2, ImagePlus, ChevronUp, ChevronDown } from "lucide-react";
 import { useDemos } from "@/components/artist/DemoContext";
 import AuthGate from "@/components/auth/AuthGate";
 
@@ -18,7 +18,8 @@ function pickFile(accept: string): Promise<File | null> {
 }
 
 function DemoEditInner() {
-  const { demos, loading, addDemo, removeDemo, replaceAudio, updateTitle } = useDemos();
+  const { demos, loading, addDemo, removeDemo, replaceAudio, updateTitle, setImage, moveDemo } =
+    useDemos();
 
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -50,6 +51,29 @@ function DemoEditInner() {
       setError(e instanceof Error ? e.message : "Не удалось заменить аудио");
     } finally {
       setBusyId(null);
+    }
+  };
+
+  const onSetImage = async (id: string) => {
+    const file = await pickFile("image/jpeg,image/png,.jpg,.jpeg,.png,.webp");
+    if (!file) return;
+    setError(null);
+    setBusyId(id);
+    try {
+      await setImage(id, file);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Не удалось загрузить обложку");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const onMove = async (id: string, dir: -1 | 1) => {
+    setError(null);
+    try {
+      await moveDemo(id, dir);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Не удалось изменить порядок");
     }
   };
 
@@ -140,20 +164,52 @@ function DemoEditInner() {
         </div>
       ) : (
         <div className="space-y-3">
-          {demos.map((d) => {
+          {demos.map((d, i) => {
             const rowBusy = busyId === d.id;
             return (
               <div
                 key={d.id}
                 className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-3 flex items-center gap-3"
               >
-                {/* Обложка-заглушка */}
-                <span
-                  className="w-16 h-16 rounded-[12px] shrink-0 flex items-center justify-center"
+                {/* Порядок */}
+                <div className="flex flex-col shrink-0">
+                  <button
+                    onClick={() => onMove(d.id, -1)}
+                    disabled={i === 0}
+                    aria-label="Выше"
+                    className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                  >
+                    <ChevronUp className="w-[16px] h-[16px]" strokeWidth={2} />
+                  </button>
+                  <button
+                    onClick={() => onMove(d.id, 1)}
+                    disabled={i === demos.length - 1}
+                    aria-label="Ниже"
+                    className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                  >
+                    <ChevronDown className="w-[16px] h-[16px]" strokeWidth={2} />
+                  </button>
+                </div>
+
+                {/* Обложка */}
+                <button
+                  onClick={() => onSetImage(d.id)}
+                  disabled={rowBusy}
+                  aria-label={d.image ? "Заменить обложку" : "Добавить обложку"}
+                  title={d.image ? "Заменить обложку" : "Добавить обложку"}
+                  className="relative w-16 h-16 rounded-[12px] shrink-0 overflow-hidden flex items-center justify-center group disabled:opacity-60"
                   style={{ background: d.gradient }}
                 >
-                  <Disc3 className="w-6 h-6 text-white/70" strokeWidth={1.5} />
-                </span>
+                  {d.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={d.image} alt={d.title} className="absolute inset-0 w-full h-full object-cover" />
+                  ) : (
+                    <Disc3 className="w-6 h-6 text-white/70" strokeWidth={1.5} />
+                  )}
+                  <span className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                    <ImagePlus className="w-5 h-5 text-white" strokeWidth={1.75} />
+                  </span>
+                </button>
 
                 {/* Название */}
                 <div className="min-w-0 flex-1">

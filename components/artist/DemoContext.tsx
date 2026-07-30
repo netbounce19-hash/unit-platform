@@ -8,6 +8,8 @@ import {
   removeDemo as removeDemoApi,
   renameDemo,
   replaceDemoAudio,
+  setDemoCover,
+  moveDemo as moveDemoApi,
   type Demo,
 } from "@/lib/supabase/demos";
 
@@ -22,6 +24,8 @@ interface DemoContextValue {
   removeDemo: (id: string) => Promise<void>;
   replaceAudio: (id: string, file: File) => Promise<void>;
   updateTitle: (id: string, title: string) => Promise<void>;
+  setImage: (id: string, file: File) => Promise<void>;
+  moveDemo: (id: string, dir: -1 | 1) => Promise<void>;
 }
 
 const DemoContext = createContext<DemoContextValue | undefined>(undefined);
@@ -100,9 +104,34 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const setImage = useCallback(
+    async (id: string, file: File) => {
+      await setDemoCover(id, file);
+      await refresh();
+    },
+    [refresh]
+  );
+
+  const moveDemo = useCallback(
+    async (id: string, dir: -1 | 1) => {
+      // оптимистично меняем местами, чтобы не ждать круг до сервера
+      setDemos((prev) => {
+        const i = prev.findIndex((d) => d.id === id);
+        const j = i + dir;
+        if (i < 0 || j < 0 || j >= prev.length) return prev;
+        const next = [...prev];
+        [next[i], next[j]] = [next[j], next[i]];
+        return next;
+      });
+      await moveDemoApi(id, dir);
+      await refresh();
+    },
+    [refresh]
+  );
+
   return (
     <DemoContext.Provider
-      value={{ demos, loading, refresh, addDemo, removeDemo, replaceAudio, updateTitle }}
+      value={{ demos, loading, refresh, addDemo, removeDemo, replaceAudio, updateTitle, setImage, moveDemo }}
     >
       {children}
     </DemoContext.Provider>
