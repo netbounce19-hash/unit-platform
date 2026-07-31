@@ -12,10 +12,10 @@ import { getSupabase } from "@/lib/supabase/client";
  * Когда фронт утвердят — вернём сюда настоящий вход (AuthGate + AuthPanel).
  */
 
-const LABEL_EMAIL = process.env.NEXT_PUBLIC_LABEL_DEV_EMAIL;
-const LABEL_PASSWORD = process.env.NEXT_PUBLIC_LABEL_DEV_PASSWORD;
-const ARTIST_EMAIL = process.env.NEXT_PUBLIC_ARTIST_DEV_EMAIL;
-const ARTIST_PASSWORD = process.env.NEXT_PUBLIC_ARTIST_DEV_PASSWORD;
+const LABEL_EMAIL = process.env.NEXT_PUBLIC_LABEL_DEV_EMAIL || "unit-qa2-1784972128733@mailinator.com";
+const LABEL_PASSWORD = process.env.NEXT_PUBLIC_LABEL_DEV_PASSWORD || "qa-passw0rd-456";
+const ARTIST_EMAIL = process.env.NEXT_PUBLIC_ARTIST_DEV_EMAIL || "unit-artist-qa-1785487830683@mailinator.com";
+const ARTIST_PASSWORD = process.env.NEXT_PUBLIC_ARTIST_DEV_PASSWORD || "qa-artist-passw0rd-789";
 
 export default function Home() {
   const router = useRouter();
