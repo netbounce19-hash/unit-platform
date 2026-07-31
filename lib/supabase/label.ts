@@ -282,6 +282,42 @@ export async function deleteTask(id: string): Promise<void> {
   if (error) throw error;
 }
 
+// ── Обязательность (реальные данные из tasks) ───────────────────────────────
+
+export interface ObligationStat {
+  artistId: string;
+  total: number;
+  done: number;
+  /** 0..100, null если у артиста ещё нет ни одной задачи — делить не на что. */
+  ratio: number | null;
+}
+
+/** Доля выполненных задач по каждому артисту org — основа метрики «обязательность». */
+export async function fetchObligationStats(orgId: string): Promise<ObligationStat[]> {
+  const { data, error } = await getSupabase()
+    .from("tasks")
+    .select("artist_id, status")
+    .eq("org_id", orgId);
+  if (error) throw error;
+
+  const rows = (data ?? []) as Pick<TaskRow, "artist_id" | "status">[];
+  const byArtist = new Map<string, { total: number; done: number }>();
+
+  for (const r of rows) {
+    const cur = byArtist.get(r.artist_id) ?? { total: 0, done: 0 };
+    cur.total += 1;
+    if (r.status === "done") cur.done += 1;
+    byArtist.set(r.artist_id, cur);
+  }
+
+  return Array.from(byArtist.entries()).map(([artistId, v]) => ({
+    artistId,
+    total: v.total,
+    done: v.done,
+    ratio: v.total > 0 ? Math.round((v.done / v.total) * 100) : null,
+  }));
+}
+
 // ── Заявки на финансирование ────────────────────────────────────────────────
 
 export async function fetchBudgets(orgId: string, artistId?: string): Promise<BudgetRow[]> {

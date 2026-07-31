@@ -16,8 +16,8 @@ import {
 } from "@/lib/supabase/label";
 
 const inputCls =
-  "w-full text-[13.5px] rounded-[9px] border border-[#E5E3DE] bg-white px-3 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]";
-const labelCls = "block text-[12px] font-medium text-[#6E6D73] mb-[6px]";
+  "w-full text-[13.5px] rounded-[9px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]";
+const labelCls = "block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]";
 
 function NewTaskInner({ org }: { org: MyOrg }) {
   const router = useRouter();
@@ -95,7 +95,7 @@ function NewTaskInner({ org }: { org: MyOrg }) {
       actions={
         <Link
           href="/label/roster"
-          className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] px-[12px] py-[8px] rounded-[9px] hover:bg-[#F0EEEA] transition"
+          className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] dark:text-[#9A98A0] px-[12px] py-[8px] rounded-[9px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
         >
           <ArrowLeft className="w-[15px] h-[15px]" strokeWidth={1.75} />
           Ростер
@@ -103,18 +103,18 @@ function NewTaskInner({ org }: { org: MyOrg }) {
       }
     >
       {loading ? (
-        <div className="py-12 flex items-center justify-center text-[#A6A5AB]">
+        <div className="py-12 flex items-center justify-center text-[#A6A5AB] dark:text-[#6E6D73]">
           <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
         </div>
       ) : done ? (
-        <div className="max-w-[520px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] p-5 text-center">
-          <span className="w-10 h-10 rounded-full bg-[#E9F6EF] text-[#166B49] flex items-center justify-center mx-auto mb-2">
+        <div className="max-w-[520px] bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-5 text-center">
+          <span className="w-10 h-10 rounded-full bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B] flex items-center justify-center mx-auto mb-2">
             <Check className="w-5 h-5" strokeWidth={2.5} />
           </span>
           <div className="text-[14px] font-semibold">Задача поставлена</div>
         </div>
       ) : (
-        <form onSubmit={submit} className="max-w-[520px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] p-4 space-y-4">
+        <form onSubmit={submit} className="max-w-[520px] bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 space-y-4">
           <label className="block">
             <span className={labelCls}>Артист</span>
             <select
@@ -181,7 +181,7 @@ function NewTaskInner({ org }: { org: MyOrg }) {
           </div>
 
           {error && (
-            <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px]">
+            <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[10px] px-3 py-[9px]">
               {error}
             </div>
           )}
@@ -207,7 +207,7 @@ export default function NewTaskPage() {
         // useSearchParams требует Suspense-границы при пререндере.
         <Suspense
           fallback={
-            <div className="min-h-screen flex items-center justify-center text-[#A6A5AB]">
+            <div className="min-h-screen flex items-center justify-center text-[#A6A5AB] dark:text-[#6E6D73]">
               <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
             </div>
           }

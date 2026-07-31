@@ -78,13 +78,13 @@ function BudgetsInner({ org }: { org: MyOrg }) {
       title="Заявки на финансирование"
       subtitle={`${pendingCount} ждут решения · ${formatMoney(pendingSum)}`}
       actions={
-        <div className="flex items-center gap-1 bg-white border-[0.5px] border-[#ECEAE5] rounded-[9px] p-[3px]">
+        <div className="flex items-center gap-1 bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[9px] p-[3px]">
           {(["pending", "all"] as Filter[]).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
               className={`text-[12.5px] font-medium px-[11px] py-[5px] rounded-[7px] transition ${
-                filter === f ? "bg-[#FDEDEB] text-[#A62018]" : "text-[#6E6D73] hover:text-[#17161A]"
+                filter === f ? "bg-[#FDEDEB] dark:bg-[#3A2422] text-[#A62018] dark:text-[#F3928C]" : "text-[#6E6D73] dark:text-[#9A98A0] hover:text-[#17161A] dark:hover:text-[#F5F4F2]"
               }`}
             >
               {f === "pending" ? "Ждут решения" : "Все"}
@@ -94,13 +94,13 @@ function BudgetsInner({ org }: { org: MyOrg }) {
       }
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[10px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="py-12 flex items-center justify-center text-[#A6A5AB]">
+        <div className="py-12 flex items-center justify-center text-[#A6A5AB] dark:text-[#6E6D73]">
           <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
         </div>
       ) : (
@@ -117,13 +117,13 @@ function BudgetsInner({ org }: { org: MyOrg }) {
           {visible.map((b) => {
             const s = budgetStatusLabels[b.status] ?? {
               label: b.status,
-              cls: "bg-[#F0EEEA] text-[#6E6D73]",
+              cls: "bg-[#F0EEEA] dark:bg-[#232227] text-[#6E6D73] dark:text-[#9A98A0]",
             };
             const isOpen = openId === b.id;
             const rowBusy = busyId === b.id;
 
             return (
-              <tr key={b.id} className="border-b-[0.5px] border-[#ECEAE5] last:border-0 align-top">
+              <tr key={b.id} className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] last:border-0 align-top">
                 <td className="px-4 py-[11px]">
                   {b.artist_id ? (
                     <Link
@@ -133,13 +133,13 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                       {nameOf(b.artist_id)}
                     </Link>
                   ) : (
-                    <span className="text-[#A6A5AB]">—</span>
+                    <span className="text-[#A6A5AB] dark:text-[#6E6D73]">—</span>
                   )}
                 </td>
                 <td className="px-4 py-[11px]">
                   <div>{b.category || b.purpose || "—"}</div>
                   {b.comment && (
-                    <div className="text-[12px] text-[#A6A5AB] max-w-[280px]">{b.comment}</div>
+                    <div className="text-[12px] text-[#A6A5AB] dark:text-[#6E6D73] max-w-[280px]">{b.comment}</div>
                   )}
                   {isOpen && (
                     <textarea
@@ -148,20 +148,20 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                       rows={2}
                       autoFocus
                       placeholder="Комментарий к решению"
-                      className="mt-2 w-full max-w-[320px] resize-none text-[12.5px] rounded-[8px] border border-[#E5E3DE] bg-white px-[10px] py-[7px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                      className="mt-2 w-full max-w-[320px] resize-none text-[12.5px] rounded-[8px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-[10px] py-[7px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
                     />
                   )}
                 </td>
                 <td className="px-4 py-[11px] font-medium whitespace-nowrap">
                   {formatMoney(b.amount)}
                 </td>
-                <td className="px-4 py-[11px] text-[#6E6D73] whitespace-nowrap">
+                <td className="px-4 py-[11px] text-[#6E6D73] dark:text-[#9A98A0] whitespace-nowrap">
                   {formatDate(b.created_at)}
                 </td>
                 <td className="px-4 py-[11px]">
                   <Badge label={s.label} cls={s.cls} />
                   {b.decision_comment && (
-                    <div className="text-[11.5px] text-[#A6A5AB] mt-1 max-w-[200px]">
+                    <div className="text-[11.5px] text-[#A6A5AB] dark:text-[#6E6D73] mt-1 max-w-[200px]">
                       {b.decision_comment}
                     </div>
                   )}
@@ -185,7 +185,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                         <button
                           onClick={() => decide(b.id, "rejected")}
                           disabled={rowBusy}
-                          className="inline-flex items-center gap-[5px] text-[12.5px] font-medium text-[#A62018] border border-[#F3C9C6] bg-[#FDEDEB] px-[10px] py-[6px] rounded-[8px] hover:brightness-95 transition disabled:opacity-40"
+                          className="inline-flex items-center gap-[5px] text-[12.5px] font-medium text-[#A62018] dark:text-[#F3928C] border border-[#F3C9C6] dark:border-[#4A2F2C] bg-[#FDEDEB] dark:bg-[#3A2422] px-[10px] py-[6px] rounded-[8px] hover:brightness-95 transition disabled:opacity-40"
                         >
                           <X className="w-3.5 h-3.5" strokeWidth={2.5} />
                           Отклонить
@@ -195,7 +195,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                             setOpenId(null);
                             setComment("");
                           }}
-                          className="text-[12.5px] text-[#A6A5AB] px-[8px] py-[6px] hover:text-[#17161A] transition"
+                          className="text-[12.5px] text-[#A6A5AB] dark:text-[#6E6D73] px-[8px] py-[6px] hover:text-[#17161A] dark:hover:text-[#F5F4F2] transition"
                         >
                           Отмена
                         </button>
@@ -206,13 +206,13 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                           setOpenId(b.id);
                           setComment("");
                         }}
-                        className="text-[12.5px] font-medium text-[#17161A] border border-[#E5E3DE] px-[11px] py-[6px] rounded-[8px] hover:bg-[#F0EEEA] transition"
+                        className="text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[11px] py-[6px] rounded-[8px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
                       >
                         Решение
                       </button>
                     )
                   ) : (
-                    <span className="text-[12px] text-[#A6A5AB]">{formatDate(b.decided_at)}</span>
+                    <span className="text-[12px] text-[#A6A5AB] dark:text-[#6E6D73]">{formatDate(b.decided_at)}</span>
                   )}
                 </td>
               </tr>

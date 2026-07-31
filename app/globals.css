@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @source "../components";
 
+/* Тёмная тема кабинета лейбла переключается классом .dark на обёртке
+   (см. components/label/LabelThemeProvider.tsx), а не системной темой —
+   поэтому свой custom-variant вместо дефолтного prefers-color-scheme. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-sapphire: #0D1B2A;
   --color-sapphire-light: #132338;

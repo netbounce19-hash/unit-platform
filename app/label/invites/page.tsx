@@ -17,13 +17,13 @@ import {
 } from "@/lib/supabase/label";
 
 const inputCls =
-  "w-full text-[13.5px] rounded-[9px] border border-[#E5E3DE] bg-white px-3 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]";
+  "w-full text-[13.5px] rounded-[9px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]";
 
 function inviteState(inv: InviteRow): { label: string; cls: string } {
-  if (inv.accepted_at) return { label: "Принято", cls: "bg-[#E9F6EF] text-[#166B49]" };
+  if (inv.accepted_at) return { label: "Принято", cls: "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]" };
   if (new Date(inv.expires_at) < new Date())
-    return { label: "Истекло", cls: "bg-[#FDEDEB] text-[#A62018]" };
-  return { label: "Ожидает", cls: "bg-[#FBF1DE] text-[#8A5A16]" };
+    return { label: "Истекло", cls: "bg-[#FDEDEB] dark:bg-[#3A2422] text-[#A62018] dark:text-[#F3928C]" };
+  return { label: "Ожидает", cls: "bg-[#FBF1DE] dark:bg-[#3A2F14] text-[#8A5A16] dark:text-[#E8B65A]" };
 }
 
 function InvitesInner({ org }: { org: MyOrg }) {
@@ -101,10 +101,10 @@ function InvitesInner({ org }: { org: MyOrg }) {
     >
       <form
         onSubmit={submit}
-        className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] p-4 mb-5 flex flex-wrap items-end gap-3"
+        className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 mb-5 flex flex-wrap items-end gap-3"
       >
         <label className="flex-1 min-w-[220px]">
-          <span className="block text-[12px] font-medium text-[#6E6D73] mb-[6px]">Email артиста</span>
+          <span className="block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">Email артиста</span>
           <input
             type="email"
             value={email}
@@ -115,7 +115,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
         </label>
 
         <label className="min-w-[200px]">
-          <span className="block text-[12px] font-medium text-[#6E6D73] mb-[6px]">
+          <span className="block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">
             Привязать к артисту
           </span>
           <select
@@ -147,17 +147,17 @@ function InvitesInner({ org }: { org: MyOrg }) {
       </form>
 
       {error && (
-        <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[10px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
 
-      <p className="text-[12.5px] text-[#A6A5AB] mb-3">
+      <p className="text-[12.5px] text-[#A6A5AB] dark:text-[#6E6D73] mb-3">
         Письма пока не отправляются — скопируйте ссылку и передайте артисту сами.
       </p>
 
       {loading ? (
-        <div className="py-12 flex items-center justify-center text-[#A6A5AB]">
+        <div className="py-12 flex items-center justify-center text-[#A6A5AB] dark:text-[#6E6D73]">
           <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
         </div>
       ) : (
@@ -168,23 +168,23 @@ function InvitesInner({ org }: { org: MyOrg }) {
           {rows.map((inv) => {
             const s = inviteState(inv);
             return (
-              <tr key={inv.id} className="border-b-[0.5px] border-[#ECEAE5] last:border-0 hover:bg-[#FAFAF9]">
+              <tr key={inv.id} className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] last:border-0 hover:bg-[#FAFAF9]">
                 <td className="px-4 py-[11px] font-medium">{inv.email}</td>
                 <td className="px-4 py-[11px]"><Badge label={s.label} cls={s.cls} /></td>
-                <td className="px-4 py-[11px] text-[#6E6D73] whitespace-nowrap">
+                <td className="px-4 py-[11px] text-[#6E6D73] dark:text-[#9A98A0] whitespace-nowrap">
                   {formatDate(inv.expires_at)}
                 </td>
                 <td className="px-4 py-[11px]">
                   {inv.accepted_at ? (
-                    <span className="text-[#A6A5AB]">—</span>
+                    <span className="text-[#A6A5AB] dark:text-[#6E6D73]">—</span>
                   ) : (
                     <button
                       onClick={() => copy(inv.token)}
-                      className="inline-flex items-center gap-[6px] text-[12.5px] font-medium text-[#17161A] border border-[#E5E3DE] px-[10px] py-[5px] rounded-[8px] hover:bg-[#F0EEEA] transition"
+                      className="inline-flex items-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[10px] py-[5px] rounded-[8px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
                     >
                       {copied === inv.token ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-[#166B49]" strokeWidth={2.5} />
+                          <Check className="w-3.5 h-3.5 text-[#166B49] dark:text-[#5FCB9B]" strokeWidth={2.5} />
                           Скопировано
                         </>
                       ) : (
@@ -202,7 +202,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
                       onClick={() => revoke(inv.id)}
                       aria-label="Отозвать приглашение"
                       title="Отозвать"
-                      className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#A62018] hover:bg-[#FDEDEB] transition"
+                      className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#A62018] dark:hover:text-[#F3928C] hover:bg-[#FDEDEB] dark:hover:bg-[#3A2422] transition"
                     >
                       <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                     </button>

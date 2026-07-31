@@ -80,7 +80,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
   if (loading) {
     return (
       <LabelShell org={org} title="Релиз">
-        <div className="py-12 flex items-center justify-center text-[#A6A5AB]">
+        <div className="py-12 flex items-center justify-center text-[#A6A5AB] dark:text-[#6E6D73]">
           <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
         </div>
       </LabelShell>
@@ -99,7 +99,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
 
   const s = releaseStatusLabels[release.status] ?? {
     label: release.status,
-    cls: "bg-[#F0EEEA] text-[#6E6D73]",
+    cls: "bg-[#F0EEEA] dark:bg-[#232227] text-[#6E6D73] dark:text-[#9A98A0]",
   };
   const decided = release.status === "approved" || release.status === "rejected";
 
@@ -111,7 +111,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
       actions={
         <Link
           href={artist ? `/label/artists/${artist.id}` : "/label/roster"}
-          className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] px-[12px] py-[8px] rounded-[9px] hover:bg-[#F0EEEA] transition"
+          className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] dark:text-[#9A98A0] px-[12px] py-[8px] rounded-[9px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
         >
           <ArrowLeft className="w-[15px] h-[15px]" strokeWidth={1.75} />
           Назад
@@ -119,22 +119,22 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
       }
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[10px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-5">
         {/* Стратегия */}
-        <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] p-4">
+        <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[13px] font-semibold text-[#6E6D73] uppercase tracking-[0.04em]">
+            <h2 className="text-[13px] font-semibold text-[#6E6D73] dark:text-[#9A98A0] uppercase tracking-[0.04em]">
               Стратегия релиза
             </h2>
             <button
               onClick={save}
               disabled={busy !== null}
-              className="inline-flex items-center gap-[6px] text-[12.5px] font-medium text-[#17161A] border border-[#E5E3DE] px-[11px] py-[6px] rounded-[8px] hover:bg-[#F0EEEA] transition disabled:opacity-40"
+              className="inline-flex items-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[11px] py-[6px] rounded-[8px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition disabled:opacity-40"
             >
               {busy === "save" && <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2} />}
               {saved ? "Сохранено" : "Сохранить"}
@@ -145,43 +145,43 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
             onChange={(e) => setStrategy(e.target.value)}
             rows={12}
             placeholder="План продвижения, площадки, даты, бюджет…"
-            className="w-full resize-y text-[13.5px] leading-[1.55] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+            className="w-full resize-y text-[13.5px] leading-[1.55] rounded-[10px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
           />
         </div>
 
         {/* Решение */}
         <aside className="space-y-4 xl:sticky xl:top-[76px] self-start">
-          <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] p-4">
-            <h2 className="text-[13px] font-semibold text-[#6E6D73] uppercase tracking-[0.04em] mb-3">
+          <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
+            <h2 className="text-[13px] font-semibold text-[#6E6D73] dark:text-[#9A98A0] uppercase tracking-[0.04em] mb-3">
               Статус
             </h2>
             <Badge label={s.label} cls={s.cls} />
 
             <dl className="mt-4 space-y-[10px] text-[12.5px]">
               <div className="flex justify-between gap-3">
-                <dt className="text-[#A6A5AB]">Плановая дата</dt>
-                <dd className="text-[#17161A]">{formatDate(release.planned_date)}</dd>
+                <dt className="text-[#A6A5AB] dark:text-[#6E6D73]">Плановая дата</dt>
+                <dd className="text-[#17161A] dark:text-[#F5F4F2]">{formatDate(release.planned_date)}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-[#A6A5AB]">Создан</dt>
-                <dd className="text-[#17161A]">{formatDate(release.created_at)}</dd>
+                <dt className="text-[#A6A5AB] dark:text-[#6E6D73]">Создан</dt>
+                <dd className="text-[#17161A] dark:text-[#F5F4F2]">{formatDate(release.created_at)}</dd>
               </div>
               {release.approved_at && (
                 <div className="flex justify-between gap-3">
-                  <dt className="text-[#A6A5AB]">Решение</dt>
-                  <dd className="text-[#17161A]">{formatDate(release.approved_at)}</dd>
+                  <dt className="text-[#A6A5AB] dark:text-[#6E6D73]">Решение</dt>
+                  <dd className="text-[#17161A] dark:text-[#F5F4F2]">{formatDate(release.approved_at)}</dd>
                 </div>
               )}
             </dl>
           </div>
 
-          <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] p-4">
-            <h2 className="text-[13px] font-semibold text-[#6E6D73] uppercase tracking-[0.04em] mb-3">
+          <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
+            <h2 className="text-[13px] font-semibold text-[#6E6D73] dark:text-[#9A98A0] uppercase tracking-[0.04em] mb-3">
               Решение
             </h2>
 
             {decided && (
-              <p className="text-[12.5px] text-[#6E6D73] mb-3">
+              <p className="text-[12.5px] text-[#6E6D73] dark:text-[#9A98A0] mb-3">
                 Релиз уже {release.status === "approved" ? "утверждён" : "отклонён"}. Решение можно
                 изменить.
               </p>
@@ -192,7 +192,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               placeholder="Комментарий при отклонении"
-              className="w-full resize-none text-[13px] rounded-[9px] border border-[#E5E3DE] bg-white px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8] mb-3"
+              className="w-full resize-none text-[13px] rounded-[9px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8] mb-3"
             />
 
             <div className="flex flex-col gap-2">
@@ -211,7 +211,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
               <button
                 onClick={() => decide("rejected")}
                 disabled={busy !== null}
-                className="inline-flex items-center justify-center gap-2 text-[13px] font-medium text-[#A62018] border border-[#F3C9C6] bg-[#FDEDEB] px-[14px] py-[9px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
+                className="inline-flex items-center justify-center gap-2 text-[13px] font-medium text-[#A62018] dark:text-[#F3928C] border border-[#F3C9C6] dark:border-[#4A2F2C] bg-[#FDEDEB] dark:bg-[#3A2422] px-[14px] py-[9px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
               >
                 {busy === "reject" ? (
                   <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
