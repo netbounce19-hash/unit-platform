@@ -27,9 +27,15 @@ function fmt(t: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export default function DemoSection() {
+/**
+ * @param bare — режим вкладки на странице «Материалы»: без карточки-обёртки
+ *   и без сворачивания, содержимое всегда раскрыто.
+ */
+export default function DemoSection({ bare = false }: { bare?: boolean } = {}) {
   const { demos } = useDemos();
-  const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const open = bare || expanded;
+  const setOpen = setExpanded;
   const [page, setPage] = useState(0);
   const [current, setCurrent] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -109,23 +115,32 @@ export default function DemoSection() {
   const cur = current !== null ? demos[current] ?? null : null;
 
   return (
-    <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[14px] mb-4">
+    <div
+      className={
+        bare
+          ? ""
+          : "bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[14px] mb-4"
+      }
+    >
       {/* Заголовок-переключатель */}
       <div className="flex items-center gap-2">
         <button
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          className="flex items-center gap-2 flex-1 min-w-0 -my-1 py-1 text-left"
+          onClick={() => !bare && setOpen((v) => !v)}
+          aria-expanded={bare ? undefined : open}
+          disabled={bare}
+          className="flex items-center gap-2 flex-1 min-w-0 -my-1 py-1 text-left disabled:cursor-default"
         >
           <Headphones className="w-[17px] h-[17px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
           <div className="text-[16px] font-semibold tracking-[-0.01em] shrink-0">Демо</div>
-          <motion.span
-            animate={{ rotate: open ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-            className="text-[#A6A5AB] shrink-0"
-          >
-            <ChevronDown className="w-[18px] h-[18px]" strokeWidth={2} />
-          </motion.span>
+          {!bare && (
+            <motion.span
+              animate={{ rotate: open ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-[#A6A5AB] shrink-0"
+            >
+              <ChevronDown className="w-[18px] h-[18px]" strokeWidth={2} />
+            </motion.span>
+          )}
         </button>
 
         {open && (

@@ -33,10 +33,18 @@ const KINDS: { key: AssetKind; label: string; accept: string; icon: React.ReactN
   },
 ];
 
-export default function AssetManager() {
+interface AssetManagerProps {
+  /** Зафиксировать тип файла снаружи (вкладки страницы «Материалы»). */
+  kind?: AssetKind;
+  /** Скрыть внутренний переключатель типов — когда им управляют снаружи. */
+  hideTabs?: boolean;
+}
+
+export default function AssetManager({ kind: controlledKind, hideTabs = false }: AssetManagerProps = {}) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
-  const [kind, setKind] = useState<AssetKind>("audio");
+  const [internalKind, setInternalKind] = useState<AssetKind>("audio");
+  const kind = controlledKind ?? internalKind;
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -100,6 +108,8 @@ export default function AssetManager() {
 
   const current = KINDS.find((k) => k.key === kind)!;
   const uploading = progress !== null;
+  // Когда тип задан снаружи, список тоже показывает только его.
+  const visible = controlledKind ? assets.filter((a) => a.kind === controlledKind) : assets;
 
   return (
     <div className="space-y-4">
@@ -110,11 +120,12 @@ export default function AssetManager() {
           Аудио загружается по частям — обрыв связи не начнёт всё заново
         </div>
 
+        {!hideTabs && (
         <div className="grid grid-cols-3 gap-2 mb-3">
           {KINDS.map((k) => (
             <button
               key={k.key}
-              onClick={() => setKind(k.key)}
+              onClick={() => setInternalKind(k.key)}
               disabled={uploading}
               className={`flex items-center justify-center gap-2 text-[13px] font-medium rounded-[10px] px-3 py-[10px] border transition disabled:opacity-50 ${
                 kind === k.key
@@ -127,6 +138,7 @@ export default function AssetManager() {
             </button>
           ))}
         </div>
+        )}
 
         <input
           ref={inputRef}
@@ -173,10 +185,10 @@ export default function AssetManager() {
           <div className="py-8 flex items-center justify-center text-[#A6A5AB]">
             <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
           </div>
-        ) : assets.length === 0 ? (
+        ) : visible.length === 0 ? (
           <div className="py-8 text-[13px] text-[#A6A5AB] text-center">Пока ничего не загружено</div>
         ) : (
-          assets.map((a, i) => (
+          visible.map((a, i) => (
             <div
               key={a.id}
               className={`flex items-center gap-3 py-[13px] ${
