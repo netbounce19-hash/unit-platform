@@ -13,6 +13,7 @@ import FaqSection from "@/components/artist/FaqSection";
 import DemoSection from "@/components/artist/DemoSection";
 import ArtistFilesSection from "@/components/artist/ArtistFilesSection";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import AuthGate from "@/components/auth/AuthGate";
 import { getSupabase } from "@/lib/supabase/client";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
@@ -95,6 +96,7 @@ const navItems = [
 ];
 
 function DashboardInner() {
+  const router = useRouter();
   const [items, setItems] = useState(initial);
   const [uploadRelease, setUploadRelease] = useState<string | null>(null);
   const [budgetOpen, setBudgetOpen] = useState(false);
@@ -196,7 +198,10 @@ function DashboardInner() {
             )}
           </button>
           <button
-            onClick={() => getSupabase().auth.signOut()}
+            onClick={async () => {
+              await getSupabase().auth.signOut();
+              router.push("/");
+            }}
             aria-label="Выйти"
             title="Выйти из аккаунта"
             className="inline-flex items-center gap-[5px] text-[12px] font-medium text-[#6E6D73] hover:text-[#A62018] transition"

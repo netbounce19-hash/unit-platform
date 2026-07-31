@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Users,
   Wallet,
@@ -72,6 +72,7 @@ function LabelShellInner({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
   return (
@@ -97,7 +98,10 @@ function LabelShellInner({
             <NavLink key={item.href} item={item} active={isActive(item.href)} />
           ))}
           <button
-            onClick={() => getSupabase().auth.signOut()}
+            onClick={async () => {
+              await getSupabase().auth.signOut();
+              router.push("/");
+            }}
             className="w-full flex items-center gap-[10px] text-[13.5px] text-[#6E6D73] dark:text-[#9A98A0] rounded-[10px] px-3 py-[9px] hover:bg-[#F0EEEA] hover:text-[#A62018] dark:hover:bg-[#242327] dark:hover:text-[#F3928C] transition"
           >
             <LogOut className="w-[16px] h-[16px] shrink-0" strokeWidth={1.75} />
