@@ -9,6 +9,15 @@ import { fetchMyOrg } from "@/lib/supabase/label";
 import AuthPanel from "@/components/auth/AuthPanel";
 
 /**
+ * ВРЕМЕННО: автовход в кабинет артиста на время разработки.
+ * Работает точно так же, как DEV_AUTOLOGIN в LabelGate —
+ * просто удалите эти переменные из .env.local, когда фронт утвердят.
+ */
+const DEV_EMAIL = process.env.NEXT_PUBLIC_ARTIST_DEV_EMAIL;
+const DEV_PASSWORD = process.env.NEXT_PUBLIC_ARTIST_DEV_PASSWORD;
+const DEV_AUTOLOGIN = Boolean(DEV_EMAIL && DEV_PASSWORD);
+
+/**
  * Пускает дальше только с активной сессией.
  * Пока сессии нет — показывает окно входа/регистрации.
  */
@@ -24,6 +33,7 @@ export default function AuthGate({
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [devAuthError, setDevAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     let supabase;
@@ -39,6 +49,30 @@ export default function AuthGate({
 
     const resolve = async (s: Session | null) => {
       if (cancelled) return;
+
+      if (!s && DEV_AUTOLOGIN) {
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: DEV_EMAIL!,
+            password: DEV_PASSWORD!,
+          });
+          if (!error && data.session) {
+            if (!cancelled) return resolve(data.session);
+          } else if (!cancelled) {
+            setDevAuthError(error?.message ?? "Не удалось войти dev-аккаунтом");
+          }
+        } catch (err) {
+          if (!cancelled) {
+            setDevAuthError(err instanceof Error ? err.message : "Не удалось войти dev-аккаунтом");
+          }
+        }
+        if (!cancelled) {
+          setSession(null);
+          setReady(true);
+        }
+        return;
+      }
+
       setSession(s);
 
       // Сотрудник лейбла в артистском кабинете делать нечего — уводим к себе.
@@ -68,6 +102,12 @@ export default function AuthGate({
     };
   }, [redirectLabelToOwnCabinet, router]);
 
+  const devBanner = DEV_AUTOLOGIN && (
+    <div className="bg-[#17161A] text-white text-[12px] text-center py-[6px] px-4">
+      DEV MODE · автовход {DEV_EMAIL} — уберите NEXT_PUBLIC_ARTIST_DEV_EMAIL/PASSWORD из .env.local, чтобы вернуть обычный логин
+    </div>
+  );
+
   if (configError) {
     return (
       <div className="max-w-[720px] mx-auto px-5 py-7">
@@ -89,12 +129,25 @@ export default function AuthGate({
 
   if (!session) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-5 py-10">
-        <div className="font-semibold tracking-[0.16em] text-[17px] mb-6">UNIT</div>
-        <AuthPanel />
+      <div className="min-h-screen flex flex-col">
+        {devBanner}
+        <div className="flex-1 flex flex-col items-center justify-center px-5 py-10">
+          <div className="font-semibold tracking-[0.16em] text-[17px] mb-6">UNIT</div>
+          {devAuthError && (
+            <div className="w-full max-w-[420px] text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px] mb-4">
+              Dev-автовход не сработал: {devAuthError}
+            </div>
+          )}
+          <AuthPanel />
+        </div>
       </div>
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {devBanner}
+      {children}
+    </>
+  );
 }

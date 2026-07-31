@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Wallet, Check, Target, Plus, ChevronDown, Trash2, ListChecks } from "lucide-react";
+import { Wallet, Check, Target, Plus, ChevronDown, Trash2, ListChecks, LogOut } from "lucide-react";
 import ReleaseUploadModal from "@/components/artist/ReleaseUploadModal";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
@@ -14,6 +14,7 @@ import DemoSection from "@/components/artist/DemoSection";
 import ArtistFilesSection from "@/components/artist/ArtistFilesSection";
 import { AnimatePresence, motion } from "framer-motion";
 import AuthGate from "@/components/auth/AuthGate";
+import { getSupabase } from "@/lib/supabase/client";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
 import {
   listBudgetRequests,
@@ -193,6 +194,15 @@ function DashboardInner() {
             ) : (
               profile.name.charAt(0) || "?"
             )}
+          </button>
+          <button
+            onClick={() => getSupabase().auth.signOut()}
+            aria-label="Выйти"
+            title="Выйти из аккаунта"
+            className="inline-flex items-center gap-[5px] text-[12px] font-medium text-[#6E6D73] hover:text-[#A62018] transition"
+          >
+            <LogOut className="w-[14px] h-[14px]" strokeWidth={1.75} />
+            Выйти
           </button>
         </div>
       </div>
