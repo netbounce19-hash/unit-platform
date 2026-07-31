@@ -14,6 +14,21 @@ interface LabelContext {
 }
 
 /**
+ * ВРЕМЕННО, на период разработки UI кабинета лейбла.
+ * Если в .env.local заданы NEXT_PUBLIC_LABEL_DEV_EMAIL/PASSWORD — гейт сам
+ * логинится этим аккаунтом и пропускает экран входа. Как только фронт
+ * утверждён, просто удалите эти две строки из .env.local — код трогать
+ * не нужно, всё вернётся к обычной форме входа.
+ *
+ * Ключи начинаются на NEXT_PUBLIC_, то есть уходят в браузерный бандл —
+ * поэтому переменные должны стоять ТОЛЬКО в локальном .env.local
+ * (он в .gitignore) и никогда — в Vercel/проде или в общем стейджинге.
+ */
+const DEV_EMAIL = process.env.NEXT_PUBLIC_LABEL_DEV_EMAIL;
+const DEV_PASSWORD = process.env.NEXT_PUBLIC_LABEL_DEV_PASSWORD;
+const DEV_AUTOLOGIN = Boolean(DEV_EMAIL && DEV_PASSWORD);
+
+/**
  * Клиентский гейт кабинета лейбла: пускает дальше только сотрудника,
  * состоящего в organizations через memberships. Артиста уводит в его кабинет.
  *
@@ -27,6 +42,7 @@ export default function LabelGate({ children }: { children: (ctx: LabelContext) 
   const [org, setOrg] = useState<MyOrg | null>(null);
   const [ready, setReady] = useState(false);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [devAuthError, setDevAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     let supabase;
@@ -42,6 +58,25 @@ export default function LabelGate({ children }: { children: (ctx: LabelContext) 
 
     const resolve = async (s: Session | null) => {
       if (!s) {
+        // Dev-автовход: тихо логинимся тестовым аккаунтом лейбла и продолжаем
+        // как будто сессия пришла обычным путём.
+        if (DEV_AUTOLOGIN) {
+          try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+              email: DEV_EMAIL!,
+              password: DEV_PASSWORD!,
+            });
+            if (!error && data.session) {
+              if (!cancelled) return resolve(data.session);
+            } else if (!cancelled) {
+              setDevAuthError(error?.message ?? "Не удалось войти dev-аккаунтом");
+            }
+          } catch (err) {
+            if (!cancelled) {
+              setDevAuthError(err instanceof Error ? err.message : "Не удалось войти dev-аккаунтом");
+            }
+          }
+        }
         if (!cancelled) {
           setSession(null);
           setOrg(null);
@@ -76,6 +111,12 @@ export default function LabelGate({ children }: { children: (ctx: LabelContext) 
     };
   }, []);
 
+  const devBanner = DEV_AUTOLOGIN && (
+    <div className="bg-[#17161A] text-white text-[12px] text-center py-[6px] px-4">
+      DEV MODE · автовход {DEV_EMAIL} — уберите NEXT_PUBLIC_LABEL_DEV_EMAIL/PASSWORD из .env.local, чтобы вернуть обычный логин
+    </div>
+  );
+
   if (configError) {
     return (
       <div className="max-w-[720px] mx-auto px-5 py-7">
@@ -97,9 +138,17 @@ export default function LabelGate({ children }: { children: (ctx: LabelContext) 
 
   if (!session) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-5 py-10">
-        <div className="font-semibold tracking-[0.16em] text-[17px] mb-6">UNIT</div>
-        <AuthPanel />
+      <div className="min-h-screen flex flex-col">
+        {devBanner}
+        <div className="flex-1 flex flex-col items-center justify-center px-5 py-10">
+          <div className="font-semibold tracking-[0.16em] text-[17px] mb-6">UNIT</div>
+          {devAuthError && (
+            <div className="w-full max-w-[420px] text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px] mb-4">
+              Dev-автовход не сработал: {devAuthError}
+            </div>
+          )}
+          <AuthPanel />
+        </div>
       </div>
     );
   }
@@ -107,22 +156,30 @@ export default function LabelGate({ children }: { children: (ctx: LabelContext) 
   // Залогинен, но не сотрудник лейбла — это артист, ему сюда нельзя.
   if (!org) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-5">
-        <div className="w-full max-w-[420px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] text-center">
-          <div className="text-[16px] font-semibold tracking-[-0.01em]">Раздел для лейбла</div>
-          <p className="text-[13px] text-[#6E6D73] mt-2 leading-[1.5]">
-            Ваш аккаунт не привязан к лейблу. Если вы артист — вам в кабинет артиста.
-          </p>
-          <button
-            onClick={() => router.replace("/dashboard")}
-            className="mt-4 w-full bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition"
-          >
-            В кабинет артиста
-          </button>
+      <div className="min-h-screen flex flex-col">
+        {devBanner}
+        <div className="flex-1 flex items-center justify-center px-5">
+          <div className="w-full max-w-[420px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] text-center">
+            <div className="text-[16px] font-semibold tracking-[-0.01em]">Раздел для лейбла</div>
+            <p className="text-[13px] text-[#6E6D73] mt-2 leading-[1.5]">
+              Ваш аккаунт не привязан к лейблу. Если вы артист — вам в кабинет артиста.
+            </p>
+            <button
+              onClick={() => router.replace("/dashboard")}
+              className="mt-4 w-full bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition"
+            >
+              В кабинет артиста
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  return <>{children({ org, session })}</>;
+  return (
+    <>
+      {devBanner}
+      {children({ org, session })}
+    </>
+  );
 }
