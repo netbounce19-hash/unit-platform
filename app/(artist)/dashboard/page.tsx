@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Check, Target, ListChecks, ArrowRight, Wallet, ChevronRight } from "lucide-react";
 import EventsFeed from "@/components/artist/EventsFeed";
 import LabelNotice from "@/components/artist/LabelNotice";
+import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
 import { listBudgetRequests } from "@/lib/supabase/cabinet";
 
@@ -142,6 +143,9 @@ export default function DashboardPage() {
           </button>
         ))}
       </div>
+
+      {/* Релизы */}
+      <ReleaseCarousel />
 
       {/* Напоминание от лейбла */}
       <LabelNotice />
