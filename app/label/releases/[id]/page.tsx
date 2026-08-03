@@ -124,7 +124,8 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-5">
+      {/* Одна колонка: в макете на 720px боковая врезка не помещается */}
+      <div className="space-y-5">
         {/* Стратегия */}
         <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
           <div className="flex items-center justify-between mb-3">

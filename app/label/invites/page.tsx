@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Loader2, Send, Copy, Check, Trash2 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
-import LabelShell, { DataTable, Badge } from "@/components/label/LabelShell";
+import LabelShell, { CardList, ListCard, Field, Badge } from "@/components/label/LabelShell";
 import {
   fetchInvites,
   createInvite,
@@ -101,9 +101,9 @@ function InvitesInner({ org }: { org: MyOrg }) {
     >
       <form
         onSubmit={submit}
-        className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 mb-5 flex flex-wrap items-end gap-3"
+        className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 mb-5 flex flex-col gap-3"
       >
-        <label className="flex-1 min-w-[220px]">
+        <label className="block">
           <span className="block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">Email артиста</span>
           <input
             type="email"
@@ -114,7 +114,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
           />
         </label>
 
-        <label className="min-w-[200px]">
+        <label className="block">
           <span className="block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">
             Привязать к артисту
           </span>
@@ -135,7 +135,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
         <button
           type="submit"
           disabled={!email.trim() || busy}
-          className="inline-flex items-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[9px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
+          className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[10px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
         >
           {busy ? (
             <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
@@ -161,57 +161,54 @@ function InvitesInner({ org }: { org: MyOrg }) {
           <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
         </div>
       ) : (
-        <DataTable
-          head={["Email", "Статус", "Действует до", "Ссылка", ""]}
-          empty={rows.length === 0 ? "Приглашений пока нет" : null}
-        >
+        <CardList empty={rows.length === 0 ? "Приглашений пока нет" : null}>
           {rows.map((inv) => {
             const s = inviteState(inv);
             return (
-              <tr key={inv.id} className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] last:border-0 hover:bg-[#FAFAF9]">
-                <td className="px-4 py-[11px] font-medium">{inv.email}</td>
-                <td className="px-4 py-[11px]"><Badge label={s.label} cls={s.cls} /></td>
-                <td className="px-4 py-[11px] text-[#6E6D73] dark:text-[#9A98A0] whitespace-nowrap">
-                  {formatDate(inv.expires_at)}
-                </td>
-                <td className="px-4 py-[11px]">
-                  {inv.accepted_at ? (
-                    <span className="text-[#A6A5AB] dark:text-[#6E6D73]">—</span>
-                  ) : (
-                    <button
-                      onClick={() => copy(inv.token)}
-                      className="inline-flex items-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[10px] py-[5px] rounded-[8px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
-                    >
-                      {copied === inv.token ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-[#166B49] dark:text-[#5FCB9B]" strokeWidth={2.5} />
-                          Скопировано
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" strokeWidth={1.75} />
-                          Копировать
-                        </>
-                      )}
-                    </button>
-                  )}
-                </td>
-                <td className="px-4 py-[11px] text-right">
-                  {!inv.accepted_at && (
-                    <button
-                      onClick={() => revoke(inv.id)}
-                      aria-label="Отозвать приглашение"
-                      title="Отозвать"
-                      className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#A62018] dark:hover:text-[#F3928C] hover:bg-[#FDEDEB] dark:hover:bg-[#3A2422] transition"
-                    >
-                      <Trash2 className="w-4 h-4" strokeWidth={1.75} />
-                    </button>
-                  )}
-                </td>
-              </tr>
+              <ListCard key={inv.id}>
+                <div className="flex items-start justify-between gap-3 mb-[6px]">
+                  <div className="text-[14px] font-medium truncate min-w-0 dark:text-[#F5F4F2]">
+                    {inv.email}
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Badge label={s.label} cls={s.cls} />
+                    {!inv.accepted_at && (
+                      <button
+                        onClick={() => revoke(inv.id)}
+                        aria-label="Отозвать приглашение"
+                        title="Отозвать"
+                        className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#A62018] dark:hover:text-[#F3928C] hover:bg-[#FDEDEB] dark:hover:bg-[#3A2422] transition"
+                      >
+                        <Trash2 className="w-4 h-4" strokeWidth={1.75} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <Field label="Действует до">{formatDate(inv.expires_at)}</Field>
+
+                {!inv.accepted_at && (
+                  <button
+                    onClick={() => copy(inv.token)}
+                    className="w-full mt-3 inline-flex items-center justify-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[10px] py-[9px] rounded-[8px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
+                  >
+                    {copied === inv.token ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-[#166B49] dark:text-[#5FCB9B]" strokeWidth={2.5} />
+                        Скопировано
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" strokeWidth={1.75} />
+                        Копировать ссылку
+                      </>
+                    )}
+                  </button>
+                )}
+              </ListCard>
             );
           })}
-        </DataTable>
+        </CardList>
       )}
     </LabelShell>
   );

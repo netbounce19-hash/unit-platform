@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Loader2, Plus, AlertTriangle, Wallet, UserPlus } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
-import LabelShell, { DataTable, Badge } from "@/components/label/LabelShell";
+import LabelShell, { CardList, ListCard, Badge } from "@/components/label/LabelShell";
 import { fetchRoster, createArtist, type MyOrg, type RosterArtist } from "@/lib/supabase/label";
 
 function RosterInner({ org }: { org: MyOrg }) {
@@ -76,9 +76,9 @@ function RosterInner({ org }: { org: MyOrg }) {
       {adding && (
         <form
           onSubmit={submit}
-          className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 mb-4 flex items-end gap-3"
+          className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 mb-4 flex flex-col gap-3"
         >
-          <label className="flex-1">
+          <label className="block">
             <span className="block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">
               Псевдоним артиста
             </span>
@@ -93,7 +93,7 @@ function RosterInner({ org }: { org: MyOrg }) {
           <button
             type="submit"
             disabled={!name.trim() || busy}
-            className="inline-flex items-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[9px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
+            className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[10px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
             Добавить
@@ -112,24 +112,20 @@ function RosterInner({ org }: { org: MyOrg }) {
           <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
         </div>
       ) : (
-        <DataTable
-          head={["Артист", "Статус", "Задачи", "Заявки", "Условия"]}
-          empty={rows.length === 0 ? "В ростере пока нет артистов" : null}
-        >
+        <CardList empty={rows.length === 0 ? "В ростере пока нет артистов" : null}>
           {rows.map((a) => (
-            <tr key={a.id} className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] last:border-0 hover:bg-[#FAFAF9]">
-              <td className="px-4 py-[11px]">
-                <Link
-                  href={`/label/artists/${a.id}`}
-                  className="font-medium text-[#17161A] dark:text-[#F5F4F2] hover:text-[#E23A34] transition"
-                >
-                  {a.stage_name}
-                </Link>
-                {!a.user_id && (
-                  <span className="ml-2 text-[11.5px] text-[#A6A5AB] dark:text-[#6E6D73]">не принял приглашение</span>
-                )}
-              </td>
-              <td className="px-4 py-[11px]">
+            <ListCard key={a.id} href={`/label/artists/${a.id}`}>
+              <div className="flex items-start justify-between gap-3 mb-[6px]">
+                <div className="min-w-0">
+                  <div className="text-[15px] font-medium truncate dark:text-[#F5F4F2]">
+                    {a.stage_name}
+                  </div>
+                  {!a.user_id && (
+                    <div className="text-[11.5px] text-[#A6A5AB] dark:text-[#6E6D73] mt-[1px]">
+                      не принял приглашение
+                    </div>
+                  )}
+                </div>
                 <Badge
                   label={a.status === "active" ? "Активен" : "Приглашён"}
                   cls={
@@ -138,35 +134,34 @@ function RosterInner({ org }: { org: MyOrg }) {
                       : "bg-[#F0EEEA] dark:bg-[#232227] text-[#6E6D73] dark:text-[#9A98A0]"
                   }
                 />
-              </td>
-              <td className="px-4 py-[11px]">
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px]">
                 {a.overdueTasks > 0 ? (
                   <span className="inline-flex items-center gap-[5px] text-[#A62018] dark:text-[#F3928C] font-medium">
                     <AlertTriangle className="w-[13px] h-[13px]" strokeWidth={2} />
                     {a.overdueTasks} просрочено
                   </span>
                 ) : (
-                  <span className="text-[#6E6D73] dark:text-[#9A98A0]">{a.openTasks} открытых</span>
+                  <span className="text-[#6E6D73] dark:text-[#9A98A0]">
+                    {a.openTasks} открытых задач
+                  </span>
                 )}
-              </td>
-              <td className="px-4 py-[11px]">
-                {a.pendingBudgets > 0 ? (
+                {a.pendingBudgets > 0 && (
                   <span className="inline-flex items-center gap-[5px] text-[#8A5A16] dark:text-[#E8B65A] font-medium">
                     <Wallet className="w-[13px] h-[13px]" strokeWidth={2} />
-                    {a.pendingBudgets} ждёт
+                    {a.pendingBudgets} заявок ждёт
                   </span>
-                ) : (
-                  <span className="text-[#A6A5AB] dark:text-[#6E6D73]">—</span>
                 )}
-              </td>
-              <td className="px-4 py-[11px] text-[#6E6D73] dark:text-[#9A98A0]">
-                {a.terms?.royalty_pct != null ? `${a.terms.royalty_pct}%` : "—"}
-                {a.terms?.term_months != null && ` · ${a.terms.term_months} мес.`}
-                {a.terms?.exclusive && " · экскл."}
-              </td>
-            </tr>
+                <span className="text-[#A6A5AB] dark:text-[#6E6D73]">
+                  {a.terms?.royalty_pct != null ? `${a.terms.royalty_pct}%` : "—"}
+                  {a.terms?.term_months != null && ` · ${a.terms.term_months} мес.`}
+                  {a.terms?.exclusive && " · экскл."}
+                </span>
+              </div>
+            </ListCard>
           ))}
-        </DataTable>
+        </CardList>
       )}
     </LabelShell>
   );

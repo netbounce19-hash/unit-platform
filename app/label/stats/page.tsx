@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Loader2, TrendingUp, Gauge, ListChecks, Info } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
-import LabelShell, { DataTable } from "@/components/label/LabelShell";
+import LabelShell, { CardList, ListCard } from "@/components/label/LabelShell";
 import { fetchRoster, fetchObligationStats, type MyOrg, type RosterArtist, type ObligationStat } from "@/lib/supabase/label";
 import { seedStreamsIfEmpty } from "@/lib/label/mockStreams";
 import { useStreams } from "@/lib/label/useStreams";
@@ -115,33 +115,56 @@ function StatsInner({ org }: { org: MyOrg }) {
           <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
         </div>
       ) : (
-        <DataTable
-          head={["#", "Артист", "Стримы", "Обязательность", "Эффективность"]}
-          empty={rows.length === 0 ? "В ростере пока нет артистов" : null}
-        >
+        <CardList empty={rows.length === 0 ? "В ростере пока нет артистов" : null}>
           {rows.map((r, i) => (
-            <tr key={r.artist.id} className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] last:border-0 hover:bg-[#FAFAF9] dark:hover:bg-[#1F1E22]">
-              <td className="px-4 py-[11px] text-[#A6A5AB] dark:text-[#6E6D73] font-medium">{i + 1}</td>
-              <td className="px-4 py-[11px]">
-                <Link
-                  href={`/label/artists/${r.artist.id}`}
-                  className="font-medium text-[#17161A] dark:text-[#F5F4F2] hover:text-[#E23A34] transition"
-                >
+            <ListCard key={r.artist.id} href={`/label/artists/${r.artist.id}`}>
+              <div className="flex items-center gap-3 mb-[8px]">
+                <span className="w-7 h-7 rounded-full bg-[#F0EEEA] dark:bg-[#242327] text-[#6E6D73] dark:text-[#9A98A0] text-[12.5px] font-semibold flex items-center justify-center shrink-0">
+                  {i + 1}
+                </span>
+                <span className="text-[15px] font-medium truncate min-w-0 dark:text-[#F5F4F2]">
                   {r.artist.stage_name}
-                </Link>
-              </td>
-              <td className={`px-4 py-[11px] ${metric === "streams" ? "font-semibold" : "text-[#6E6D73] dark:text-[#9A98A0]"}`}>
-                {fmtStreams(r.streams)}
-              </td>
-              <td className={`px-4 py-[11px] ${metric === "obligation" ? "font-semibold" : "text-[#6E6D73] dark:text-[#9A98A0]"}`}>
-                {r.obligationScore === null ? "—" : `${r.obligationScore}%`}
-              </td>
-              <td className={`px-4 py-[11px] ${metric === "efficiency" ? "font-semibold" : "text-[#6E6D73] dark:text-[#9A98A0]"}`}>
-                {r.efficiency}
-              </td>
-            </tr>
+                </span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                {(
+                  [
+                    { key: "streams", label: "Стримы", value: fmtStreams(r.streams) },
+                    {
+                      key: "obligation",
+                      label: "Обязательность",
+                      value: r.obligationScore === null ? "—" : `${r.obligationScore}%`,
+                    },
+                    { key: "efficiency", label: "Эффективность", value: String(r.efficiency) },
+                  ] as const
+                ).map((m) => (
+                  <div
+                    key={m.key}
+                    className={`rounded-[9px] px-[10px] py-[8px] ${
+                      metric === m.key
+                        ? "bg-[#FDEDEB] dark:bg-[#3A2422]"
+                        : "bg-[#FAFAF9] dark:bg-[#232227]"
+                    }`}
+                  >
+                    <div className="text-[11px] text-[#A6A5AB] dark:text-[#6E6D73] truncate">
+                      {m.label}
+                    </div>
+                    <div
+                      className={`text-[15px] mt-[2px] ${
+                        metric === m.key
+                          ? "font-semibold text-[#A62018] dark:text-[#F3928C]"
+                          : "text-[#17161A] dark:text-[#F5F4F2]"
+                      }`}
+                    >
+                      {m.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ListCard>
           ))}
-        </DataTable>
+        </CardList>
       )}
     </LabelShell>
   );

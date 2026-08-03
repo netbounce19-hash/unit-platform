@@ -73,6 +73,8 @@ export interface BudgetRow {
   category: string | null;
   amount: number;
   comment: string | null;
+  /** к какой дате артисту нужны средства, YYYY-MM-DD */
+  needed_by: string | null;
   status: BudgetStatus;
   decided_by: string | null;
   decided_at: string | null;

@@ -13,7 +13,7 @@ import {
   Check,
 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
-import LabelShell, { DataTable, Badge } from "@/components/label/LabelShell";
+import LabelShell, { CardList, ListCard, Field, Badge } from "@/components/label/LabelShell";
 import {
   fetchArtist,
   fetchReleases,
@@ -166,50 +166,41 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-5">
+      {/* Одна колонка: в макете на 720px боковая врезка не помещается */}
+      <div className="space-y-5">
         <div className="min-w-0">
           <Panel title="Релизы">
-            <DataTable
-              head={["Название", "Статус", "План", "Стратегия"]}
-              empty={releases.length === 0 ? "Релизов нет" : null}
-            >
+            <CardList empty={releases.length === 0 ? "Релизов нет" : null}>
               {releases.map((r) => {
                 const s = releaseStatusLabels[r.status] ?? { label: r.status, cls: "bg-[#F0EEEA] dark:bg-[#232227] text-[#6E6D73] dark:text-[#9A98A0]" };
                 return (
-                  <tr key={r.id} className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] last:border-0 hover:bg-[#FAFAF9]">
-                    <td className="px-4 py-[10px]">
-                      <Link href={`/label/releases/${r.id}`} className="font-medium hover:text-[#E23A34] transition">
+                  <ListCard key={r.id} href={`/label/releases/${r.id}`}>
+                    <div className="flex items-start justify-between gap-3 mb-[4px]">
+                      <span className="text-[14px] font-medium truncate min-w-0 dark:text-[#F5F4F2]">
                         {r.title}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-[10px]"><Badge label={s.label} cls={s.cls} /></td>
-                    <td className="px-4 py-[10px] text-[#6E6D73] dark:text-[#9A98A0]">{formatDate(r.planned_date)}</td>
-                    <td className="px-4 py-[10px] text-[#A6A5AB] dark:text-[#6E6D73] truncate max-w-[220px]">
-                      {r.strategy || "—"}
-                    </td>
-                  </tr>
+                      </span>
+                      <Badge label={s.label} cls={s.cls} />
+                    </div>
+                    <Field label="План">{formatDate(r.planned_date)}</Field>
+                    {r.strategy && (
+                      <div className="text-[12px] text-[#A6A5AB] dark:text-[#6E6D73] mt-1">
+                        {r.strategy}
+                      </div>
+                    )}
+                  </ListCard>
                 );
               })}
-            </DataTable>
+            </CardList>
           </Panel>
 
           <Panel title="Задачи">
-            <DataTable
-              head={["Задача", "Дедлайн", "Статус"]}
-              empty={tasks.length === 0 ? "Задач нет" : null}
-            >
+            <CardList empty={tasks.length === 0 ? "Задач нет" : null}>
               {tasks.map((t) => (
-                <tr key={t.id} className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] last:border-0 hover:bg-[#FAFAF9]">
-                  <td className="px-4 py-[10px]">
-                    <div className="font-medium">{t.title}</div>
-                    {t.description && (
-                      <div className="text-[12px] text-[#A6A5AB] dark:text-[#6E6D73] truncate max-w-[380px]">{t.description}</div>
-                    )}
-                  </td>
-                  <td className={`px-4 py-[10px] ${isOverdue(t.due_date, t.status) ? "text-[#A62018] dark:text-[#F3928C] font-medium" : "text-[#6E6D73] dark:text-[#9A98A0]"}`}>
-                    {formatDate(t.due_date)}
-                  </td>
-                  <td className="px-4 py-[10px]">
+                <ListCard key={t.id}>
+                  <div className="flex items-start justify-between gap-3 mb-[4px]">
+                    <span className="text-[14px] font-medium min-w-0 dark:text-[#F5F4F2]">
+                      {t.title}
+                    </span>
                     <Badge
                       label={t.status === "done" ? "Выполнена" : isOverdue(t.due_date, t.status) ? "Просрочена" : "В работе"}
                       cls={
@@ -220,32 +211,51 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
                           : "bg-[#FBF1DE] dark:bg-[#3A2F14] text-[#8A5A16] dark:text-[#E8B65A]"
                       }
                     />
-                  </td>
-                </tr>
+                  </div>
+                  {t.description && (
+                    <div className="text-[12px] text-[#A6A5AB] dark:text-[#6E6D73] mb-1">
+                      {t.description}
+                    </div>
+                  )}
+                  <Field label="Дедлайн">
+                    <span
+                      className={
+                        isOverdue(t.due_date, t.status)
+                          ? "text-[#A62018] dark:text-[#F3928C] font-medium"
+                          : ""
+                      }
+                    >
+                      {formatDate(t.due_date)}
+                    </span>
+                  </Field>
+                </ListCard>
               ))}
-            </DataTable>
+            </CardList>
           </Panel>
 
           <Panel title="Заявки">
-            <DataTable
-              head={["Назначение", "Сумма", "Статус"]}
-              empty={budgets.length === 0 ? "Заявок нет" : null}
-            >
+            <CardList empty={budgets.length === 0 ? "Заявок нет" : null}>
               {budgets.map((b) => (
-                <tr key={b.id} className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] last:border-0 hover:bg-[#FAFAF9]">
-                  <td className="px-4 py-[10px]">{b.category || b.purpose || "—"}</td>
-                  <td className="px-4 py-[10px] font-medium">{formatMoney(b.amount)}</td>
-                  <td className="px-4 py-[10px]">
+                <ListCard key={b.id}>
+                  <div className="flex items-start justify-between gap-3 mb-[4px]">
+                    <span className="min-w-0">
+                      <span className="block text-[14px] font-medium dark:text-[#F5F4F2]">
+                        {formatMoney(b.amount)}
+                      </span>
+                      <span className="block text-[12.5px] text-[#6E6D73] dark:text-[#9A98A0] mt-[1px]">
+                        {b.category || b.purpose || "—"}
+                      </span>
+                    </span>
                     <Badge {...(budgetStatusLabels[b.status] ?? { label: b.status, cls: "bg-[#F0EEEA] dark:bg-[#232227] text-[#6E6D73] dark:text-[#9A98A0]" })} />
-                  </td>
-                </tr>
+                  </div>
+                  {b.needed_by && <Field label="Нужны к">{formatDate(b.needed_by)}</Field>}
+                </ListCard>
               ))}
-            </DataTable>
+            </CardList>
           </Panel>
 
           <Panel title="Загрузки">
-            <DataTable
-              head={["Файл", "Тип", "Загружен", ""]}
+            <CardList
               empty={
                 !artist.user_id
                   ? "Артист ещё не принял приглашение"
@@ -255,27 +265,30 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
               }
             >
               {assets.map((a) => (
-                <tr key={a.id} className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] last:border-0 hover:bg-[#FAFAF9]">
-                  <td className="px-4 py-[10px] font-medium truncate max-w-[300px]">{a.title ?? "—"}</td>
-                  <td className="px-4 py-[10px] text-[#6E6D73] dark:text-[#9A98A0]">
-                    <span className="inline-flex items-center gap-[6px]">
+                <ListCard key={a.id}>
+                  <div className="flex items-center gap-3">
+                    <span className="w-9 h-9 rounded-[10px] bg-[#F0EEEA] dark:bg-[#242327] text-[#6E6D73] dark:text-[#9A98A0] flex items-center justify-center shrink-0">
                       {KIND_ICON[a.kind]}
-                      {a.kind}
                     </span>
-                  </td>
-                  <td className="px-4 py-[10px] text-[#6E6D73] dark:text-[#9A98A0]">{formatDate(a.created_at)}</td>
-                  <td className="px-4 py-[10px] text-right">
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[13.5px] font-medium truncate dark:text-[#F5F4F2]">
+                        {a.title ?? "—"}
+                      </span>
+                      <span className="block text-[12px] text-[#A6A5AB] dark:text-[#6E6D73] mt-[1px]">
+                        {a.kind} · {formatDate(a.created_at)}
+                      </span>
+                    </span>
                     <button
                       onClick={() => openAsset(a.storage_path)}
                       aria-label="Открыть файл"
-                      className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#6E6D73] dark:text-[#9A98A0] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
+                      className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#6E6D73] dark:text-[#9A98A0] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition shrink-0"
                     >
                       <ExternalLink className="w-4 h-4" strokeWidth={1.75} />
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </ListCard>
               ))}
-            </DataTable>
+            </CardList>
           </Panel>
         </div>
 

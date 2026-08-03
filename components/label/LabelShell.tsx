@@ -1,62 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  Users,
-  Wallet,
-  Mail,
-  LogOut,
-  MessagesSquare,
-  BarChart3,
-  UploadCloud,
-  Settings,
-  LifeBuoy,
-  type LucideIcon,
-} from "lucide-react";
-import { getSupabase } from "@/lib/supabase/client";
 import type { MyOrg } from "@/lib/supabase/label";
 import { LabelThemeProvider } from "./LabelThemeProvider";
-
-const NAV: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/label/roster", label: "Ростер", icon: Users },
-  { href: "/label/messages", label: "Сообщения", icon: MessagesSquare },
-  { href: "/label/stats", label: "Статистика", icon: BarChart3 },
-  { href: "/label/data-upload", label: "Загрузка данных", icon: UploadCloud },
-  { href: "/label/budgets", label: "Заявки", icon: Wallet },
-  { href: "/label/invites", label: "Приглашения", icon: Mail },
-];
-
-const NAV_BOTTOM: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/label/settings", label: "Настройки", icon: Settings },
-  { href: "/label/support", label: "Поддержка", icon: LifeBuoy },
-];
+import LabelNav from "./LabelNav";
 
 const ROLE_LABEL: Record<string, string> = {
   label_admin: "Администратор",
   label_manager: "Менеджер",
 };
 
-function NavLink({ item, active }: { item: (typeof NAV)[number]; active: boolean }) {
-  const Icon = item.icon;
-  return (
-    <Link
-      href={item.href}
-      className={`flex items-center gap-[10px] text-[13.5px] rounded-[10px] px-3 py-[9px] mb-[2px] transition ${
-        active
-          ? "bg-[#FDEDEB] text-[#A62018] font-medium dark:bg-[#3A2422] dark:text-[#F3928C]"
-          : "text-[#6E6D73] hover:bg-[#F0EEEA] hover:text-[#17161A] dark:text-[#9A98A0] dark:hover:bg-[#242327] dark:hover:text-[#F5F4F2]"
-      }`}
-    >
-      <Icon className="w-[16px] h-[16px] shrink-0" strokeWidth={1.75} />
-      {item.label}
-    </Link>
-  );
-}
-
 /**
- * Каркас кабинета лейбла: боковая навигация и плотная рабочая область.
- * Намеренно не похож на артистский — тут не лента карточек, а рабочий стол.
+ * Каркас кабинета лейбла — единый мобильный макет, как в кабинете артиста:
+ * колонка 720px по центру, топбар сверху, навигация снизу.
+ * Плотный сайдбар на 212px был рабочим столом для десктопа, но на
+ * телефоне съедал больше половины ширины.
  */
 function LabelShellInner({
   org,
@@ -71,59 +29,39 @@ function LabelShellInner({
   actions?: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
-
   return (
-    <div className="min-h-screen flex bg-[#FAFAF9] dark:bg-[#141316]">
-      {/* Сайдбар */}
-      <aside className="w-[212px] shrink-0 border-r-[0.5px] border-[#ECEAE5] dark:border-[#242327] bg-white dark:bg-[#1A191D] flex flex-col sticky top-0 h-screen">
-        <div className="px-4 py-[18px] border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
-          <div className="font-semibold tracking-[0.16em] text-[15px] dark:text-[#F5F4F2]">UNIT</div>
-          <div className="text-[12px] text-[#6E6D73] dark:text-[#9A98A0] mt-[3px] truncate">{org.name}</div>
-          <div className="text-[11px] text-[#A6A5AB] dark:text-[#6E6D73] mt-[1px]">
-            {ROLE_LABEL[org.role] ?? org.role}
-          </div>
-        </div>
-
-        <nav className="flex-1 p-2 overflow-y-auto">
-          {NAV.map((item) => (
-            <NavLink key={item.href} item={item} active={isActive(item.href)} />
-          ))}
-        </nav>
-
-        <div className="p-2 border-t-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
-          {NAV_BOTTOM.map((item) => (
-            <NavLink key={item.href} item={item} active={isActive(item.href)} />
-          ))}
-          <button
-            onClick={async () => {
-              await getSupabase().auth.signOut();
-              router.push("/");
-            }}
-            className="w-full flex items-center gap-[10px] text-[13.5px] text-[#6E6D73] dark:text-[#9A98A0] rounded-[10px] px-3 py-[9px] hover:bg-[#F0EEEA] hover:text-[#A62018] dark:hover:bg-[#242327] dark:hover:text-[#F3928C] transition"
+    <div className="min-h-screen bg-[#FAFAF9] dark:bg-[#141316]">
+      <div className="max-w-[720px] mx-auto px-5 py-7 pb-[92px]">
+        {/* Топбар */}
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <Link
+            href="/label/roster"
+            className="font-semibold tracking-[0.16em] text-[17px] dark:text-[#F5F4F2] shrink-0"
           >
-            <LogOut className="w-[16px] h-[16px] shrink-0" strokeWidth={1.75} />
-            Выйти
-          </button>
-        </div>
-      </aside>
-
-      {/* Рабочая область */}
-      <main className="flex-1 min-w-0">
-        <header className="sticky top-0 z-20 bg-[#FAFAF9]/95 dark:bg-[#141316]/95 backdrop-blur-sm border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] px-6 py-[14px] flex items-center justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="text-[18px] font-semibold tracking-[-0.01em] truncate dark:text-[#F5F4F2]">{title}</h1>
-            {subtitle && (
-              <p className="text-[12.5px] text-[#6E6D73] dark:text-[#9A98A0] mt-[1px] truncate">{subtitle}</p>
-            )}
+            UNIT
+          </Link>
+          <div className="text-right min-w-0">
+            <div className="text-[12.5px] font-medium truncate dark:text-[#F5F4F2]">{org.name}</div>
+            <div className="text-[11px] text-[#A6A5AB] dark:text-[#6E6D73]">
+              {ROLE_LABEL[org.role] ?? org.role}
+            </div>
           </div>
-          {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
-        </header>
+        </div>
 
-        <div className="p-6">{children}</div>
-      </main>
+        {/* Заголовок страницы. Кнопки уходят под него: в строке с заголовком
+            они на узком экране не помещаются. */}
+        <div className="mb-4">
+          <h1 className="text-[22px] font-medium tracking-[-0.01em] dark:text-[#F5F4F2]">{title}</h1>
+          {subtitle && (
+            <p className="text-[13.5px] text-[#6E6D73] dark:text-[#9A98A0] mt-[3px]">{subtitle}</p>
+          )}
+          {actions && <div className="flex flex-wrap items-center gap-2 mt-3">{actions}</div>}
+        </div>
+
+        {children}
+      </div>
+
+      <LabelNav />
     </div>
   );
 }
@@ -136,39 +74,9 @@ export default function LabelShell(props: Parameters<typeof LabelShellInner>[0])
   );
 }
 
-/** Плотная таблица — основной способ показывать данные в кабинете лейбла. */
-export function DataTable({
-  head,
-  children,
-  empty,
-}: {
-  head: string[];
-  children: React.ReactNode;
-  empty?: string | null;
-}) {
-  return (
-    <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] overflow-hidden">
-      <table className="w-full text-[13.5px] dark:text-[#F5F4F2]">
-        <thead>
-          <tr className="border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
-            {head.map((h) => (
-              <th
-                key={h}
-                className="text-left font-medium text-[#A6A5AB] dark:text-[#6E6D73] text-[12px] px-4 py-[10px] whitespace-nowrap"
-              >
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>{children}</tbody>
-      </table>
-      {empty && (
-        <div className="px-4 py-8 text-center text-[13px] text-[#A6A5AB] dark:text-[#6E6D73]">{empty}</div>
-      )}
-    </div>
-  );
-}
+/** Общий класс белой панели-карточки — с поддержкой тёмной темы. */
+export const panelCls =
+  "bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px]";
 
 export function Badge({ label, cls }: { label: string; cls: string }) {
   return (
@@ -178,6 +86,66 @@ export function Badge({ label, cls }: { label: string; cls: string }) {
   );
 }
 
-/** Общий класс белой панели-карточки — с поддержкой тёмной темы. */
-export const panelCls =
-  "bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px]";
+/**
+ * Список карточек вместо таблицы. Плотные таблицы с whitespace-nowrap
+ * на телефоне уезжали вбок, поэтому строка стала карточкой.
+ */
+export function CardList({
+  children,
+  empty,
+}: {
+  children?: React.ReactNode;
+  empty?: string | null;
+}) {
+  return (
+    <div className="space-y-2">
+      {children}
+      {empty && (
+        <div
+          className={`${panelCls} px-4 py-8 text-center text-[13px] text-[#A6A5AB] dark:text-[#6E6D73]`}
+        >
+          {empty}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Одна карточка списка. С href становится ссылкой на подробности. */
+export function ListCard({
+  href,
+  children,
+}: {
+  href?: string;
+  children: React.ReactNode;
+}) {
+  const cls = `${panelCls} block px-4 py-[13px] ${
+    href ? "hover:border-[#D2D0CB] dark:hover:border-[#33323A] transition" : ""
+  }`;
+  return href ? (
+    <Link href={href} className={cls}>
+      {children}
+    </Link>
+  ) : (
+    <div className={cls}>{children}</div>
+  );
+}
+
+/**
+ * Пара «подпись — значение» внутри карточки: то, что в таблице было
+ * заголовком колонки, здесь стоит рядом со значением.
+ */
+export function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 text-[13px] py-[3px]">
+      <span className="text-[#A6A5AB] dark:text-[#6E6D73] shrink-0">{label}</span>
+      <span className="text-right min-w-0 dark:text-[#F5F4F2]">{children}</span>
+    </div>
+  );
+}

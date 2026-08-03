@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Loader2, Send, MessagesSquare } from "lucide-react";
+import { Loader2, Send, MessagesSquare, ArrowLeft } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { panelCls } from "@/components/label/LabelShell";
 import { fetchRoster, type MyOrg, type RosterArtist } from "@/lib/supabase/label";
@@ -24,7 +24,8 @@ function MessagesInner({ org }: { org: MyOrg }) {
       .then((rows) => {
         setArtists(rows);
         rows.forEach((a) => seedThreadIfEmpty(a.id, a.stage_name));
-        setSelected((cur) => cur ?? rows[0]?.id ?? null);
+        // Артиста не выбираем заранее: на телефоне сначала список,
+        // переписка открывается по тапу.
       })
       .catch((e) => setError(e instanceof Error ? e.message : "Не удалось загрузить ростер"))
       .finally(() => setLoading(false));
@@ -64,49 +65,54 @@ function MessagesInner({ org }: { org: MyOrg }) {
           В ростере пока нет артистов — переписка появится, когда кто-то присоединится
         </div>
       ) : (
-        <div className={`${panelCls} flex h-[calc(100vh-140px)] overflow-hidden`}>
-          {/* Список артистов */}
-          <div className="w-[260px] shrink-0 border-r-[0.5px] border-[#ECEAE5] dark:border-[#242327] overflow-y-auto">
-            {artists.map((a) => {
-              const last = previewOf(a.id);
-              const active = a.id === selected;
-              return (
-                <button
-                  key={a.id}
-                  onClick={() => setSelected(a.id)}
-                  className={`w-full text-left px-4 py-[11px] border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327] transition ${
-                    active ? "bg-[#FDEDEB] dark:bg-[#3A2422]" : "hover:bg-[#FAFAF9] dark:hover:bg-[#232227]"
-                  }`}
-                >
-                  <div
-                    className={`text-[13.5px] font-medium truncate ${
-                      active ? "text-[#A62018] dark:text-[#F3928C]" : "text-[#17161A] dark:text-[#F5F4F2]"
+        <>
+          {/* Список артистов — на узком экране это отдельный экран */}
+          {!activeArtist && (
+            <div className={`${panelCls} overflow-hidden`}>
+              {artists.map((a, i) => {
+                const last = previewOf(a.id);
+                return (
+                  <button
+                    key={a.id}
+                    onClick={() => setSelected(a.id)}
+                    className={`w-full text-left px-4 py-[13px] hover:bg-[#FAFAF9] dark:hover:bg-[#232227] transition ${
+                      i > 0 ? "border-t-[0.5px] border-[#ECEAE5] dark:border-[#242327]" : ""
                     }`}
                   >
-                    {a.stage_name}
-                  </div>
-                  <div className="text-[12px] text-[#A6A5AB] dark:text-[#6E6D73] truncate mt-[2px]">
-                    {last ? (last.from === "label" ? "Вы: " : "") + last.text : "Нет сообщений"}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                    <div className="text-[14px] font-medium truncate text-[#17161A] dark:text-[#F5F4F2]">
+                      {a.stage_name}
+                    </div>
+                    <div className="text-[12px] text-[#A6A5AB] dark:text-[#6E6D73] truncate mt-[2px]">
+                      {last ? (last.from === "label" ? "Вы: " : "") + last.text : "Нет сообщений"}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-          {/* Переписка */}
-          <div className="flex-1 min-w-0 flex flex-col">
-            {activeArtist ? (
-              <>
-                <div className="px-5 py-[13px] border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
-                  <div className="text-[14px] font-semibold text-[#17161A] dark:text-[#F5F4F2]">
-                    {activeArtist.stage_name}
-                  </div>
-                  <div className="text-[11.5px] text-[#A6A5AB] dark:text-[#6E6D73]">
-                    {activeArtist.user_id ? "Аккаунт привязан" : "Приглашение не принято"}
+          {/* Переписка — открывается на весь экран поверх списка */}
+          {activeArtist && (
+            <div className={`${panelCls} flex flex-col h-[calc(100dvh-260px)] min-h-[420px] overflow-hidden`}>
+                <div className="flex items-center gap-3 px-4 py-[13px] border-b-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
+                  <button
+                    onClick={() => setSelected(null)}
+                    aria-label="К списку артистов"
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-[#6E6D73] dark:text-[#9A98A0] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition shrink-0"
+                  >
+                    <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+                  </button>
+                  <div className="min-w-0">
+                    <div className="text-[14px] font-semibold text-[#17161A] dark:text-[#F5F4F2] truncate">
+                      {activeArtist.stage_name}
+                    </div>
+                    <div className="text-[11.5px] text-[#A6A5AB] dark:text-[#6E6D73]">
+                      {activeArtist.user_id ? "Аккаунт привязан" : "Приглашение не принято"}
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-[#FAFAF9] dark:bg-[#141316]">
+                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-[#FAFAF9] dark:bg-[#141316]">
                   {thread.length === 0 ? (
                     <div className="h-full flex items-center justify-center text-[13px] text-[#A6A5AB] dark:text-[#6E6D73]">
                       <MessagesSquare className="w-4 h-4 mr-2" strokeWidth={1.75} />
@@ -116,7 +122,7 @@ function MessagesInner({ org }: { org: MyOrg }) {
                     thread.map((m) => (
                       <div key={m.id} className={`flex ${m.from === "label" ? "justify-end" : "justify-start"}`}>
                         <div
-                          className={`max-w-[70%] rounded-[12px] px-[13px] py-[9px] ${
+                          className={`max-w-[85%] rounded-[12px] px-[13px] py-[9px] ${
                             m.from === "label"
                               ? "bg-[#E23A34] text-white rounded-tr-[4px]"
                               : "bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] text-[#17161A] dark:text-[#F5F4F2] rounded-tl-[4px]"
@@ -162,14 +168,9 @@ function MessagesInner({ org }: { org: MyOrg }) {
                     <Send className="w-4 h-4" strokeWidth={2} />
                   </button>
                 </form>
-              </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-[13px] text-[#A6A5AB] dark:text-[#6E6D73]">
-                Выберите артиста слева
-              </div>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
+        </>
       )}
     </LabelShell>
   );
