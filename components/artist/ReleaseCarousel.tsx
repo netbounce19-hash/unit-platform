@@ -3,19 +3,49 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, BarChart3, ArrowRight, X, Trash2, Loader2, Disc3 } from "lucide-react";
-import { listReleases, deleteRelease, type ReleaseView } from "@/lib/supabase/cabinet";
+import {
+  ChevronLeft,
+  ChevronRight,
+  BarChart3,
+  ArrowRight,
+  X,
+  Trash2,
+  Loader2,
+  Disc3,
+  CalendarDays,
+} from "lucide-react";
+import {
+  listReleases,
+  deleteRelease,
+  releaseStatusLabels,
+  type ReleaseView,
+  type ReleaseStatus,
+} from "@/lib/supabase/cabinet";
 
 interface ReleaseCarouselProps {
   /** меняется при создании релиза — триггерит перезагрузку из БД */
   refreshKey?: number;
 }
 
-function releaseDate(r: ReleaseView) {
-  if (r.release_date) return r.release_date;
-  const d = new Date(r.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
-  return `Создан ${d}`;
+/** «2026-09-05» → «5 сентября 2026 г.» */
+export function formatPlannedDate(d: string | null): string | null {
+  if (!d) return null;
+  return new Date(`${d}T00:00:00`).toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
+
+/** Что артисту делать дальше при таком статусе. */
+const statusHint: Record<ReleaseStatus, string> = {
+  draft: "Черновик — заполните данные и отправьте менеджеру",
+  pending_approval: "Ждёт решения менеджера",
+  approved: "Принят менеджером — готовим материалы",
+  in_progress: "В работе у лейбла",
+  released: "Трек в ротации — доступна статистика",
+  rejected: "Отклонён — менеджер оставил комментарий",
+};
 
 export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps) {
   const [releases, setReleases] = useState<ReleaseView[]>([]);
@@ -80,7 +110,12 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
     );
   }
 
-  const isLive = release.status === "live";
+  const isReleased = release.status === "released";
+  const badge = releaseStatusLabels[release.status] ?? {
+    label: release.status,
+    cls: "bg-[#F0EEEA] text-[#6E6D73]",
+  };
+  const planned = formatPlannedDate(release.planned_date);
 
   return (
     <div className="relative bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4 overflow-hidden">
@@ -136,18 +171,19 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-[3px] flex-wrap">
                 <span className="text-[18px] font-medium tracking-[-0.01em]">{release.title}</span>
-                {isLive ? (
-                  <span className="inline-flex items-center gap-[5px] text-[12px] font-medium px-[10px] py-[3px] rounded-full bg-[#E9F6EF] text-[#166B49]">
+                <span
+                  className={`inline-flex items-center gap-[5px] text-[12px] font-medium px-[10px] py-[3px] rounded-full ${badge.cls}`}
+                >
+                  {isReleased && (
                     <span className="w-[6px] h-[6px] rounded-full bg-[#1F9D6B] animate-pulse" />
-                    Вышел · Live
-                  </span>
-                ) : (
-                  <span className="text-[12px] font-medium px-[10px] py-[3px] rounded-full bg-[#FBF1DE] text-[#8A5A16]">
-                    Готовится
-                  </span>
-                )}
+                  )}
+                  {badge.label}
+                </span>
               </div>
-              <div className="text-[13px] text-[#6E6D73]">{releaseDate(release)}</div>
+              <div className="flex items-center gap-[6px] text-[13px] text-[#6E6D73]">
+                <CalendarDays className="w-[14px] h-[14px] shrink-0" strokeWidth={1.75} />
+                {planned ?? <span className="text-[#A6A5AB]">Дата релиза не назначена</span>}
+              </div>
             </div>
             <button
               onClick={() => setConfirmOpen(true)}
@@ -159,31 +195,29 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
             </button>
           </div>
 
-          {isLive ? (
-            <div className="flex items-center justify-between gap-4">
-              <div className="text-[13px] text-[#6E6D73]">
-                Трек в ротации — доступна статистика и текущие процессы
-              </div>
-              <Link
-                href={`/releases/${release.id}`}
-                className="inline-flex items-center gap-[7px] bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition shrink-0"
-              >
-                <BarChart3 className="w-[16px] h-[16px]" strokeWidth={2} />
-                Смотреть данные
-              </Link>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between gap-4">
-              <div className="text-[13px] text-[#6E6D73]">В работе — файлы и данные загружены</div>
-              <Link
-                href={`/releases/${release.id}`}
-                className="inline-flex items-center gap-[7px] text-[14px] font-medium text-[#17161A] border border-[#E5E3DE] px-[16px] py-[9px] rounded-[10px] hover:bg-[#F0EEEA] transition shrink-0"
-              >
-                Открыть
-                <ArrowRight className="w-[14px] h-[14px]" strokeWidth={2} />
-              </Link>
-            </div>
-          )}
+          <div className="flex items-center justify-between gap-4">
+            <div className="text-[13px] text-[#6E6D73]">{statusHint[release.status]}</div>
+            <Link
+              href={`/releases/${release.id}`}
+              className={`inline-flex items-center gap-[7px] font-medium text-[14px] rounded-[10px] transition shrink-0 ${
+                isReleased
+                  ? "bg-[#E23A34] text-white px-[18px] py-[10px] hover:brightness-95"
+                  : "text-[#17161A] border border-[#E5E3DE] px-[16px] py-[9px] hover:bg-[#F0EEEA]"
+              }`}
+            >
+              {isReleased ? (
+                <>
+                  <BarChart3 className="w-[16px] h-[16px]" strokeWidth={2} />
+                  Смотреть данные
+                </>
+              ) : (
+                <>
+                  Открыть
+                  <ArrowRight className="w-[14px] h-[14px]" strokeWidth={2} />
+                </>
+              )}
+            </Link>
+          </div>
         </motion.div>
       </AnimatePresence>
 

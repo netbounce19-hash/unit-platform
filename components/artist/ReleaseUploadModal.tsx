@@ -202,6 +202,7 @@ export default function ReleaseUploadModal({
   onSubmit,
 }: ReleaseUploadModalProps) {
   const [title, setTitle] = useState("");
+  const [plannedDate, setPlannedDate] = useState("");
   const [cover, setCover] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [audio, setAudio] = useState<File | null>(null);
@@ -222,6 +223,7 @@ export default function ReleaseUploadModal({
   useEffect(() => {
     if (open) {
       setTitle(releaseTitle && releaseTitle !== "Новый релиз" ? releaseTitle : "");
+      setPlannedDate("");
       setCover(null);
       setCoverPreview(null);
       setAudio(null);
@@ -291,6 +293,7 @@ export default function ReleaseUploadModal({
     try {
       await createRelease({
         title,
+        plannedDate,
         cover,
         audio,
         demoAssetIds: demoIds,
@@ -363,6 +366,19 @@ export default function ReleaseUploadModal({
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Например, Midnight Protocol"
                       className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="flex items-center justify-between mb-[7px]">
+                      <span className="text-[13px] font-medium text-[#6E6D73]">Дата релиза</span>
+                      <span className="text-[11px] text-[#A6A5AB]">можно указать позже</span>
+                    </span>
+                    <input
+                      type="date"
+                      value={plannedDate}
+                      onChange={(e) => setPlannedDate(e.target.value)}
+                      className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition"
                     />
                   </label>
                 </section>

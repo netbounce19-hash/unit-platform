@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, Target, ListChecks, ArrowRight, Wallet, ChevronRight } from "lucide-react";
+import { Check, Target, ListChecks, ArrowRight, Wallet } from "lucide-react";
 import EventsFeed from "@/components/artist/EventsFeed";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
@@ -23,9 +23,14 @@ function plural(n: number, one: string, few: string, many: string) {
   return many;
 }
 
-// Задачи ставит менеджер — у нового артиста список пуст.
+// ЗАГЛУШКА: задачи ставит менеджер из своего кабинета, таблицы для них
+// пока нет — до подключения бэкенда показываем фиксированный список.
 type Task = { id: number; title: string; meta: string; done: boolean };
-const initial: Task[] = [];
+const initial: Task[] = [
+  { id: 1, title: "Загрузить финальный мастер", meta: "до 6 августа", done: false },
+  { id: 2, title: "Согласовать обложку релиза", meta: "до 8 августа", done: false },
+  { id: 3, title: "Записать промо-ролик для TikTok", meta: "до 10 августа", done: false },
+];
 
 export default function DashboardPage() {
   const [items, setItems] = useState(initial);
@@ -147,34 +152,39 @@ export default function DashboardPage() {
       {/* Релизы */}
       <ReleaseCarousel />
 
+      {/* Стратегия и заявки — две плитки в строку.
+          Заявки показываем только когда есть что ждать; тогда стратегия
+          занимает всю ширину, чтобы не оставлять пустую половину. */}
+      <div className={`grid gap-3 mb-4 ${pending > 0 ? "grid-cols-2" : "grid-cols-1"}`}>
+        <Link
+          href="/strategy"
+          className="flex flex-col justify-between gap-4 min-h-[104px] bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[4px] p-4 hover:border-[#E3D0A4] transition"
+        >
+          <Target className="w-[18px] h-[18px] text-[#8A5A16]" strokeWidth={1.75} />
+          <span className="min-w-0">
+            <span className="block text-[14px] font-medium truncate">Стратегия III кв.</span>
+            <span className="block text-[12px] text-[#166B49] mt-[2px]">Утверждена</span>
+          </span>
+        </Link>
+
+        {pending > 0 && (
+          <Link
+            href="/finance"
+            className="flex flex-col justify-between gap-4 min-h-[104px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[4px] p-4 hover:border-[#D2D0CB] transition"
+          >
+            <Wallet className="w-[18px] h-[18px] text-[#6E6D73]" strokeWidth={1.75} />
+            <span className="min-w-0">
+              <span className="block text-[14px] font-medium truncate">Заявки</span>
+              <span className="block text-[12px] text-[#6E6D73] mt-[2px]">
+                {pending} на рассмотрении
+              </span>
+            </span>
+          </Link>
+        )}
+      </div>
+
       {/* Переписка с менеджером */}
       <ManagerMessenger />
-
-      {/* Стратегия — одна строка, подробности на своей странице */}
-      <Link
-        href="/strategy"
-        className="flex items-center gap-3 bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[12px] px-4 py-[13px] mb-4 hover:border-[#E3D0A4] transition"
-      >
-        <Target className="w-[16px] h-[16px] text-[#8A5A16] shrink-0" strokeWidth={1.75} />
-        <span className="text-[14px] flex-1 min-w-0 truncate">
-          Стратегия III кв. · <span className="text-[#166B49] font-medium">Утверждена</span>
-        </span>
-        <ChevronRight className="w-[16px] h-[16px] text-[#8A5A16]/50 shrink-0" strokeWidth={2} />
-      </Link>
-
-      {/* Заявки — только когда есть что ждать */}
-      {pending > 0 && (
-        <Link
-          href="/finance"
-          className="flex items-center gap-3 bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[13px] mb-4 hover:border-[#D2D0CB] transition"
-        >
-          <Wallet className="w-[16px] h-[16px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
-          <span className="text-[14px] flex-1 min-w-0 truncate">
-            Заявки: <span className="font-medium">{pending} на рассмотрении</span>
-          </span>
-          <ChevronRight className="w-[16px] h-[16px] text-[#A6A5AB] shrink-0" strokeWidth={2} />
-        </Link>
-      )}
 
       {/* Новости и мероприятия */}
       <EventsFeed />

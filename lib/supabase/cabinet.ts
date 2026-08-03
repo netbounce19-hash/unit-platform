@@ -1,7 +1,7 @@
 "use client";
 
 import { getSupabase } from "./client";
-import { BUCKET, buildStoragePath, uploadAsset } from "./uploads";
+import { BUCKET, buildStoragePath, uploadAsset, type Asset, type AssetKind } from "./uploads";
 
 // ── Заявки на финансирование ────────────────────────────────
 
@@ -53,20 +53,59 @@ export async function deleteBudgetRequest(id: string): Promise<void> {
 
 // ── Релизы ──────────────────────────────────────────────────
 
-export type ReleaseStatus = "upcoming" | "live";
+/** Общий словарь с кабинетом лейбла (см. миграцию 20260803120000). */
+export type ReleaseStatus =
+  | "draft"
+  | "pending_approval"
+  | "approved"
+  | "in_progress"
+  | "released"
+  | "rejected";
 
 export interface ReleaseRow {
   id: string;
   owner_id: string;
+  org_id: string | null;
+  artist_id: string | null;
   title: string;
   status: ReleaseStatus;
-  release_date: string | null;
+  planned_date: string | null; // YYYY-MM-DD
+  strategy: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
   cover_path: string | null;
   created_at: string;
 }
 
 export interface ReleaseView extends ReleaseRow {
   coverUrl: string | null; // подписанная ссылка на обложку
+}
+
+/** Как показывать статус приёмки артисту. */
+export const releaseStatusLabels: Record<ReleaseStatus, { label: string; cls: string }> = {
+  draft: { label: "Черновик", cls: "bg-[#F0EEEA] text-[#6E6D73]" },
+  pending_approval: { label: "На согласовании", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
+  approved: { label: "Принят менеджером", cls: "bg-[#E9F6EF] text-[#166B49]" },
+  in_progress: { label: "В работе", cls: "bg-[#EAF1FB] text-[#1B4F9C]" },
+  released: { label: "Вышел", cls: "bg-[#E9F6EF] text-[#166B49]" },
+  rejected: { label: "Отклонён", cls: "bg-[#FDEDEB] text-[#A62018]" },
+};
+
+/** Связка текущего пользователя с артистом лейбла — нужна, чтобы релиз дошёл до менеджера. */
+export interface MyArtistLink {
+  artistId: string;
+  orgId: string;
+}
+
+export async function fetchMyArtistLink(): Promise<MyArtistLink | null> {
+  const user = await requireUser();
+  const { data, error } = await getSupabase()
+    .from("artists")
+    .select("id, org_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (error || !data) return null;
+  return { artistId: data.id as string, orgId: data.org_id as string };
 }
 
 async function signCover(path: string | null): Promise<string | null> {
@@ -91,6 +130,8 @@ export async function listReleases(): Promise<ReleaseView[]> {
 
 export interface CreateReleaseArgs {
   title: string;
+  /** планируемая дата релиза, YYYY-MM-DD */
+  plannedDate?: string | null;
   cover?: File | null;
   audio?: File | null;
   /** id аудио-ассетов из демо, которые прикрепляем к релизу */
@@ -104,6 +145,7 @@ export interface CreateReleaseArgs {
  */
 export async function createRelease({
   title,
+  plannedDate,
   cover,
   audio,
   demoAssetIds,
@@ -111,6 +153,8 @@ export async function createRelease({
 }: CreateReleaseArgs): Promise<ReleaseView> {
   const supabase = getSupabase();
   const user = await requireUser();
+  // Без org_id релиз не попадёт в кабинет лейбла и менеджер его не увидит
+  const link = await fetchMyArtistLink();
 
   // 1. Обложка → хранилище
   let coverPath: string | null = null;
@@ -128,8 +172,11 @@ export async function createRelease({
     .from("releases")
     .insert({
       owner_id: user.id,
+      org_id: link?.orgId ?? null,
+      artist_id: link?.artistId ?? null,
       title: title.trim() || "Без названия",
-      status: "upcoming",
+      status: "pending_approval",
+      planned_date: plannedDate || null,
       cover_path: coverPath,
     })
     .select()
@@ -152,6 +199,74 @@ export async function createRelease({
   }
 
   return { ...release, coverUrl: await signCover(release.cover_path) };
+}
+
+export async function fetchRelease(id: string): Promise<ReleaseView | null> {
+  const { data, error } = await getSupabase()
+    .from("releases")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const row = data as ReleaseRow;
+  return { ...row, coverUrl: await signCover(row.cover_path) };
+}
+
+/**
+ * Правит поля, которые артист может менять сам. Статус приёмки сюда не
+ * входит — его меняет только лейбл, это стоит на триггере в БД.
+ */
+export async function updateRelease(
+  id: string,
+  patch: { title?: string; plannedDate?: string | null }
+): Promise<void> {
+  const body: Record<string, unknown> = {};
+  if (patch.title !== undefined) body.title = patch.title.trim() || "Без названия";
+  if (patch.plannedDate !== undefined) body.planned_date = patch.plannedDate || null;
+  if (Object.keys(body).length === 0) return;
+
+  const { error } = await getSupabase().from("releases").update(body).eq("id", id);
+  if (error) throw error;
+}
+
+/** Файлы, прикреплённые к релизу. */
+export interface ReleaseAsset extends Asset {
+  url: string | null;
+}
+
+export async function listReleaseAssets(releaseId: string): Promise<ReleaseAsset[]> {
+  const { data, error } = await getSupabase()
+    .from("assets")
+    .select("*")
+    .eq("release_id", releaseId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+
+  const rows = (data ?? []) as Asset[];
+  return Promise.all(
+    rows.map(async (a) => {
+      const { data: signed } = await getSupabase()
+        .storage.from(BUCKET)
+        .createSignedUrl(a.storage_path, 3600);
+      return { ...a, url: signed?.signedUrl ?? null };
+    })
+  );
+}
+
+/** «Догрузить данные» — добавляет файл к уже созданному релизу. */
+export async function addReleaseAsset(
+  releaseId: string,
+  file: File,
+  kind: AssetKind,
+  onProgress?: (percent: number) => void
+): Promise<void> {
+  const asset = await uploadAsset({ file, kind, title: file.name, onProgress });
+  const { error } = await getSupabase()
+    .from("assets")
+    .update({ release_id: releaseId })
+    .eq("id", asset.id);
+  if (error) throw error;
 }
 
 export async function deleteRelease(release: ReleaseRow): Promise<void> {
