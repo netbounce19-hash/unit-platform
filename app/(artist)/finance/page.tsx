@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Trash2, Check } from "lucide-react";
+import { Plus, Trash2, Check, CalendarDays } from "lucide-react";
 import BudgetRequestModal, { NewBudgetRequest } from "@/components/artist/BudgetRequestModal";
 import SwipeToDelete from "@/components/artist/SwipeToDelete";
 import {
@@ -32,6 +32,20 @@ function formatSince(iso: string) {
   if (diff <= 0) return "отправлена сегодня";
   if (diff === 1) return "отправлена вчера";
   return "отправлена " + d.toLocaleDateString("ru-RU", { day: "numeric", month: "long" });
+}
+
+/** «2026-08-20» → «20 августа» */
+function formatNeededBy(d: string) {
+  return new Date(`${d}T00:00:00`).toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "long",
+  });
+}
+
+/** Меньше недели до срока — подсвечиваем, чтобы заявка не зависла. */
+function isUrgent(d: string) {
+  const days = (new Date(`${d}T00:00:00`).getTime() - Date.now()) / 86_400_000;
+  return days <= 7;
 }
 
 export default function FinancePage() {
@@ -70,7 +84,7 @@ export default function FinancePage() {
 
   const addRequest = async (req: NewBudgetRequest) => {
     try {
-      const row = await createBudgetRequest(req.purpose, req.amount);
+      const row = await createBudgetRequest(req.purpose, req.amount, req.neededBy);
       setRequests((prev) => [row, ...prev]);
       setToast(`Заявка отправлена менеджеру · ${req.purpose}`);
     } catch {
@@ -121,6 +135,18 @@ export default function FinancePage() {
                     <div className="text-[12px] text-[#A6A5AB] mt-[2px]">
                       {r.amount.toLocaleString("ru-RU")} ₽ · {formatSince(r.created_at)}
                     </div>
+                    {r.needed_by && (
+                      <div
+                        className={`inline-flex items-center gap-[5px] text-[12px] mt-[5px] ${
+                          isUrgent(r.needed_by) && r.status === "pending"
+                            ? "text-[#A62018]"
+                            : "text-[#6E6D73]"
+                        }`}
+                      >
+                        <CalendarDays className="w-[13px] h-[13px] shrink-0" strokeWidth={1.75} />
+                        Нужны к {formatNeededBy(r.needed_by)}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <span

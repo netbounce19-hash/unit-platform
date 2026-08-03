@@ -10,9 +10,14 @@ export type RequestStatus = "pending" | "approved" | "declined";
 export interface BudgetRequestRow {
   id: string;
   owner_id: string;
+  org_id: string | null;
+  artist_id: string | null;
   purpose: string;
   amount: number;
+  /** к какой дате нужны средства, YYYY-MM-DD */
+  needed_by: string | null;
   status: RequestStatus;
+  decision_comment: string | null;
   created_at: string;
 }
 
@@ -35,11 +40,28 @@ export async function listBudgetRequests(): Promise<BudgetRequestRow[]> {
   return (data ?? []) as BudgetRequestRow[];
 }
 
-export async function createBudgetRequest(purpose: string, amount: number): Promise<BudgetRequestRow> {
+/**
+ * Заводит заявку. Без org_id она не попадёт в кабинет лейбла и менеджер
+ * её не увидит — а срок «когда нужны средства» адресован именно ему.
+ */
+export async function createBudgetRequest(
+  purpose: string,
+  amount: number,
+  neededBy?: string | null
+): Promise<BudgetRequestRow> {
   const user = await requireUser();
+  const link = await fetchMyArtistLink();
   const { data, error } = await getSupabase()
     .from("budget_requests")
-    .insert({ owner_id: user.id, purpose, amount, status: "pending" })
+    .insert({
+      owner_id: user.id,
+      org_id: link?.orgId ?? null,
+      artist_id: link?.artistId ?? null,
+      purpose,
+      amount,
+      needed_by: neededBy || null,
+      status: "pending",
+    })
     .select()
     .single();
   if (error) throw error;

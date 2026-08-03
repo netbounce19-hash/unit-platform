@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Wallet, ArrowUp } from "lucide-react";
+import { X, Wallet, ArrowUp, CalendarDays } from "lucide-react";
+
+/** Просить деньги задним числом нельзя — ограничиваем выбор сегодняшним днём. */
+const today = new Date().toISOString().slice(0, 10);
 
 export interface NewBudgetRequest {
   purpose: string;
   amount: number;
+  /** к какой дате нужны средства, YYYY-MM-DD; пусто — срок не горит */
+  neededBy: string | null;
 }
 
 interface BudgetRequestModalProps {
@@ -27,12 +32,14 @@ export default function BudgetRequestModal({
 }: BudgetRequestModalProps) {
   const [purpose, setPurpose] = useState("");
   const [amount, setAmount] = useState(""); // только цифры
+  const [neededBy, setNeededBy] = useState("");
 
   // Сброс полей при открытии
   useEffect(() => {
     if (open) {
       setPurpose("");
       setAmount("");
+      setNeededBy("");
     }
   }, [open]);
 
@@ -48,7 +55,7 @@ export default function BudgetRequestModal({
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    onSubmit({ purpose: purpose.trim(), amount: Number(amount) });
+    onSubmit({ purpose: purpose.trim(), amount: Number(amount), neededBy: neededBy || null });
     onClose();
   };
 
@@ -134,6 +141,31 @@ export default function BudgetRequestModal({
                       ₽
                     </span>
                   </div>
+                </label>
+
+                <label className="block">
+                  <span className="flex items-center justify-between mb-[8px]">
+                    <span className="text-[13px] font-medium text-[#6E6D73]">
+                      Когда нужны средства
+                    </span>
+                    <span className="text-[11px] text-[#A6A5AB]">необязательно</span>
+                  </span>
+                  <div className="relative">
+                    <CalendarDays
+                      className="absolute left-[11px] top-1/2 -translate-y-1/2 w-[15px] h-[15px] text-[#A6A5AB] pointer-events-none"
+                      strokeWidth={1.75}
+                    />
+                    <input
+                      type="date"
+                      value={neededBy}
+                      min={today}
+                      onChange={(e) => setNeededBy(e.target.value)}
+                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white pl-[34px] pr-3 py-[11px] outline-none focus:border-[#E23A34] transition"
+                    />
+                  </div>
+                  <span className="block text-[12px] text-[#A6A5AB] mt-[6px]">
+                    Менеджер увидит срок и успеет согласовать бюджет заранее
+                  </span>
                 </label>
               </div>
 
