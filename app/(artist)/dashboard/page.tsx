@@ -6,6 +6,7 @@ import { Check, Target, ListChecks, ArrowRight, Wallet } from "lucide-react";
 import EventsFeed from "@/components/artist/EventsFeed";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
+import PromoConfirm from "@/components/artist/PromoConfirm";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
 import { listBudgetRequests } from "@/lib/supabase/cabinet";
 
@@ -147,6 +148,9 @@ export default function DashboardPage() {
             </span>
           </button>
         ))}
+
+        {/* Задачи закрыты — подтверждаем промо ссылкой на публикацию */}
+        {items.length > 0 && openTasks === 0 && <PromoConfirm />}
       </div>
 
       {/* Релизы */}

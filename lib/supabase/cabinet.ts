@@ -269,6 +269,82 @@ export async function addReleaseAsset(
   if (error) throw error;
 }
 
+// ── Подтверждения промо-действий ────────────────────────────
+
+export type PromoStatus = "submitted" | "accepted" | "needs_changes";
+
+export interface PromoReportRow {
+  id: string;
+  org_id: string;
+  artist_id: string;
+  release_id: string | null;
+  platform: string;
+  url: string | null;
+  status: PromoStatus;
+  created_at: string;
+}
+
+export const promoStatusLabels: Record<PromoStatus, { label: string; cls: string }> = {
+  submitted: { label: "На проверке", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
+  accepted: { label: "Принято", cls: "bg-[#E9F6EF] text-[#166B49]" },
+  needs_changes: { label: "Нужны правки", cls: "bg-[#FDEDEB] text-[#A62018]" },
+};
+
+/** Площадки, на которых артист отчитывается о промо. */
+export const PROMO_PLATFORMS = [
+  "TikTok",
+  "Instagram Reels",
+  "YouTube Shorts",
+  "VK Клипы",
+  "Telegram",
+  "Другое",
+] as const;
+
+export async function listPromoReports(): Promise<PromoReportRow[]> {
+  const { data, error } = await getSupabase()
+    .from("promo_reports")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as PromoReportRow[];
+}
+
+/**
+ * Отправляет менеджеру ссылку на выполненное промо-действие.
+ * org_id и artist_id в таблице NOT NULL, поэтому без привязки артиста
+ * к лейблу отчёт отправить некуда — об этом честно говорим наверх.
+ */
+export async function createPromoReport(args: {
+  platform: string;
+  url: string;
+  releaseId?: string | null;
+}): Promise<PromoReportRow> {
+  const link = await fetchMyArtistLink();
+  if (!link) {
+    throw new Error("Аккаунт не привязан к лейблу — отчёт отправить некому");
+  }
+
+  const { data, error } = await getSupabase()
+    .from("promo_reports")
+    .insert({
+      org_id: link.orgId,
+      artist_id: link.artistId,
+      release_id: args.releaseId ?? null,
+      platform: args.platform,
+      url: args.url.trim(),
+      status: "submitted",
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as PromoReportRow;
+}
+
+export async function deletePromoReport(id: string): Promise<void> {
+  const { error } = await getSupabase().from("promo_reports").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function deleteRelease(release: ReleaseRow): Promise<void> {
   const supabase = getSupabase();
   if (release.cover_path) {
