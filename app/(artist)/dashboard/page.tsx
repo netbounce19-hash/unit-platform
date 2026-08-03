@@ -6,6 +6,7 @@ import { Check, Target, ListChecks, ArrowRight, Wallet, ChevronRight } from "luc
 import EventsFeed from "@/components/artist/EventsFeed";
 import LabelNotice from "@/components/artist/LabelNotice";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
+import ManagerMessenger from "@/components/artist/ManagerMessenger";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
 import { listBudgetRequests } from "@/lib/supabase/cabinet";
 
@@ -146,6 +147,9 @@ export default function DashboardPage() {
 
       {/* Релизы */}
       <ReleaseCarousel />
+
+      {/* Переписка с менеджером */}
+      <ManagerMessenger />
 
       {/* Напоминание от лейбла */}
       <LabelNotice />
