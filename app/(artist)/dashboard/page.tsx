@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check, Target, ListChecks, ArrowRight, Wallet, ChevronRight } from "lucide-react";
 import EventsFeed from "@/components/artist/EventsFeed";
-import LabelNotice from "@/components/artist/LabelNotice";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
@@ -150,9 +149,6 @@ export default function DashboardPage() {
 
       {/* Переписка с менеджером */}
       <ManagerMessenger />
-
-      {/* Напоминание от лейбла */}
-      <LabelNotice />
 
       {/* Стратегия — одна строка, подробности на своей странице */}
       <Link

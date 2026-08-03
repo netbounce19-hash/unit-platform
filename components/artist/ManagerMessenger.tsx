@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUp, Bell, CheckCheck } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowUp, Bell, CheckCheck, ChevronDown, MessageCircle } from "lucide-react";
 
 interface Manager {
   name: string;
@@ -50,21 +51,23 @@ function nowTime() {
 }
 
 /**
- * Переписка с менеджером — секция дашборда. Раньше это был плавающий
- * виджет в углу экрана; секцией он не перекрывает контент и не требует
- * отдельного состояния «открыт / свёрнут».
+ * Переписка с менеджером — сворачиваемая секция дашборда. Раньше это был
+ * плавающий виджет в углу экрана; секцией он не перекрывает контент.
+ * Свёрнута по умолчанию: на фокус-экране дня чат — справочный раздел,
+ * а не то, с чего начинают.
  */
 export default function ManagerMessenger() {
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Автоскролл ленты вниз при новом сообщении
+  // Автоскролл ленты вниз при новом сообщении и при раскрытии секции
   useEffect(() => {
-    if (scrollRef.current) {
+    if (open && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, open]);
 
   const send = () => {
     const text = draft.trim();
@@ -75,24 +78,45 @@ export default function ManagerMessenger() {
 
   return (
     <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] mb-4 overflow-hidden">
-      {/* Шапка — она же заголовок секции */}
-      <div className="flex items-center gap-3 px-[22px] py-[14px] border-b-[0.5px] border-[#ECEAE5]">
-        <span className="relative w-10 h-10 rounded-full bg-[#17161A] text-white flex items-center justify-center text-[15px] font-medium shrink-0">
-          {MANAGER.avatar}
-          <span className="absolute -bottom-[1px] -right-[1px] w-[11px] h-[11px] rounded-full bg-[#1F9D6B] border-2 border-white" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="text-[16px] font-semibold tracking-[-0.01em] text-[#17161A] truncate">
-            {MANAGER.name}
-          </div>
-          <div className="text-[12px] text-[#1F9D6B] flex items-center gap-[5px]">
-            <span className="w-[6px] h-[6px] rounded-full bg-[#1F9D6B]" />
-            {MANAGER.role} · на связи
-          </div>
-        </div>
-      </div>
+      {/* Заголовок-переключатель */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="w-full flex items-center gap-2 px-[22px] py-[18px] text-left"
+      >
+        <MessageCircle className="w-[17px] h-[17px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
+        <div className="text-[16px] font-semibold tracking-[-0.01em] shrink-0">Чат с менеджером</div>
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          className="text-[#A6A5AB] shrink-0"
+        >
+          <ChevronDown className="w-[18px] h-[18px]" strokeWidth={2} />
+        </motion.span>
+      </button>
 
-      {/* Лента сообщений */}
+      {/* Тело */}
+      <div className="grid" style={{ gridTemplateRows: open ? "1fr" : "0fr" }}>
+        <div className="overflow-hidden min-h-0">
+          <div className={`transition-opacity duration-200 ${open ? "opacity-100" : "opacity-0"}`}>
+            {/* Менеджер */}
+            <div className="flex items-center gap-3 px-[22px] pb-[14px] border-b-[0.5px] border-[#ECEAE5]">
+              <span className="relative w-10 h-10 rounded-full bg-[#17161A] text-white flex items-center justify-center text-[15px] font-medium shrink-0">
+                {MANAGER.avatar}
+                <span className="absolute -bottom-[1px] -right-[1px] w-[11px] h-[11px] rounded-full bg-[#1F9D6B] border-2 border-white" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="text-[14px] font-medium text-[#17161A] truncate">
+                  {MANAGER.name}
+                </div>
+                <div className="text-[12px] text-[#1F9D6B] flex items-center gap-[5px]">
+                  <span className="w-[6px] h-[6px] rounded-full bg-[#1F9D6B]" />
+                  {MANAGER.role} · на связи
+                </div>
+              </div>
+            </div>
+
+            {/* Лента сообщений */}
       <div ref={scrollRef} className="h-[340px] overflow-y-auto px-4 py-4 space-y-3 bg-[#FAFAF9]">
         {messages.map((m) =>
           m.from === "manager" ? (
@@ -151,6 +175,9 @@ export default function ManagerMessenger() {
         >
           <ArrowUp className="w-[18px] h-[18px]" strokeWidth={2.5} />
         </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
