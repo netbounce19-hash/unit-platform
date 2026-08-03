@@ -8,20 +8,13 @@ import LabelShell, { CardList, ListCard } from "@/components/label/LabelShell";
 import { fetchRoster, fetchObligationStats, type MyOrg, type RosterArtist, type ObligationStat } from "@/lib/supabase/label";
 import { seedStreamsIfEmpty } from "@/lib/label/mockStreams";
 import { useStreams } from "@/lib/label/useStreams";
-
-type Metric = "streams" | "efficiency" | "obligation";
+import { computeScores, sortByMetric, fmtStreams, type Metric } from "@/lib/label/ranking";
 
 const METRICS: { key: Metric; label: string; icon: typeof TrendingUp }[] = [
   { key: "streams", label: "Стримы", icon: TrendingUp },
   { key: "efficiency", label: "Эффективность", icon: Gauge },
   { key: "obligation", label: "Обязательность", icon: ListChecks },
 ];
-
-function fmtStreams(n: number) {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-  if (n >= 1_000) return `${Math.round(n / 1_000)}k`;
-  return String(n);
-}
 
 function StatsInner({ org }: { org: MyOrg }) {
   const [artists, setArtists] = useState<RosterArtist[]>([]);
@@ -43,29 +36,10 @@ function StatsInner({ org }: { org: MyOrg }) {
 
   const streamsMap = useStreams();
 
-  const rows = useMemo(() => {
-    const oblByArtist = new Map(obligations.map((o) => [o.artistId, o]));
-    const maxStreams = Math.max(1, ...artists.map((a) => streamsMap.get(a.id)?.streams ?? 0));
-
-    const withScores = artists.map((a) => {
-      const streams = streamsMap.get(a.id)?.streams ?? 0;
-      const obl = oblByArtist.get(a.id) ?? null;
-      const streamsScore = Math.round((streams / maxStreams) * 100);
-      const obligationScore = obl?.ratio ?? null;
-      // Эффективность = 60% нормированных стримов + 40% обязательности.
-      // Если задач ещё нет — считаем только по стримам (без веса обязательности).
-      const efficiency =
-        obligationScore === null ? streamsScore : Math.round(streamsScore * 0.6 + obligationScore * 0.4);
-      return { artist: a, streams, obligationScore, efficiency };
-    });
-
-    const sorted = [...withScores].sort((x, y) => {
-      if (metric === "streams") return y.streams - x.streams;
-      if (metric === "obligation") return (y.obligationScore ?? -1) - (x.obligationScore ?? -1);
-      return y.efficiency - x.efficiency;
-    });
-    return sorted;
-  }, [artists, obligations, streamsMap, metric]);
+  const rows = useMemo(
+    () => sortByMetric(computeScores(artists, obligations, streamsMap), metric),
+    [artists, obligations, streamsMap, metric]
+  );
 
   return (
     <LabelShell

@@ -1,14 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Loader2, Plus, AlertTriangle, Wallet, UserPlus } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { CardList, ListCard, Badge } from "@/components/label/LabelShell";
-import { fetchRoster, createArtist, type MyOrg, type RosterArtist } from "@/lib/supabase/label";
+import ScoreMeter from "@/components/label/ScoreMeter";
+import {
+  fetchRoster,
+  fetchObligationStats,
+  createArtist,
+  type MyOrg,
+  type RosterArtist,
+  type ObligationStat,
+} from "@/lib/supabase/label";
+import { seedStreamsIfEmpty } from "@/lib/label/mockStreams";
+import { useStreams } from "@/lib/label/useStreams";
+import { computeScores, fmtStreams } from "@/lib/label/ranking";
 
 function RosterInner({ org }: { org: MyOrg }) {
   const [rows, setRows] = useState<RosterArtist[]>([]);
+  const [obligations, setObligations] = useState<ObligationStat[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
@@ -17,7 +29,13 @@ function RosterInner({ org }: { org: MyOrg }) {
 
   const load = useCallback(async () => {
     try {
-      setRows(await fetchRoster(org.org_id));
+      const [roster, obl] = await Promise.all([
+        fetchRoster(org.org_id),
+        fetchObligationStats(org.org_id),
+      ]);
+      setRows(roster);
+      setObligations(obl);
+      seedStreamsIfEmpty(roster.map((a) => a.id));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Не удалось загрузить ростер");
     } finally {
@@ -28,6 +46,12 @@ function RosterInner({ org }: { org: MyOrg }) {
   useEffect(() => {
     load();
   }, [load]);
+
+  const streamsMap = useStreams();
+  const scores = useMemo(
+    () => computeScores(rows, obligations, streamsMap),
+    [rows, obligations, streamsMap]
+  );
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,7 +137,7 @@ function RosterInner({ org }: { org: MyOrg }) {
         </div>
       ) : (
         <CardList empty={rows.length === 0 ? "В ростере пока нет артистов" : null}>
-          {rows.map((a) => (
+          {scores.map(({ artist: a, streams, streamsScore, obligationScore, efficiency }) => (
             <ListCard key={a.id} href={`/label/artists/${a.id}`}>
               <div className="flex items-start justify-between gap-3 mb-[6px]">
                 <div className="min-w-0">
@@ -158,6 +182,18 @@ function RosterInner({ org }: { org: MyOrg }) {
                   {a.terms?.term_months != null && ` · ${a.terms.term_months} мес.`}
                   {a.terms?.exclusive && " · экскл."}
                 </span>
+              </div>
+
+              {/* Рейтинговая шкала. Те же метрики и та же формула, что на
+                  странице статистики — считаются в lib/label/ranking. */}
+              <div className="grid grid-cols-3 gap-3 mt-3 pt-3 border-t-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
+                <ScoreMeter label="Стримы" value={streamsScore} display={fmtStreams(streams)} />
+                <ScoreMeter
+                  label="Обязательность"
+                  value={obligationScore}
+                  display={obligationScore === null ? "—" : `${obligationScore}%`}
+                />
+                <ScoreMeter label="Эффективность" value={efficiency} display={String(efficiency)} accent />
               </div>
             </ListCard>
           ))}
