@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { AssetKind } from "@/lib/supabase/uploads";
+import AddButton from "@/components/ui/AddButton";
 import DemoSection from "@/components/artist/DemoSection";
 import AssetManager from "@/components/artist/AssetManager";
 
@@ -27,6 +28,10 @@ export default function MaterialsPage() {
       <div className="mb-4">
         <div className="text-[22px] font-medium tracking-[-0.01em]">Материалы</div>
         <div className="text-[14px] text-[#6E6D73] mt-[3px]">Демо, мастера, обложки и документы</div>
+        {/* Демо заводятся на отдельном экране, остальное — загрузчиком ниже */}
+        {!tab.kind && (
+          <AddButton label="Добавить демо" href="/demo/edit" className="mt-3" />
+        )}
       </div>
 
       <div className="flex items-center gap-[6px] mb-4 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
