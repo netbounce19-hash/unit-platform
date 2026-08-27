@@ -126,7 +126,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
   if (!artist) {
     return (
       <LabelShell org={org} title="Артист не найден">
-        <Link href="/label/roster" className="text-[13px] text-[#E23A34] hover:opacity-80">
+        <Link href="/label/roster" className="text-[13px] text-[#17161A] hover:opacity-80">
           ← К ростеру
         </Link>
       </LabelShell>
@@ -134,7 +134,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
   }
 
   const inputCls =
-    "w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition";
+    "w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#17161A] transition";
 
   return (
     <LabelShell
@@ -152,7 +152,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
           </Link>
           <Link
             href={`/label/tasks/new?artist=${artist.id}`}
-            className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition"
+            className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition"
           >
             <Plus className="w-[15px] h-[15px]" strokeWidth={2} />
             Задача
@@ -161,7 +161,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
       }
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
@@ -207,7 +207,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
                         t.status === "done"
                           ? "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]"
                           : isOverdue(t.due_date, t.status)
-                          ? "bg-[#FDEDEB] dark:bg-[#3A2422] text-[#A62018] dark:text-[#F3928C]"
+                          ? "bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2]"
                           : "bg-[#FBF1DE] dark:bg-[#3A2F14] text-[#8A5A16] dark:text-[#E8B65A]"
                       }
                     />
@@ -221,7 +221,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
                     <span
                       className={
                         isOverdue(t.due_date, t.status)
-                          ? "text-[#A62018] dark:text-[#F3928C] font-medium"
+                          ? "text-[#17161A] dark:text-[#F5F4F2] font-medium"
                           : ""
                       }
                     >
@@ -326,7 +326,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
                   type="checkbox"
                   checked={Boolean(terms.exclusive)}
                   onChange={(e) => setTerms((t) => ({ ...t, exclusive: e.target.checked }))}
-                  className="w-4 h-4 accent-[#E23A34]"
+                  className="w-4 h-4 accent-[#17161A]"
                 />
                 <span className="text-[13px]">Эксклюзив</span>
               </label>
@@ -334,7 +334,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
               <button
                 onClick={saveTerms}
                 disabled={termsBusy}
-                className="w-full inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
+                className="w-full inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40"
               >
                 {termsBusy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
                 {termsSaved ? <><Check className="w-4 h-4" strokeWidth={2.5} /> Сохранено</> : "Сохранить"}

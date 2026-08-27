@@ -28,7 +28,7 @@ export default function ScoreMeter({
       <div
         className={`text-[13.5px] tabular-nums mb-[4px] ${
           accent
-            ? "font-semibold text-[#A62018] dark:text-[#F3928C]"
+            ? "font-semibold text-[#17161A] dark:text-[#F5F4F2]"
             : "text-[#17161A] dark:text-[#F5F4F2]"
         }`}
       >
@@ -37,7 +37,7 @@ export default function ScoreMeter({
       <div className="h-[4px] rounded-full bg-[#F0EEEA] dark:bg-[#242327] overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${
-            accent ? "bg-[#E23A34]" : "bg-[#C4C3C8] dark:bg-[#4A4952]"
+            accent ? "bg-[#17161A]" : "bg-[#C4C3C8] dark:bg-[#4A4952]"
           }`}
           style={{ width: `${width}%` }}
         />

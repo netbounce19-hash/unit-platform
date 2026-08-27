@@ -113,7 +113,7 @@ function MessagesInner({ org }: { org: MyOrg }) {
       subtitle="Оперативная связь с артистами ростера UNIT"
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[12px] px-4 py-3 mb-4">
+        <div className="text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-4 py-3 mb-4">
           {error}
         </div>
       )}
@@ -140,7 +140,7 @@ function MessagesInner({ org }: { org: MyOrg }) {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Поиск по артистам ростера…"
-                    className="w-full bg-white border border-[#E5E3DE] rounded-[12px] pl-9 pr-3 py-1.5 text-[13px] text-[#17161A] placeholder:text-[#C4C3C8] outline-none focus:border-[#E23A34] transition"
+                    className="w-full bg-white border border-[#E5E3DE] rounded-[12px] pl-9 pr-3 py-1.5 text-[13px] text-[#17161A] placeholder:text-[#C4C3C8] outline-none focus:border-[#17161A] transition"
                   />
                 </div>
               </div>
@@ -166,7 +166,7 @@ function MessagesInner({ org }: { org: MyOrg }) {
                       {/* Info & Snippet */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2 mb-0.5">
-                          <span className="text-[14px] font-semibold text-[#17161A] truncate group-hover:text-[#E23A34] transition">
+                          <span className="text-[14px] font-semibold text-[#17161A] truncate group-hover:text-[#6E6D73] transition">
                             {a.stage_name}
                           </span>
                           {last && (
@@ -231,7 +231,7 @@ function MessagesInner({ org }: { org: MyOrg }) {
 
                 <Link
                   href={`/label/artists/${activeArtist.id}`}
-                  className="inline-flex items-center gap-1 text-[11.5px] font-medium text-[#6E6D73] hover:text-[#E23A34] px-2.5 py-1 rounded-full bg-[#FAFAF9] hover:bg-[#F0EEEA] transition shrink-0"
+                  className="inline-flex items-center gap-1 text-[11.5px] font-medium text-[#6E6D73] hover:text-[#17161A] px-2.5 py-1 rounded-full bg-[#FAFAF9] hover:bg-[#F0EEEA] transition shrink-0"
                 >
                   <span>Профиль</span>
                   <ExternalLink className="w-3 h-3" />
@@ -274,7 +274,7 @@ function MessagesInner({ org }: { org: MyOrg }) {
                             >
                               <div className="flex items-center gap-2 mb-0.5">
                                 {m.attachment.type === "file" && (
-                                  <FileAudio className={`w-3.5 h-3.5 ${isLabel ? "text-[#D4AF37]" : "text-[#E23A34]"}`} />
+                                  <FileAudio className={`w-3.5 h-3.5 ${isLabel ? "text-[#D4AF37]" : "text-[#17161A]"}`} />
                                 )}
                                 {m.attachment.type === "task" && (
                                   <CheckCircle2 className="w-3.5 h-3.5 text-[#1F9D6B]" />
@@ -351,14 +351,14 @@ function MessagesInner({ org }: { org: MyOrg }) {
                   }}
                   rows={1}
                   placeholder={`Сообщение ${activeArtist.stage_name}…`}
-                  className="flex-1 resize-none max-h-24 text-[13.5px] leading-[1.4] rounded-[12px] border border-[#E5E3DE] bg-white px-3.5 py-2.5 outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                  className="flex-1 resize-none max-h-24 text-[13.5px] leading-[1.4] rounded-[12px] border border-[#E5E3DE] bg-white px-3.5 py-2.5 outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
                 />
 
                 <button
                   type="submit"
                   disabled={!draft.trim()}
                   aria-label="Отправить"
-                  className="w-10 h-10 shrink-0 rounded-full bg-[#E23A34] text-white flex items-center justify-center hover:brightness-95 active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden cursor-pointer"
+                  className="w-10 h-10 shrink-0 rounded-full bg-[#17161A] text-white flex items-center justify-center hover:bg-[#2A282E] active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden cursor-pointer"
                 >
                   <SendIconControlled size={18} color="white" sent={sending} />
                 </button>

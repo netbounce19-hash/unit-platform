@@ -89,7 +89,7 @@ function RosterInner({ org }: { org: MyOrg }) {
           </Link>
           <button
             onClick={() => setAdding((v) => !v)}
-            className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition"
+            className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition"
           >
             <Plus className="w-[15px] h-[15px]" strokeWidth={2} />
             Артист
@@ -111,13 +111,13 @@ function RosterInner({ org }: { org: MyOrg }) {
               onChange={(e) => setName(e.target.value)}
               autoFocus
               placeholder="KXDE"
-              className="w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+              className="w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
             />
           </label>
           <button
             type="submit"
             disabled={!name.trim() || busy}
-            className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
+            className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
             Добавить
@@ -126,7 +126,7 @@ function RosterInner({ org }: { org: MyOrg }) {
       )}
 
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
@@ -162,7 +162,7 @@ function RosterInner({ org }: { org: MyOrg }) {
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px]">
                 {a.overdueTasks > 0 ? (
-                  <span className="inline-flex items-center gap-[5px] text-[#A62018] dark:text-[#F3928C] font-medium">
+                  <span className="inline-flex items-center gap-[5px] text-[#17161A] dark:text-[#F5F4F2] font-medium">
                     <AlertTriangle className="w-[13px] h-[13px]" strokeWidth={2} />
                     {a.overdueTasks} просрочено
                   </span>

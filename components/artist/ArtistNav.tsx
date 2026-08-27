@@ -32,7 +32,7 @@ export default function ArtistNav() {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={`flex-1 flex flex-col items-center gap-[3px] py-[9px] rounded-full transition ${
-                active ? "text-[#E23A34]" : "text-[#A6A5AB] hover:text-[#6E6D73]"
+                active ? "text-[#17161A]" : "text-[#A6A5AB] hover:text-[#6E6D73]"
               }`}
             >
               <Icon className="w-[19px] h-[19px]" strokeWidth={active ? 2 : 1.75} />

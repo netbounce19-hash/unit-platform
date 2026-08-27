@@ -128,7 +128,7 @@ export default function ManagerMessenger() {
             <div key={m.id} className="flex flex-col items-start max-w-[85%]">
               <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] rounded-tl-[4px] px-[13px] py-[9px]">
                 {m.ping && (
-                  <div className="flex items-center gap-[5px] text-[11px] font-medium text-[#A62018] mb-[5px]">
+                  <div className="flex items-center gap-[5px] text-[11px] font-medium text-[#17161A] mb-[5px]">
                     <Bell className="w-3 h-3" strokeWidth={2} />
                     Напоминание
                   </div>
@@ -136,7 +136,7 @@ export default function ManagerMessenger() {
                 <p className="text-[13.5px] leading-[1.45] text-[#17161A]">{m.text}</p>
                 {m.task && (
                   <span className="inline-flex items-center gap-[6px] mt-2 text-[12px] font-medium text-[#6E6D73] bg-[#F0EEEA] rounded-[12px] px-[8px] py-[4px]">
-                    <span className="w-[6px] h-[6px] rounded-full bg-[#E23A34]" />
+                    <span className="w-[6px] h-[6px] rounded-full bg-[#17161A]" />
                     {m.task}
                   </span>
                 )}
@@ -145,7 +145,7 @@ export default function ManagerMessenger() {
             </div>
           ) : (
             <div key={m.id} className="flex flex-col items-end ml-auto max-w-[85%]">
-              <div className="bg-[#E23A34] text-white rounded-[12px] rounded-tr-[4px] px-[13px] py-[9px]">
+              <div className="bg-[#17161A] text-white rounded-[12px] rounded-tr-[4px] px-[13px] py-[9px]">
                 <p className="text-[13.5px] leading-[1.45]">{m.text}</p>
               </div>
               <span className="flex items-center gap-[3px] text-[10px] text-[#A6A5AB] mt-[3px] mr-1">
@@ -170,13 +170,13 @@ export default function ManagerMessenger() {
           }}
           rows={1}
           placeholder="Сообщение менеджеру…"
-          className="flex-1 resize-none max-h-24 text-[14px] leading-[1.4] rounded-[12px] border border-[#E5E3DE] bg-white px-[12px] py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+          className="flex-1 resize-none max-h-24 text-[14px] leading-[1.4] rounded-[12px] border border-[#E5E3DE] bg-white px-[12px] py-[9px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
         />
         <button
           onClick={send}
           disabled={!draft.trim()}
           aria-label="Отправить"
-          className="w-9 h-9 shrink-0 rounded-full bg-[#E23A34] text-white flex items-center justify-center hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden"
+          className="w-9 h-9 shrink-0 rounded-full bg-[#17161A] text-white flex items-center justify-center hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden"
         >
           <SendIconControlled size={18} color="white" sent={sending} />
         </button>

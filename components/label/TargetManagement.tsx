@@ -96,7 +96,7 @@ export default function TargetManagement() {
                       onChange={(e) => setEditValue(e.target.value)}
                       placeholder="Новая цель"
                       autoFocus
-                      className="flex-1 bg-white border border-[#E5E3DE] rounded-[12px] px-2.5 py-1 text-[12px] text-[#17161A] outline-none focus:border-[#E23A34]"
+                      className="flex-1 bg-white border border-[#E5E3DE] rounded-[12px] px-2.5 py-1 text-[12px] text-[#17161A] outline-none focus:border-[#17161A]"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") handleSave(target.artistId);
                         if (e.key === "Escape") setEditingId(null);
@@ -122,7 +122,7 @@ export default function TargetManagement() {
                         setEditingId(target.artistId);
                         setEditValue(target.goal.toString());
                       }}
-                      className="text-[11px] font-medium text-[#6E6D73] hover:text-[#E23A34] transition cursor-pointer"
+                      className="text-[11px] font-medium text-[#6E6D73] hover:text-[#17161A] transition cursor-pointer"
                     >
                       Изменить цель →
                     </button>

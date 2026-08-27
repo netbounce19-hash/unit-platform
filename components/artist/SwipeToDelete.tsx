@@ -33,11 +33,11 @@ export default function SwipeToDelete({
   return (
     <div className="relative overflow-hidden">
       {/* Подложка с удалением */}
-      <div className="absolute inset-y-0 right-0 w-[96px] flex items-center justify-center bg-[#FDEDEB]">
+      <div className="absolute inset-y-0 right-0 w-[96px] flex items-center justify-center bg-[#F0EEEA]">
         <button
           onClick={onDelete}
           aria-label={label}
-          className="inline-flex flex-col items-center gap-[2px] text-[#A62018]"
+          className="inline-flex flex-col items-center gap-[2px] text-[#17161A]"
         >
           <Trash2 className="w-[18px] h-[18px]" strokeWidth={1.75} />
           <span className="text-[11px] font-medium">Удалить</span>

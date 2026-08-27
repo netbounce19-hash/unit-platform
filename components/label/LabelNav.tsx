@@ -47,7 +47,7 @@ export default function LabelNav() {
               aria-current={active ? "page" : undefined}
               className={`flex-1 flex flex-col items-center gap-[3px] py-[9px] rounded-full transition ${
                 active
-                  ? "text-[#E23A34] dark:text-[#F3928C]"
+                  ? "text-[#17161A] dark:text-[#F5F4F2]"
                   : "text-[#A6A5AB] dark:text-[#6E6D73] hover:text-[#6E6D73] dark:hover:text-[#9A98A0]"
               }`}
             >

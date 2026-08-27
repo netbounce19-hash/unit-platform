@@ -98,7 +98,7 @@ export default function LabelGate({ children }: { children: (ctx: LabelContext) 
           <div className="flex gap-3 mt-4">
             <button
               onClick={() => router.replace("/dashboard")}
-              className="flex-1 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition"
+              className="flex-1 bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:bg-[#2A282E] transition"
             >
               В кабинет артиста
             </button>

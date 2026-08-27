@@ -81,7 +81,7 @@ export default function ProfilePage() {
           <div className="text-[22px] font-medium">{formatListeners(draft.listeners)}</div>
           <div className="h-[4px] bg-[#F0EEEA] rounded-full overflow-hidden mt-[7px] mb-[5px]">
             <div
-              className="h-full bg-[#E23A34] rounded-full transition-all"
+              className="h-full bg-[#17161A] rounded-full transition-all"
               style={{ width: `${listenersProgress}%` }}
             />
           </div>
@@ -128,7 +128,7 @@ export default function ProfilePage() {
           <div>
             <button
               onClick={() => fileRef.current?.click()}
-              className="text-[13px] font-medium text-[#E23A34] hover:opacity-80 transition"
+              className="text-[13px] font-medium text-[#17161A] hover:opacity-80 transition"
             >
               Загрузить фото
             </button>
@@ -142,7 +142,7 @@ export default function ProfilePage() {
           <input
             value={draft.name}
             onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
-            className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+            className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
           />
         </label>
 
@@ -155,7 +155,7 @@ export default function ProfilePage() {
             rows={3}
             maxLength={300}
             placeholder="Коротко о себе и звучании"
-            className="w-full resize-none text-[14px] leading-[1.45] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+            className="w-full resize-none text-[14px] leading-[1.45] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
           />
           <span className="block text-[11px] text-[#A6A5AB] mt-[4px] text-right">
             {draft.bio.length} / 300
@@ -179,7 +179,7 @@ export default function ProfilePage() {
                 title={opt.disabled ? "Недоступно — изменяет менеджер" : undefined}
                 className={`text-[13px] font-medium rounded-[12px] px-[14px] py-[10px] border transition ${
                   draft.status === opt.key
-                    ? "border-[#E23A34] bg-[#FDEDEB] text-[#A62018]"
+                    ? "border-[#17161A] bg-[#F0EEEA] text-[#17161A]"
                     : "border-[#E5E3DE] bg-white text-[#6E6D73] hover:border-[#D2D0CB]"
                 } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#E5E3DE]`}
               >
@@ -221,7 +221,7 @@ export default function ProfilePage() {
           <button
             onClick={() => setToast("Профиль сохранён")}
             disabled={!draft.name.trim()}
-            className="bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Сохранить
           </button>
@@ -235,7 +235,7 @@ export default function ProfilePage() {
           await getSupabase().auth.signOut();
           router.push("/");
         }}
-        className="w-full flex items-center justify-center gap-[7px] text-[14px] font-medium text-[#6E6D73] bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[13px] hover:text-[#A62018] hover:border-[#F3C9C6] transition"
+        className="w-full flex items-center justify-center gap-[7px] text-[14px] font-medium text-[#6E6D73] bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[13px] hover:text-[#17161A] hover:border-[#D2D0CB] transition"
       >
         <LogOut className="w-[16px] h-[16px]" strokeWidth={1.75} />
         Выйти из аккаунта

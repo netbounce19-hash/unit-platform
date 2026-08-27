@@ -60,7 +60,7 @@ export default function Leaderboard() {
             <p className="text-[13px] font-semibold text-[#17161A]">{d.name}</p>
             <span
               className={`text-[10px] font-semibold ${
-                d.isPositive ? "text-[#1F9D6B]" : "text-[#A62018]"
+                d.isPositive ? "text-[#1F9D6B]" : "text-[#17161A]"
               }`}
             >
               {d.trend}
@@ -159,7 +159,7 @@ export default function Leaderboard() {
               {data.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={index === 0 ? "#E23A34" : "#17161A"}
+                  fill={index === 0 ? "#17161A" : "#17161A"}
                   opacity={index === 0 ? 1 : 0.85 - index * 0.18}
                 />
               ))}
@@ -178,7 +178,7 @@ export default function Leaderboard() {
             <span
               className={`w-6 text-[13px] font-bold text-center ${
                 i === 0
-                  ? "text-[#E23A34]"
+                  ? "text-[#17161A]"
                   : "text-[#6E6D73]"
               }`}
             >
@@ -204,7 +204,7 @@ export default function Leaderboard() {
               </div>
               <div
                 className={`text-[10px] font-medium ${
-                  artist.isPositive ? "text-[#1F9D6B]" : "text-[#A62018]"
+                  artist.isPositive ? "text-[#1F9D6B]" : "text-[#17161A]"
                 }`}
               >
                 {artist.trend}

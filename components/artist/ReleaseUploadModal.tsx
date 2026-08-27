@@ -83,10 +83,10 @@ function UploadField({
       onDrop={handleDrop}
       className={`flex items-center gap-3 rounded-[12px] border border-dashed px-4 py-[14px] cursor-pointer transition ${
         dragging
-          ? "border-[#E23A34] bg-[#FDEDEB]"
+          ? "border-[#17161A] bg-[#F0EEEA]"
           : file
           ? "border-[#1F9D6B]/50 bg-[#E9F6EF]"
-          : "border-[#D2D0CB] hover:border-[#E23A34]/50 hover:bg-[#FAFAF9]"
+          : "border-[#D2D0CB] hover:border-[#17161A]/50 hover:bg-[#FAFAF9]"
       }`}
     >
       <input
@@ -146,8 +146,8 @@ function MultiFileField({
         }}
         className={`flex items-center gap-3 rounded-[12px] border border-dashed px-4 py-[14px] cursor-pointer transition ${
           dragging
-            ? "border-[#E23A34] bg-[#FDEDEB]"
-            : "border-[#D2D0CB] hover:border-[#E23A34]/50 hover:bg-[#FAFAF9]"
+            ? "border-[#17161A] bg-[#F0EEEA]"
+            : "border-[#D2D0CB] hover:border-[#17161A]/50 hover:bg-[#FAFAF9]"
         }`}
       >
         <input
@@ -185,7 +185,7 @@ function MultiFileField({
           <button
             onClick={() => onRemove(i)}
             aria-label="Удалить документ"
-            className="w-6 h-6 shrink-0 rounded-[12px] flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition"
+            className="w-6 h-6 shrink-0 rounded-[12px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition"
           >
             <Trash2 className="w-[14px] h-[14px]" strokeWidth={1.75} />
           </button>
@@ -365,7 +365,7 @@ export default function ReleaseUploadModal({
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Например, Midnight Protocol"
-                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
                     />
                   </label>
 
@@ -378,7 +378,7 @@ export default function ReleaseUploadModal({
                       type="date"
                       value={plannedDate}
                       onChange={(e) => setPlannedDate(e.target.value)}
-                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition"
+                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition"
                     />
                   </label>
                 </section>
@@ -390,7 +390,7 @@ export default function ReleaseUploadModal({
                   </div>
                   <div
                     onClick={() => coverInputRef.current?.click()}
-                    className="flex items-center gap-4 rounded-[12px] border border-dashed border-[#D2D0CB] hover:border-[#E23A34]/50 hover:bg-[#FAFAF9] p-3 cursor-pointer transition"
+                    className="flex items-center gap-4 rounded-[12px] border border-dashed border-[#D2D0CB] hover:border-[#17161A]/50 hover:bg-[#FAFAF9] p-3 cursor-pointer transition"
                   >
                     <input
                       ref={coverInputRef}
@@ -514,7 +514,7 @@ export default function ReleaseUploadModal({
                       value={copyrightHolder}
                       onChange={(e) => setCopyrightHolder(e.target.value)}
                       placeholder="Напр. KXDE / UNIT Records"
-                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
                     />
                   </label>
                 </section>
@@ -530,7 +530,7 @@ export default function ReleaseUploadModal({
                       className={`text-[12px] font-medium px-[10px] py-[3px] rounded-full ${
                         shareOk
                           ? "bg-[#E9F6EF] text-[#166B49]"
-                          : "bg-[#FDEDEB] text-[#A62018]"
+                          : "bg-[#F0EEEA] text-[#17161A]"
                       }`}
                     >
                       {totalShare % 1 === 0 ? totalShare : totalShare.toFixed(1)}% из
@@ -547,14 +547,14 @@ export default function ReleaseUploadModal({
                             updateAuthor(a.id, { name: e.target.value })
                           }
                           placeholder="Имя"
-                          className="flex-1 min-w-0 text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                          className="flex-1 min-w-0 text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[9px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
                         />
                         <select
                           value={a.role}
                           onChange={(e) =>
                             updateAuthor(a.id, { role: e.target.value })
                           }
-                          className="text-[13px] rounded-[12px] border border-[#E5E3DE] bg-white px-2 py-[9px] outline-none focus:border-[#E23A34] transition text-[#17161A] cursor-pointer shrink-0 w-[130px]"
+                          className="text-[13px] rounded-[12px] border border-[#E5E3DE] bg-white px-2 py-[9px] outline-none focus:border-[#17161A] transition text-[#17161A] cursor-pointer shrink-0 w-[130px]"
                         >
                           {ROLES.map((r) => (
                             <option key={r} value={r}>
@@ -572,7 +572,7 @@ export default function ReleaseUploadModal({
                             }
                             inputMode="decimal"
                             placeholder="0"
-                            className="w-full text-[14px] text-right rounded-[12px] border border-[#E5E3DE] bg-white pl-3 pr-6 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                            className="w-full text-[14px] text-right rounded-[12px] border border-[#E5E3DE] bg-white pl-3 pr-6 py-[9px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
                           />
                           <span className="absolute right-[10px] top-1/2 -translate-y-1/2 text-[13px] text-[#A6A5AB] pointer-events-none">
                             %
@@ -582,7 +582,7 @@ export default function ReleaseUploadModal({
                           onClick={() => removeAuthor(a.id)}
                           disabled={coAuthors.length === 1}
                           aria-label="Удалить со-автора"
-                          className="w-8 h-8 shrink-0 rounded-[12px] flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#A6A5AB]"
+                          className="w-8 h-8 shrink-0 rounded-[12px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#A6A5AB]"
                         >
                           <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                         </button>
@@ -592,7 +592,7 @@ export default function ReleaseUploadModal({
 
                   <button
                     onClick={addAuthor}
-                    className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#E23A34] hover:opacity-80 transition"
+                    className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#17161A] hover:opacity-80 transition"
                   >
                     <Plus className="w-4 h-4" strokeWidth={2} />
                     Добавить со-автора
@@ -622,13 +622,13 @@ export default function ReleaseUploadModal({
               {/* Footer */}
               <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm px-[22px] py-[16px] border-t-[0.5px] border-[#ECEAE5]">
                 {uploadError && (
-                  <div className="text-[12px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[12px] px-3 py-[8px] mb-3">
+                  <div className="text-[12px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[8px] mb-3">
                     {uploadError}
                   </div>
                 )}
                 {progress !== null && (
                   <div className="h-[6px] bg-[#F0EEEA] rounded-full overflow-hidden mb-3">
-                    <div className="h-full bg-[#E23A34] rounded-full transition-all" style={{ width: `${progress}%` }} />
+                    <div className="h-full bg-[#17161A] rounded-full transition-all" style={{ width: `${progress}%` }} />
                   </div>
                 )}
                 <div className="flex items-center justify-between gap-3">
@@ -656,7 +656,7 @@ export default function ReleaseUploadModal({
                     <button
                       onClick={handleSubmit}
                       disabled={!canSubmit || busy}
-                      className="inline-flex items-center gap-2 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-2 bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
                       Загрузить релиз

@@ -189,7 +189,7 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
               onClick={() => setConfirmOpen(true)}
               aria-label="Удалить релиз"
               title="Удалить релиз"
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition shrink-0 self-start"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition shrink-0 self-start"
             >
               <X className="w-[18px] h-[18px]" strokeWidth={2} />
             </button>
@@ -201,7 +201,7 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
               href={`/releases/${release.id}`}
               className={`inline-flex items-center gap-[7px] font-medium text-[14px] rounded-full transition shrink-0 ${
                 isReleased
-                  ? "bg-[#E23A34] text-white px-[18px] py-[10px] hover:brightness-95"
+                  ? "bg-[#17161A] text-white px-[18px] py-[10px] hover:bg-[#2A282E]"
                   : "text-[#17161A] border border-[#E5E3DE] px-[16px] py-[9px] hover:bg-[#F0EEEA]"
               }`}
             >
@@ -256,7 +256,7 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
               transition={{ type: "spring", damping: 26, stiffness: 320 }}
               className="w-full max-w-[360px] rounded-[16px] border-[0.5px] border-[#ECEAE5] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] p-5 text-center"
             >
-              <span className="w-11 h-11 rounded-full bg-[#FDEDEB] text-[#A62018] flex items-center justify-center mx-auto mb-3">
+              <span className="w-11 h-11 rounded-full bg-[#F0EEEA] text-[#17161A] flex items-center justify-center mx-auto mb-3">
                 <Trash2 className="w-5 h-5" strokeWidth={1.75} />
               </span>
               <div className="text-[15px] font-semibold tracking-[-0.01em]">Удалить релиз?</div>
@@ -272,7 +272,7 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
                 </button>
                 <button
                   onClick={remove}
-                  className="flex-1 text-[14px] font-medium text-white bg-[#E23A34] px-[18px] py-[10px] rounded-full hover:brightness-95 transition"
+                  className="flex-1 text-[14px] font-medium text-white bg-[#17161A] px-[18px] py-[10px] rounded-full hover:bg-[#2A282E] transition"
                 >
                   Да, удалить
                 </button>

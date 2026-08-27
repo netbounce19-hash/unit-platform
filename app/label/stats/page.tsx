@@ -57,7 +57,7 @@ function StatsInner({ org }: { org: MyOrg }) {
                 onClick={() => setMetric(m.key)}
                 className={`inline-flex items-center gap-[6px] text-[12.5px] font-medium px-[11px] py-[5px] rounded-full transition ${
                   active
-                    ? "bg-[#FDEDEB] dark:bg-[#3A2422] text-[#A62018] dark:text-[#F3928C]"
+                    ? "bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2]"
                     : "text-[#6E6D73] dark:text-[#9A98A0] hover:text-[#17161A] dark:hover:text-[#F5F4F2]"
                 }`}
               >
@@ -70,7 +70,7 @@ function StatsInner({ org }: { org: MyOrg }) {
       }
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
@@ -117,7 +117,7 @@ function StatsInner({ org }: { org: MyOrg }) {
                     key={m.key}
                     className={`rounded-[12px] px-[10px] py-[8px] ${
                       metric === m.key
-                        ? "bg-[#FDEDEB] dark:bg-[#3A2422]"
+                        ? "bg-[#F0EEEA] dark:bg-[#242327]"
                         : "bg-[#FAFAF9] dark:bg-[#232227]"
                     }`}
                   >
@@ -127,7 +127,7 @@ function StatsInner({ org }: { org: MyOrg }) {
                     <div
                       className={`text-[15px] mt-[2px] ${
                         metric === m.key
-                          ? "font-semibold text-[#A62018] dark:text-[#F3928C]"
+                          ? "font-semibold text-[#17161A] dark:text-[#F5F4F2]"
                           : "text-[#17161A] dark:text-[#F5F4F2]"
                       }`}
                     >

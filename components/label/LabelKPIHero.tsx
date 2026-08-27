@@ -41,7 +41,7 @@ export default function LabelKPIHero() {
       >
         <div className="flex items-center justify-between mb-3">
           <span className="text-[12px] font-medium text-[#6E6D73]">Стримы (Q3)</span>
-          <div className="w-7 h-7 rounded-[12px] bg-[#FDEDEB] text-[#E23A34] flex items-center justify-center">
+          <div className="w-7 h-7 rounded-[12px] bg-[#F0EEEA] text-[#17161A] flex items-center justify-center">
             <TrendingUp className="w-3.5 h-3.5" strokeWidth={2.5} />
           </div>
         </div>
@@ -109,15 +109,15 @@ export default function LabelKPIHero() {
       >
         <div className="flex items-center justify-between mb-3">
           <span className="text-[12px] font-medium text-[#6E6D73]">Промо-отчёты</span>
-          <div className="w-7 h-7 rounded-[12px] bg-[#FDEDEB] text-[#E23A34] flex items-center justify-center">
-            <NotificationIconControlled size={16} color="#E23A34" hasNotif={unreviewedPromos > 0} />
+          <div className="w-7 h-7 rounded-[12px] bg-[#F0EEEA] text-[#17161A] flex items-center justify-center">
+            <NotificationIconControlled size={16} color="#17161A" hasNotif={unreviewedPromos > 0} />
           </div>
         </div>
         <div>
           <div className="text-[26px] font-semibold tracking-tight text-[#17161A] leading-none mb-1.5">
             {unreviewedPromos}
           </div>
-          <div className="text-[11px] text-[#A62018] font-medium">
+          <div className="text-[11px] text-[#17161A] font-medium">
             {unreviewedPromos > 0 ? "Ожидают проверки" : "Все проверены"}
           </div>
         </div>

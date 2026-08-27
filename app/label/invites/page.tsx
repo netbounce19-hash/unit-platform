@@ -17,12 +17,12 @@ import {
 } from "@/lib/supabase/label";
 
 const inputCls =
-  "w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]";
+  "w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[9px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]";
 
 function inviteState(inv: InviteRow): { label: string; cls: string } {
   if (inv.accepted_at) return { label: "Принято", cls: "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]" };
   if (new Date(inv.expires_at) < new Date())
-    return { label: "Истекло", cls: "bg-[#FDEDEB] dark:bg-[#3A2422] text-[#A62018] dark:text-[#F3928C]" };
+    return { label: "Истекло", cls: "bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2]" };
   return { label: "Ожидает", cls: "bg-[#FBF1DE] dark:bg-[#3A2F14] text-[#8A5A16] dark:text-[#E8B65A]" };
 }
 
@@ -135,7 +135,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
         <button
           type="submit"
           disabled={!email.trim() || busy}
-          className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
+          className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40"
         >
           {busy ? (
             <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
@@ -147,7 +147,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
       </form>
 
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
@@ -177,7 +177,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
                         onClick={() => revoke(inv.id)}
                         aria-label="Отозвать приглашение"
                         title="Отозвать"
-                        className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#A62018] dark:hover:text-[#F3928C] hover:bg-[#FDEDEB] dark:hover:bg-[#3A2422] transition"
+                        className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#17161A] dark:hover:text-[#F5F4F2] hover:bg-[#F0EEEA] dark:hover:bg-[#242327] transition"
                       >
                         <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                       </button>

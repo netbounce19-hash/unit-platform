@@ -146,7 +146,7 @@ export default function DemoSection({ bare = false }: { bare?: boolean } = {}) {
         {open && (
           <Link
             href="/demo/edit"
-            className="inline-flex items-center gap-[5px] text-[13px] font-medium text-[#E23A34] hover:opacity-80 transition shrink-0"
+            className="inline-flex items-center gap-[5px] text-[13px] font-medium text-[#17161A] hover:opacity-80 transition shrink-0"
           >
             <Pencil className="w-[14px] h-[14px]" strokeWidth={2} />
             Редактировать
@@ -197,7 +197,7 @@ export default function DemoSection({ bare = false }: { bare?: boolean } = {}) {
                     >
                       <div
                         className={`relative aspect-square rounded-[12px] overflow-hidden flex items-center justify-center transition ${
-                          isCur ? "ring-2 ring-[#E23A34] ring-offset-2" : ""
+                          isCur ? "ring-2 ring-[#17161A] ring-offset-2" : ""
                         }`}
                         style={{ background: t.gradient }}
                       >
@@ -219,7 +219,7 @@ export default function DemoSection({ bare = false }: { bare?: boolean } = {}) {
                           )}
                         </span>
                       </div>
-                      <div className={`text-[13px] font-medium truncate mt-[6px] ${isCur ? "text-[#E23A34]" : "text-[#17161A]"}`}>
+                      <div className={`text-[13px] font-medium truncate mt-[6px] ${isCur ? "text-[#17161A]" : "text-[#17161A]"}`}>
                         {t.title}
                       </div>
                       <div className="text-[11px] text-[#A6A5AB]">Демо</div>
@@ -262,7 +262,7 @@ export default function DemoSection({ bare = false }: { bare?: boolean } = {}) {
                   className="h-[6px] bg-[#ECEAE5] rounded-full overflow-hidden cursor-pointer mb-3"
                 >
                   <div
-                    className="h-full bg-[#E23A34] rounded-full"
+                    className="h-full bg-[#17161A] rounded-full"
                     style={{ width: duration ? `${(time / duration) * 100}%` : "0%" }}
                   />
                 </div>
@@ -279,7 +279,7 @@ export default function DemoSection({ bare = false }: { bare?: boolean } = {}) {
                   <button
                     onClick={togglePlay}
                     aria-label={playing ? "Пауза" : "Играть"}
-                    className="w-12 h-12 rounded-full bg-[#E23A34] text-white flex items-center justify-center hover:brightness-95 transition"
+                    className="w-12 h-12 rounded-full bg-[#17161A] text-white flex items-center justify-center hover:bg-[#2A282E] transition"
                   >
                     {playing ? (
                       <Pause className="w-5 h-5" strokeWidth={2} fill="currentColor" />

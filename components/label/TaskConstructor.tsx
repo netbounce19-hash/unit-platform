@@ -60,7 +60,7 @@ export default function TaskConstructor() {
             <select
               value={artistId}
               onChange={(e) => setArtistId(e.target.value)}
-              className="w-full bg-[#FAFAF9] border border-[#ECEAE5] rounded-[12px] px-3 py-2 text-[13px] text-[#17161A] outline-none focus:border-[#E23A34] transition cursor-pointer"
+              className="w-full bg-[#FAFAF9] border border-[#ECEAE5] rounded-[12px] px-3 py-2 text-[13px] text-[#17161A] outline-none focus:border-[#17161A] transition cursor-pointer"
             >
               {state.artists.map((a) => (
                 <option key={a.id} value={a.id}>
@@ -80,7 +80,7 @@ export default function TaskConstructor() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Например: Загрузить финальный мастер"
-              className="w-full bg-[#FAFAF9] border border-[#ECEAE5] rounded-[12px] px-3 py-2 text-[13px] text-[#17161A] placeholder:text-[#C4C3C8] outline-none focus:border-[#E23A34] transition"
+              className="w-full bg-[#FAFAF9] border border-[#ECEAE5] rounded-[12px] px-3 py-2 text-[13px] text-[#17161A] placeholder:text-[#C4C3C8] outline-none focus:border-[#17161A] transition"
             />
           </div>
 
@@ -93,7 +93,7 @@ export default function TaskConstructor() {
               <select
                 value={taskType}
                 onChange={(e) => setTaskType(e.target.value as typeof taskType)}
-                className="w-full bg-[#FAFAF9] border border-[#ECEAE5] rounded-[12px] px-2.5 py-2 text-[12.5px] text-[#17161A] outline-none focus:border-[#E23A34] transition cursor-pointer"
+                className="w-full bg-[#FAFAF9] border border-[#ECEAE5] rounded-[12px] px-2.5 py-2 text-[12.5px] text-[#17161A] outline-none focus:border-[#17161A] transition cursor-pointer"
               >
                 {typeOptions.map((o) => (
                   <option key={o.value} value={o.value}>
@@ -110,7 +110,7 @@ export default function TaskConstructor() {
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#ECEAE5] rounded-[12px] px-2.5 py-1.5 text-[12.5px] text-[#17161A] outline-none focus:border-[#E23A34] transition cursor-pointer"
+                className="w-full bg-[#FAFAF9] border border-[#ECEAE5] rounded-[12px] px-2.5 py-1.5 text-[12.5px] text-[#17161A] outline-none focus:border-[#17161A] transition cursor-pointer"
               />
             </div>
           </div>

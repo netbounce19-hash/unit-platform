@@ -49,7 +49,7 @@ const CATEGORY_MAP: Record<
   promo: {
     label: "Промо и реклама",
     icon: Megaphone,
-    badgeCls: "bg-[#FDEDEB] text-[#A62018] border-[#F3C9C6]",
+    badgeCls: "bg-[#F0EEEA] text-[#17161A] border-[#D2D0CB]",
   },
   video: {
     label: "Музыкальное видео",
@@ -200,7 +200,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
       subtitle="Согласование бюджетов на продакшн, маркетинг и промо артистов"
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[12px] px-4 py-3 mb-5 flex items-center gap-2">
+        <div className="text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-4 py-3 mb-5 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
@@ -280,7 +280,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
               onClick={() => setCategoryFilter(cat.key as CategoryFilter)}
               className={`px-2.5 py-1 text-[11px] font-medium rounded-full border transition cursor-pointer whitespace-nowrap ${
                 categoryFilter === cat.key
-                  ? "bg-[#FDEDEB] text-[#A62018] border-[#F3C9C6]"
+                  ? "bg-[#F0EEEA] text-[#17161A] border-[#D2D0CB]"
                   : "bg-white text-[#6E6D73] border-[#ECEAE5] hover:border-[#D2D0CB]"
               }`}
             >
@@ -332,7 +332,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                     <div className="min-w-0">
                       <Link
                         href={`/label/artists/${b.artist_id}`}
-                        className="text-[14px] font-semibold text-[#17161A] hover:text-[#E23A34] transition block truncate"
+                        className="text-[14px] font-semibold text-[#17161A] hover:text-[#6E6D73] transition block truncate"
                       >
                         {nameOf(b.artist_id)}
                       </Link>
@@ -382,7 +382,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                     <Calendar className="w-3.5 h-3.5 text-[#6E6D73]" />
                     <span className="text-[#6E6D73]">Нужны к: {formatDate(b.needed_by)}</span>
                     {daysRemaining !== null && daysRemaining <= 5 && b.status === "pending" && (
-                      <span className="text-[10.5px] font-semibold px-2 py-0.5 rounded bg-[#FDEDEB] text-[#A62018]">
+                      <span className="text-[10.5px] font-semibold px-2 py-0.5 rounded bg-[#F0EEEA] text-[#17161A]">
                         {daysRemaining <= 0 ? "Срок истёк" : `Осталось ${daysRemaining} дн.`}
                       </span>
                     )}
@@ -408,7 +408,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                           rows={2}
                           autoFocus
                           placeholder="Комментарий или условия одобрения (опционально)…"
-                          className="w-full resize-none text-[12.5px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-2 outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                          className="w-full resize-none text-[12.5px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-2 outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
                         />
 
                         {/* Quick Reason Chips for Rejection */}
@@ -443,7 +443,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                           <button
                             onClick={() => decide(b.id, "rejected")}
                             disabled={isBusy}
-                            className="inline-flex items-center justify-center gap-1.5 text-[12.5px] font-medium text-[#A62018] bg-[#FDEDEB] border border-[#F3C9C6] px-[14px] py-[8px] rounded-full hover:bg-[#FCE2DF] transition disabled:opacity-40 cursor-pointer"
+                            className="inline-flex items-center justify-center gap-1.5 text-[12.5px] font-medium text-[#17161A] bg-[#F0EEEA] border border-[#D2D0CB] px-[14px] py-[8px] rounded-full hover:bg-[#E5E3DE] transition disabled:opacity-40 cursor-pointer"
                           >
                             <X className="w-3.5 h-3.5" strokeWidth={2.5} />
                             Отклонить

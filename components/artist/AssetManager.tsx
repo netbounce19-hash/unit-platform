@@ -129,7 +129,7 @@ export default function AssetManager({ kind: controlledKind, hideTabs = false }:
               disabled={uploading}
               className={`flex items-center justify-center gap-2 text-[13px] font-medium rounded-full px-[14px] py-[8px] border transition disabled:opacity-50 ${
                 kind === k.key
-                  ? "border-[#E23A34] bg-[#FDEDEB] text-[#A62018]"
+                  ? "border-[#17161A] bg-[#F0EEEA] text-[#17161A]"
                   : "border-[#E5E3DE] bg-white text-[#6E6D73] hover:border-[#D2D0CB]"
               }`}
             >
@@ -151,9 +151,9 @@ export default function AssetManager({ kind: controlledKind, hideTabs = false }:
         <button
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="w-full flex items-center justify-center gap-3 rounded-[12px] border border-dashed border-[#D2D0CB] px-5 py-[16px] hover:border-[#E23A34] hover:bg-[#FDEDEB]/50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-3 rounded-[12px] border border-dashed border-[#D2D0CB] px-5 py-[16px] hover:border-[#17161A] hover:bg-[#F0EEEA]/50 transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          <span className="w-9 h-9 rounded-full bg-[#E23A34] text-white flex items-center justify-center shrink-0">
+          <span className="w-9 h-9 rounded-full bg-[#17161A] text-white flex items-center justify-center shrink-0">
             <Upload className="w-[18px] h-[18px]" strokeWidth={2} />
           </span>
           <span className="text-[14px] font-medium">
@@ -164,14 +164,14 @@ export default function AssetManager({ kind: controlledKind, hideTabs = false }:
         {uploading && (
           <div className="h-2 bg-[#F0EEEA] rounded-full overflow-hidden mt-3">
             <div
-              className="h-full bg-[#E23A34] rounded-full transition-all"
+              className="h-full bg-[#17161A] rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
         )}
 
         {error && (
-          <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[12px] px-3 py-[9px] mt-3">
+          <div className="text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px] mt-3">
             {error}
           </div>
         )}
@@ -224,7 +224,7 @@ export default function AssetManager({ kind: controlledKind, hideTabs = false }:
                   disabled={busyId === a.id}
                   aria-label="Удалить файл"
                   title="Удалить"
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-[#C4C3C8] hover:text-[#A62018] hover:bg-[#FDEDEB] transition disabled:opacity-40"
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-[#C4C3C8] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-40"
                 >
                   <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                 </button>

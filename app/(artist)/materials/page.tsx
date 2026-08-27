@@ -41,7 +41,7 @@ export default function MaterialsPage() {
             onClick={() => setTab(t)}
             className={`shrink-0 text-[13px] font-medium rounded-full px-[14px] py-[8px] border transition ${
               tab.key === t.key
-                ? "border-[#E23A34] bg-[#FDEDEB] text-[#A62018]"
+                ? "border-[#17161A] bg-[#F0EEEA] text-[#17161A]"
                 : "border-[#ECEAE5] bg-white text-[#6E6D73] hover:border-[#D2D0CB] hover:text-[#17161A]"
             }`}
           >

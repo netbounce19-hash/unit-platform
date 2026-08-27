@@ -90,7 +90,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
   if (!release) {
     return (
       <LabelShell org={org} title="Релиз не найден">
-        <Link href="/label/roster" className="text-[13px] text-[#E23A34] hover:opacity-80">
+        <Link href="/label/roster" className="text-[13px] text-[#17161A] hover:opacity-80">
           ← К ростеру
         </Link>
       </LabelShell>
@@ -119,7 +119,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
       }
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
@@ -146,7 +146,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
             onChange={(e) => setStrategy(e.target.value)}
             rows={12}
             placeholder="План продвижения, площадки, даты, бюджет…"
-            className="w-full resize-y text-[13.5px] leading-[1.55] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+            className="w-full resize-y text-[13.5px] leading-[1.55] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
           />
         </div>
 
@@ -193,7 +193,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               placeholder="Комментарий при отклонении"
-              className="w-full resize-none text-[13px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8] mb-3"
+              className="w-full resize-none text-[13px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8] mb-3"
             />
 
             <div className="flex flex-col gap-2">
@@ -212,7 +212,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
               <button
                 onClick={() => decide("rejected")}
                 disabled={busy !== null}
-                className="inline-flex items-center justify-center gap-2 text-[13px] font-medium text-[#A62018] dark:text-[#F3928C] border border-[#F3C9C6] dark:border-[#4A2F2C] bg-[#FDEDEB] dark:bg-[#3A2422] px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
+                className="inline-flex items-center justify-center gap-2 text-[13px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#D2D0CB] dark:border-[#33323A] bg-[#F0EEEA] dark:bg-[#242327] px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
               >
                 {busy === "reject" ? (
                   <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />

@@ -32,7 +32,7 @@ export default function StrategyPage() {
         <div className="space-y-[10px]">
           {strategyPillars.map((p, i) => (
             <div key={i} className="flex items-start gap-3">
-              <span className="w-[22px] h-[22px] rounded-full bg-[#FDEDEB] text-[#A62018] text-[12px] font-semibold flex items-center justify-center shrink-0 mt-[1px]">
+              <span className="w-[22px] h-[22px] rounded-full bg-[#F0EEEA] text-[#17161A] text-[12px] font-semibold flex items-center justify-center shrink-0 mt-[1px]">
                 {i + 1}
               </span>
               <div>

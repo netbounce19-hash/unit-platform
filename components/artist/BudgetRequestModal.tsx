@@ -119,7 +119,7 @@ export default function BudgetRequestModal({
                     onChange={(e) => setPurpose(e.target.value)}
                     rows={3}
                     placeholder="Напр. Сведение и мастеринг трека, съёмка клипа, промо-кампания…"
-                    className="w-full resize-none text-[14px] leading-[1.45] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                    className="w-full resize-none text-[14px] leading-[1.45] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
                   />
                 </label>
 
@@ -135,7 +135,7 @@ export default function BudgetRequestModal({
                       }
                       inputMode="numeric"
                       placeholder="0"
-                      className="w-full text-[18px] font-medium rounded-[12px] border border-[#E5E3DE] bg-white pl-3 pr-9 py-[11px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8] placeholder:font-normal"
+                      className="w-full text-[18px] font-medium rounded-[12px] border border-[#E5E3DE] bg-white pl-3 pr-9 py-[11px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8] placeholder:font-normal"
                     />
                     <span className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[16px] text-[#A6A5AB] pointer-events-none">
                       ₽
@@ -160,7 +160,7 @@ export default function BudgetRequestModal({
                       value={neededBy}
                       min={today}
                       onChange={(e) => setNeededBy(e.target.value)}
-                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white pl-[34px] pr-3 py-[11px] outline-none focus:border-[#E23A34] transition"
+                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white pl-[34px] pr-3 py-[11px] outline-none focus:border-[#17161A] transition"
                     />
                   </div>
                   <span className="block text-[12px] text-[#A6A5AB] mt-[6px]">
@@ -180,7 +180,7 @@ export default function BudgetRequestModal({
                 <button
                   onClick={handleSubmit}
                   disabled={!canSubmit}
-                  className="inline-flex items-center gap-[7px] bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-[7px] bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Отправить на согласование
                   <ArrowUp className="w-[15px] h-[15px]" strokeWidth={2.5} />

@@ -53,7 +53,7 @@ function DataUploadInner({ org }: { org: MyOrg }) {
       </div>
 
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
@@ -91,13 +91,13 @@ function DataUploadInner({ org }: { org: MyOrg }) {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") save(a.id);
                   }}
-                  className="w-[160px] text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[7px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                  className="w-[160px] text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[7px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
                 />
 
                 <button
                   onClick={() => save(a.id)}
                   disabled={!drafts[a.id]}
-                  className="inline-flex items-center gap-[6px] text-[12.5px] font-medium bg-[#E23A34] text-white px-[12px] py-[7px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-[6px] text-[12.5px] font-medium bg-[#17161A] text-white px-[12px] py-[7px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {saved === a.id ? (
                     <>

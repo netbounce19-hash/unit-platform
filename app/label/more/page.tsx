@@ -84,7 +84,7 @@ function MoreInner({ org }: { org: MyOrg }) {
           await getSupabase().auth.signOut();
           router.push("/");
         }}
-        className={`${panelCls} w-full flex items-center justify-center gap-[7px] px-4 py-[13px] text-[14px] font-medium text-[#6E6D73] dark:text-[#9A98A0] hover:text-[#A62018] dark:hover:text-[#F3928C] hover:border-[#F3C9C6] dark:hover:border-[#3A2422] transition`}
+        className={`${panelCls} w-full flex items-center justify-center gap-[7px] px-4 py-[13px] text-[14px] font-medium text-[#6E6D73] dark:text-[#9A98A0] hover:text-[#17161A] dark:hover:text-[#F5F4F2] hover:border-[#D2D0CB] dark:hover:border-[#242327] transition`}
       >
         <LogOut className="w-[16px] h-[16px]" strokeWidth={1.75} />
         Выйти из аккаунта

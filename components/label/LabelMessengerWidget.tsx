@@ -191,12 +191,12 @@ export default function LabelMessengerWidget() {
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               placeholder={`Написать ${artist?.name || "артисту"}…`}
-              className="flex-1 text-[13px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-2 outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+              className="flex-1 text-[13px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-2 outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
             />
             <button
               type="submit"
               disabled={!draft.trim()}
-              className="w-9 h-9 shrink-0 rounded-full bg-[#E23A34] text-white flex items-center justify-center hover:brightness-95 active:scale-95 transition disabled:opacity-40 cursor-pointer"
+              className="w-9 h-9 shrink-0 rounded-full bg-[#17161A] text-white flex items-center justify-center hover:bg-[#2A282E] active:scale-95 transition disabled:opacity-40 cursor-pointer"
             >
               <SendIconControlled size={16} color="white" sent={sending} />
             </button>

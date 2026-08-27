@@ -13,7 +13,7 @@ import {
   type RequestStatus,
 } from "@/lib/supabase/cabinet";
 
-const DECLINED = { label: "Отклонена", cls: "bg-[#FDEDEB] text-[#A62018]" };
+const DECLINED = { label: "Отклонена", cls: "bg-[#F0EEEA] text-[#17161A]" };
 
 const statusLabels: Record<RequestStatus, { label: string; cls: string }> = {
   pending: { label: "На рассмотрении", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
@@ -113,7 +113,7 @@ export default function FinancePage() {
         </div>
         <button
           onClick={() => setBudgetOpen(true)}
-          className="shrink-0 inline-flex items-center gap-[6px] bg-[#E23A34] text-white font-medium text-[13px] px-[14px] py-[8px] rounded-full hover:brightness-95 transition mt-1"
+          className="shrink-0 inline-flex items-center gap-[6px] bg-[#17161A] text-white font-medium text-[13px] px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition mt-1"
         >
           <Plus className="w-4 h-4" strokeWidth={2.5} />
           Сделать заявку
@@ -147,7 +147,7 @@ export default function FinancePage() {
                       <div
                         className={`inline-flex items-center gap-[5px] text-[12px] mt-[5px] ${
                           isUrgent(r.needed_by) && r.status === "pending"
-                            ? "text-[#A62018]"
+                            ? "text-[#17161A]"
                             : "text-[#6E6D73]"
                         }`}
                       >
@@ -166,7 +166,7 @@ export default function FinancePage() {
                       onClick={() => removeRequest(r.id)}
                       aria-label={`Удалить заявку: ${r.purpose}`}
                       title="Удалить заявку"
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-[#C4C3C8] hover:text-[#A62018] hover:bg-[#FDEDEB] transition"
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-[#C4C3C8] hover:text-[#17161A] hover:bg-[#F0EEEA] transition"
                     >
                       <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                     </button>

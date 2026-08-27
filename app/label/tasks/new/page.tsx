@@ -16,7 +16,7 @@ import {
 } from "@/lib/supabase/label";
 
 const inputCls =
-  "w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]";
+  "w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[9px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]";
 const labelCls = "block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]";
 
 function NewTaskInner({ org }: { org: MyOrg }) {
@@ -181,7 +181,7 @@ function NewTaskInner({ org }: { org: MyOrg }) {
           </div>
 
           {error && (
-            <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px]">
+            <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px]">
               {error}
             </div>
           )}
@@ -189,7 +189,7 @@ function NewTaskInner({ org }: { org: MyOrg }) {
           <button
             type="submit"
             disabled={!canSubmit}
-            className="w-full inline-flex items-center justify-center gap-2 text-[13.5px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-2 text-[13.5px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
             Поставить задачу

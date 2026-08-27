@@ -23,7 +23,7 @@ export default function PromoInbox() {
       case "TikTok":
         return "bg-[#17161A] text-white";
       case "Instagram Reels":
-        return "bg-[#FDEDEB] text-[#A62018]";
+        return "bg-[#F0EEEA] text-[#17161A]";
       case "YouTube Shorts":
         return "bg-[#FBF1DE] text-[#8A5A16]";
       default:
@@ -42,7 +42,7 @@ export default function PromoInbox() {
         <div className="flex items-center gap-2">
           <NotificationIconControlled
             size={18}
-            color="#E23A34"
+            color="#17161A"
             hasNotif={unreviewed.length > 0}
           />
           <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-[#17161A]">
@@ -50,7 +50,7 @@ export default function PromoInbox() {
           </h3>
         </div>
         {unreviewed.length > 0 ? (
-          <span className="px-2.5 py-0.5 bg-[#FDEDEB] text-[#A62018] text-[11px] font-medium rounded-full">
+          <span className="px-2.5 py-0.5 bg-[#F0EEEA] text-[#17161A] text-[11px] font-medium rounded-full">
             {unreviewed.length} на проверке
           </span>
         ) : (
@@ -106,7 +106,7 @@ export default function PromoInbox() {
                 href={promo.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[12px] text-[#6E6D73] hover:text-[#E23A34] transition inline-flex items-center gap-1 mb-3 truncate max-w-full"
+                className="text-[12px] text-[#6E6D73] hover:text-[#17161A] transition inline-flex items-center gap-1 mb-3 truncate max-w-full"
               >
                 <span className="truncate">{promo.link}</span>
                 <ExternalLink className="w-3 h-3 shrink-0" />
@@ -119,7 +119,7 @@ export default function PromoInbox() {
                 onClick={() =>
                   dispatch({ type: "REVIEW_PROMO", payload: promo.id })
                 }
-                className="w-full py-1.5 bg-[#FDEDEB] text-[#A62018] hover:bg-[#FCE2DF] text-[12px] font-medium rounded-full transition cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full py-1.5 bg-[#F0EEEA] text-[#17161A] hover:bg-[#E5E3DE] text-[12px] font-medium rounded-full transition cursor-pointer flex items-center justify-center gap-1.5"
               >
                 Отметить проверенным
               </button>

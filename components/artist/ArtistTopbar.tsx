@@ -39,7 +39,7 @@ export default function ArtistTopbar() {
           href="/profile"
           aria-label="Профиль"
           title="Профиль"
-          className="w-8 h-8 rounded-full overflow-hidden bg-[#17161A] text-white flex items-center justify-center text-[13px] font-medium hover:ring-2 hover:ring-[#E23A34]/30 transition"
+          className="w-8 h-8 rounded-full overflow-hidden bg-[#17161A] text-white flex items-center justify-center text-[13px] font-medium hover:ring-2 hover:ring-[#17161A]/30 transition"
         >
           {name.charAt(0) || "?"}
         </Link>

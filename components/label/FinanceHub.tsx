@@ -100,7 +100,7 @@ export default function FinanceHub() {
                       payload: { id: budget.id, status: "declined" },
                     })
                   }
-                  className="py-1.5 px-3 bg-[#FDEDEB] text-[#A62018] text-[12px] font-medium rounded-full hover:bg-[#FCE2DF] transition flex items-center justify-center gap-1 cursor-pointer"
+                  className="py-1.5 px-3 bg-[#F0EEEA] text-[#17161A] text-[12px] font-medium rounded-full hover:bg-[#E5E3DE] transition flex items-center justify-center gap-1 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" strokeWidth={2.5} />
                   Отклонить
@@ -143,7 +143,7 @@ export default function FinanceHub() {
                     className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
                       budget.status === "approved"
                         ? "bg-[#E9F6EF] text-[#166B49]"
-                        : "bg-[#FDEDEB] text-[#A62018]"
+                        : "bg-[#F0EEEA] text-[#17161A]"
                     }`}
                   >
                     {budget.status === "approved" ? "Одобрено" : "Отклонено"}

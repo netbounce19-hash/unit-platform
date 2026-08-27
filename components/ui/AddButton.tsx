@@ -45,13 +45,12 @@ export default function AddButton({
   const content = (
     <>
       <span
-        className={`${s.circle} rounded-full bg-[#E23A34] text-white flex items-center justify-center shrink-0 transition group-hover:brightness-95`}
+        className={`${s.circle} rounded-full bg-[#17161A] text-white flex items-center justify-center shrink-0 transition group-hover:bg-[#2A282E]`}
       >
         <Plus className={s.icon} strokeWidth={2.5} />
       </span>
-      <span
-        className={`${s.label} font-medium text-[#17161A] dark:text-[#F5F4F2] group-hover:text-[#A62018] dark:group-hover:text-[#F3928C] transition`}
-      >
+      {/* Подпись цвет не меняет — на ховер отзывается круг */}
+      <span className={`${s.label} font-medium text-[#17161A] dark:text-[#F5F4F2]`}>
         {label}
       </span>
     </>
