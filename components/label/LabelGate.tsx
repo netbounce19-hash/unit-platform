@@ -44,7 +44,22 @@ export default function LabelGate({ children }: { children: (ctx: LabelContext) 
       }
 
       try {
-        const found = await fetchMyOrg();
+        let found = await fetchMyOrg();
+
+        // Регистрация лейбла завершается здесь: при signUp сессии может не
+        // быть (почта требует подтверждения), поэтому название откладывается
+        // в метаданные и организация создаётся при первом реальном входе.
+        const pending = s.user.user_metadata?.pending_label_name as string | undefined;
+        if (!found && pending) {
+          const { error: rpcErr } = await supabase.rpc("create_label_org", {
+            org_name: pending,
+          });
+          if (!rpcErr) {
+            await supabase.auth.updateUser({ data: { pending_label_name: null } });
+            found = await fetchMyOrg();
+          }
+        }
+
         if (cancelled) return;
         setSession(s);
         setOrg(found);

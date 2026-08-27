@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Music, Building2 } from "lucide-react";
+import Link from "next/link";
+import { Loader2, Music, Building2, UserPlus } from "lucide-react";
 import { getSupabase } from "@/lib/supabase/client";
 
 /**
@@ -91,6 +92,19 @@ export default function Home() {
           {error}
         </div>
       )}
+
+      {/* Кнопки выше — быстрый вход тестовыми аккаунтами. Здесь настоящая
+          регистрация: новый пользователь и, для лейбла, своя организация. */}
+      <div className="mt-8 text-center">
+        <div className="text-[13px] text-[#A6A5AB] mb-3">Нет аккаунта?</div>
+        <Link
+          href="/signup"
+          className="inline-flex items-center gap-[8px] bg-white border border-[#E5E3DE] text-[#17161A] font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:border-[#D2D0CB] transition"
+        >
+          <UserPlus className="w-[16px] h-[16px]" strokeWidth={1.75} />
+          Создать аккаунт
+        </Link>
+      </div>
     </div>
   );
 }
