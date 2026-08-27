@@ -60,34 +60,34 @@ export default function Home() {
         <button
           onClick={() => enter("artist")}
           disabled={busy !== null}
-          className="group w-[200px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#E23A34] hover:shadow-lg transition text-center disabled:opacity-50"
+          className="group w-[200px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#17161A] hover:shadow-lg transition text-center disabled:opacity-50"
         >
           {busy === "artist" ? (
-            <Loader2 className="w-8 h-8 mx-auto animate-spin text-[#E23A34]" strokeWidth={2} />
+            <Loader2 className="w-8 h-8 mx-auto animate-spin text-[#17161A]" strokeWidth={2} />
           ) : (
-            <Music className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#E23A34] transition" strokeWidth={1.5} />
+            <Music className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#17161A] transition" strokeWidth={1.5} />
           )}
-          <div className="text-[15px] font-semibold mt-3 group-hover:text-[#E23A34] transition">Артист</div>
+          <div className="text-[15px] font-semibold mt-3 group-hover:text-[#17161A] transition">Артист</div>
           <div className="text-[12px] text-[#A6A5AB] mt-1">Кабинет артиста</div>
         </button>
 
         <button
           onClick={() => enter("label")}
           disabled={busy !== null}
-          className="group w-[200px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#E23A34] hover:shadow-lg transition text-center disabled:opacity-50"
+          className="group w-[200px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#17161A] hover:shadow-lg transition text-center disabled:opacity-50"
         >
           {busy === "label" ? (
-            <Loader2 className="w-8 h-8 mx-auto animate-spin text-[#E23A34]" strokeWidth={2} />
+            <Loader2 className="w-8 h-8 mx-auto animate-spin text-[#17161A]" strokeWidth={2} />
           ) : (
-            <Building2 className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#E23A34] transition" strokeWidth={1.5} />
+            <Building2 className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#17161A] transition" strokeWidth={1.5} />
           )}
-          <div className="text-[15px] font-semibold mt-3 group-hover:text-[#E23A34] transition">Лейбл</div>
+          <div className="text-[15px] font-semibold mt-3 group-hover:text-[#17161A] transition">Лейбл</div>
           <div className="text-[12px] text-[#A6A5AB] mt-1">Кабинет лейбла</div>
         </button>
       </div>
 
       {error && (
-        <div className="mt-5 max-w-[420px] text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px]">
+        <div className="mt-5 max-w-[420px] text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px]">
           {error}
         </div>
       )}

@@ -32,7 +32,7 @@ const ROLES: { key: AccountRole; label: string; hint: string; icon: React.ReactN
 ];
 
 const inputCls =
-  "w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]";
+  "w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]";
 const labelCls = "block text-[13px] font-medium text-[#6E6D73] mb-[7px]";
 
 export default function AuthPanel() {
@@ -143,7 +143,7 @@ export default function AuthPanel() {
             <button
               type="button"
               onClick={() => switchMode("signin")}
-              className="mt-4 text-[13px] font-medium text-[#E23A34] hover:opacity-80 transition"
+              className="mt-4 text-[13px] font-medium text-[#17161A] hover:opacity-80 transition"
             >
               Вернуться ко входу
             </button>
@@ -182,13 +182,13 @@ export default function AuthPanel() {
                   aria-pressed={active}
                   className={`text-left rounded-[12px] border px-3 py-[11px] transition ${
                     active
-                      ? "border-[#E23A34] bg-[#FDEDEB]"
+                      ? "border-[#17161A] bg-[#F0EEEA]"
                       : "border-[#E5E3DE] bg-white hover:border-[#D2D0CB]"
                   }`}
                 >
                   <span
                     className={`flex items-center gap-2 text-[14px] font-medium ${
-                      active ? "text-[#A62018]" : "text-[#17161A]"
+                      active ? "text-[#17161A]" : "text-[#17161A]"
                     }`}
                   >
                     {r.icon}
@@ -253,7 +253,7 @@ export default function AuthPanel() {
                   <button
                     type="button"
                     onClick={() => switchMode("reset")}
-                    className="text-[12px] font-medium text-[#E23A34] hover:opacity-80 transition"
+                    className="text-[12px] font-medium text-[#17161A] hover:opacity-80 transition"
                   >
                     Забыли пароль?
                   </button>
@@ -271,7 +271,7 @@ export default function AuthPanel() {
           )}
 
           {error && (
-            <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px]">
+            <div className="text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px]">
               {error}
             </div>
           )}
@@ -279,7 +279,7 @@ export default function AuthPanel() {
           <button
             type="submit"
             disabled={!canSubmit}
-            className="w-full inline-flex items-center justify-center gap-2 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-2 bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
             {busy ? "Секунду…" : submitLabel}
@@ -301,7 +301,7 @@ export default function AuthPanel() {
                   key={p.key}
                   type="button"
                   onClick={() => onSocial(p.key)}
-                  className="inline-flex items-center justify-center gap-2 text-[13.5px] font-medium rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] hover:border-[#D2D0CB] hover:bg-[#FAFAF9] transition"
+                  className="inline-flex items-center justify-center gap-2 text-[13.5px] font-medium rounded-full border border-[#E5E3DE] bg-white px-3 py-[10px] hover:border-[#D2D0CB] hover:bg-[#FAFAF9] transition"
                 >
                   <span style={{ color: p.brand }}>{p.icon}</span>
                   {p.label}
@@ -312,7 +312,7 @@ export default function AuthPanel() {
         )}
 
         {notice && (
-          <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[10px] px-3 py-[9px]">
+          <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[12px] px-3 py-[9px]">
             <Info className="w-[14px] h-[14px] shrink-0 mt-[1px]" strokeWidth={2} />
             <span className="leading-[1.45]">{notice}</span>
           </div>
@@ -326,7 +326,7 @@ export default function AuthPanel() {
             <button
               type="button"
               onClick={() => switchMode("signin")}
-              className="font-medium text-[#E23A34] hover:opacity-80 transition"
+              className="font-medium text-[#17161A] hover:opacity-80 transition"
             >
               Войти
             </button>
@@ -337,7 +337,7 @@ export default function AuthPanel() {
             <button
               type="button"
               onClick={() => switchMode(isSignup ? "signin" : "signup")}
-              className="font-medium text-[#E23A34] hover:opacity-80 transition"
+              className="font-medium text-[#17161A] hover:opacity-80 transition"
             >
               {isSignup ? "Войти" : "Зарегистрироваться"}
             </button>

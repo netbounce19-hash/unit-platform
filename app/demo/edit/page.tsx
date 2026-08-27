@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, Plus, Trash2, RefreshCw, Disc3, Music, Loader2, ImagePlus, ChevronUp, ChevronDown } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Disc3, Music, Loader2, ImagePlus, ChevronUp, ChevronDown } from "lucide-react";
 import { useDemos } from "@/components/artist/DemoContext";
+import BackHome from "@/components/ui/BackHome";
 import AuthGate from "@/components/auth/AuthGate";
 
 // Открывает системный выбор файла и резолвит выбранный File
@@ -108,13 +108,8 @@ function DemoEditInner() {
 
   return (
     <div className="max-w-[720px] mx-auto px-5 py-7">
-      <Link
-        href="/dashboard"
-        className="inline-flex items-center gap-[6px] text-[13px] text-[#6E6D73] hover:text-[#17161A] transition mb-5"
-      >
-        <ArrowLeft className="w-4 h-4" strokeWidth={2} />
-        К дашборду
-      </Link>
+      {/* Страница живёт вне (artist)-каркаса, поэтому контрол ставим вручную */}
+      <BackHome homeHref="/dashboard" roots={[]} />
 
       <div className="mb-5">
         <div className="text-[12px] text-[#A6A5AB]">ДЕМО</div>
@@ -128,9 +123,9 @@ function DemoEditInner() {
       <button
         onClick={onUpload}
         disabled={uploading}
-        className="w-full mb-3 flex items-center justify-center gap-3 rounded-[16px] border border-dashed border-[#D2D0CB] bg-white px-5 py-[20px] hover:border-[#E23A34] hover:bg-[#FDEDEB]/50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full mb-3 flex items-center justify-center gap-3 rounded-[16px] border border-dashed border-[#D2D0CB] bg-white px-5 py-[20px] hover:border-[#17161A] hover:bg-[#F0EEEA]/50 transition disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        <span className="w-11 h-11 rounded-full bg-[#E23A34] text-white flex items-center justify-center shrink-0">
+        <span className="w-11 h-11 rounded-full bg-[#17161A] text-white flex items-center justify-center shrink-0">
           {uploading ? <Loader2 className="w-6 h-6 animate-spin" strokeWidth={2} /> : <Plus className="w-6 h-6" strokeWidth={2.5} />}
         </span>
         <span className="text-left">
@@ -143,12 +138,12 @@ function DemoEditInner() {
 
       {uploading && (
         <div className="h-2 bg-[#F0EEEA] rounded-full overflow-hidden mb-5">
-          <div className="h-full bg-[#E23A34] rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
+          <div className="h-full bg-[#17161A] rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
         </div>
       )}
 
       {error && (
-        <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
@@ -177,7 +172,7 @@ function DemoEditInner() {
                     onClick={() => onMove(d.id, -1)}
                     disabled={i === 0}
                     aria-label="Выше"
-                    className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    className="w-6 h-6 rounded-[12px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                   >
                     <ChevronUp className="w-[16px] h-[16px]" strokeWidth={2} />
                   </button>
@@ -185,7 +180,7 @@ function DemoEditInner() {
                     onClick={() => onMove(d.id, 1)}
                     disabled={i === demos.length - 1}
                     aria-label="Ниже"
-                    className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    className="w-6 h-6 rounded-[12px] flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                   >
                     <ChevronDown className="w-[16px] h-[16px]" strokeWidth={2} />
                   </button>
@@ -219,7 +214,7 @@ function DemoEditInner() {
                     onBlur={() => commitTitle(d.id, d.title)}
                     onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
                     placeholder="Название демо"
-                    className="w-full text-[14px] font-medium rounded-[8px] border border-transparent hover:border-[#E5E3DE] focus:border-[#E23A34] bg-transparent px-2 py-[6px] -ml-2 outline-none transition placeholder:text-[#C4C3C8]"
+                    className="w-full text-[14px] font-medium rounded-[12px] border border-transparent hover:border-[#E5E3DE] focus:border-[#17161A] bg-transparent px-2 py-[6px] -ml-2 outline-none transition placeholder:text-[#C4C3C8]"
                   />
                   <div className="flex items-center gap-[5px] text-[12px] text-[#A6A5AB] mt-[2px] px-[2px]">
                     <Music className="w-[12px] h-[12px]" strokeWidth={1.75} />
@@ -243,7 +238,7 @@ function DemoEditInner() {
                     disabled={rowBusy}
                     aria-label="Удалить демо"
                     title="Удалить"
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition disabled:opacity-40"
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition disabled:opacity-40"
                   >
                     <Trash2 className="w-[17px] h-[17px]" strokeWidth={1.75} />
                   </button>

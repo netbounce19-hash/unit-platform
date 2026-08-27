@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, LogOut, Loader2 } from "lucide-react";
+import { LogOut, Loader2 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import { getSupabase } from "@/lib/supabase/client";
+import BackHome from "@/components/ui/BackHome";
 import AuthPanel from "@/components/auth/AuthPanel";
 import AssetManager from "@/components/artist/AssetManager";
 
@@ -37,19 +37,15 @@ export default function AccountPage() {
 
   return (
     <div className="max-w-[720px] mx-auto px-5 py-7">
-      <div className="flex items-center justify-between mb-5">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-[6px] text-[13px] text-[#6E6D73] hover:text-[#17161A] transition"
-        >
-          <ArrowLeft className="w-4 h-4" strokeWidth={2} />
-          К дашборду
-        </Link>
+      <div className="flex items-center justify-between">
+        {/* Страница вне (artist)-каркаса — контрол ставим вручную.
+            Без сессии вести в кабинет некуда, поэтому только с ней. */}
+        {session ? <BackHome homeHref="/dashboard" roots={[]} /> : <span />}
 
         {session && (
           <button
             onClick={() => getSupabase().auth.signOut()}
-            className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] hover:text-[#A62018] transition"
+            className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] hover:text-[#17161A] transition"
           >
             <LogOut className="w-4 h-4" strokeWidth={1.75} />
             Выйти
@@ -68,8 +64,8 @@ export default function AccountPage() {
       </div>
 
       {configError ? (
-        <div className="bg-white border-[0.5px] border-[#F3C9C6] rounded-[16px] p-[22px]">
-          <div className="text-[15px] font-semibold text-[#A62018] mb-2">Supabase не настроен</div>
+        <div className="bg-white border-[0.5px] border-[#D2D0CB] rounded-[16px] p-[22px]">
+          <div className="text-[15px] font-semibold text-[#17161A] mb-2">Supabase не настроен</div>
           <p className="text-[13px] text-[#6E6D73] leading-[1.5]">{configError}</p>
         </div>
       ) : !ready ? (

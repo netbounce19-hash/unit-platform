@@ -15,7 +15,7 @@ import {
 import { getSupabase } from "@/lib/supabase/client";
 
 const inputCls =
-  "w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]";
+  "w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]";
 const labelCls = "block text-[13px] font-medium text-[#6E6D73] mb-[7px]";
 
 export default function ResetPasswordPage() {
@@ -87,7 +87,7 @@ export default function ResetPasswordPage() {
       {configError ? (
         <Card className="w-full max-w-[420px]">
           <CardContent className="py-2">
-            <CardTitle className="text-[#A62018]">Supabase не настроен</CardTitle>
+            <CardTitle className="text-[#17161A]">Supabase не настроен</CardTitle>
             <CardDescription className="mt-1">{configError}</CardDescription>
           </CardContent>
         </Card>
@@ -116,7 +116,7 @@ export default function ResetPasswordPage() {
           <CardFooter className="justify-center">
             <Link
               href="/"
-              className="text-[13px] font-medium text-[#E23A34] hover:opacity-80 transition"
+              className="text-[13px] font-medium text-[#17161A] hover:opacity-80 transition"
             >
               Вернуться ко входу
             </Link>
@@ -153,14 +153,14 @@ export default function ResetPasswordPage() {
                   className={inputCls}
                 />
                 {confirm.length > 0 && password !== confirm && (
-                  <span className="block text-[11px] text-[#A62018] mt-[5px]">
+                  <span className="block text-[11px] text-[#17161A] mt-[5px]">
                     Пароли не совпадают
                   </span>
                 )}
               </label>
 
               {error && (
-                <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px]">
+                <div className="text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px]">
                   {error}
                 </div>
               )}
@@ -168,7 +168,7 @@ export default function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="w-full inline-flex items-center justify-center gap-2 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
                 {busy ? "Секунду…" : "Сохранить пароль"}

@@ -91,7 +91,7 @@ function InviteInner({ token }: { token: string }) {
             </p>
 
             {error && (
-              <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px] mt-4 text-left">
+              <div className="text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px] mt-4 text-left">
                 {error}
               </div>
             )}
@@ -99,7 +99,7 @@ function InviteInner({ token }: { token: string }) {
             <button
               onClick={accept}
               disabled={busy}
-              className="w-full inline-flex items-center justify-center gap-2 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 mt-4"
+              className="w-full inline-flex items-center justify-center gap-2 bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 mt-4"
             >
               {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
               Принять приглашение

@@ -83,7 +83,7 @@ export default function SignUpForm() {
           onChange={(e) => setEmail(e.target.value)}
           autoComplete="email"
           placeholder="you@example.com"
-          className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+          className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
         />
       </label>
 
@@ -94,7 +94,7 @@ export default function SignUpForm() {
           onChange={(e) => setFullName(e.target.value)}
           autoComplete="name"
           placeholder="Иван Петров"
-          className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+          className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
         />
       </label>
 
@@ -104,7 +104,7 @@ export default function SignUpForm() {
           value={artistName}
           onChange={(e) => setArtistName(e.target.value)}
           placeholder="KXDE"
-          className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+          className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
         />
       </label>
 
@@ -116,12 +116,12 @@ export default function SignUpForm() {
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
           placeholder="Минимум 6 символов"
-          className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+          className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
         />
       </label>
 
       {error && (
-        <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px]">
+        <div className="text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px]">
           {error}
         </div>
       )}
@@ -129,7 +129,7 @@ export default function SignUpForm() {
       <button
         type="submit"
         disabled={!canSubmit}
-        className="w-full inline-flex items-center justify-center gap-2 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full inline-flex items-center justify-center gap-2 bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
         {busy ? "Создаём аккаунт…" : "Зарегистрироваться"}
