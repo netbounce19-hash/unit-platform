@@ -21,16 +21,15 @@ import LabelGate from "@/components/label/LabelGate";
 import LabelShell from "@/components/label/LabelShell";
 import { fetchRoster, type MyOrg, type RosterArtist } from "@/lib/supabase/label";
 import {
-  sendMessage,
-  seedThreadIfEmpty,
-  getThread,
+  fetchThread,
+  fetchOrgPreviews,
+  postMessage,
+  POLL_MS,
   type Message,
-  type MessageAttachment,
-} from "@/lib/label/mockMessages";
-import { useMessageThread } from "@/lib/label/useMessageThread";
+} from "@/lib/supabase/messages";
 import { SendIconControlled } from "@/components/ui/animated-state-icons";
 
-function fmtTime(iso: string) {
+function formatTime(iso: string) {
   return new Date(iso).toLocaleTimeString("ru-RU", {
     hour: "2-digit",
     minute: "2-digit",
@@ -45,13 +44,15 @@ function MessagesInner({ org }: { org: MyOrg }) {
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [thread, setThread] = useState<Message[]>([]);
+  const [previews, setPreviews] = useState<Map<string, Message>>(new Map());
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchRoster(org.org_id)
-      .then((rows) => {
+    Promise.all([fetchRoster(org.org_id), fetchOrgPreviews(org.org_id)])
+      .then(([rows, prev]) => {
         setArtists(rows);
-        rows.forEach((a) => seedThreadIfEmpty(a.id, a.stage_name));
+        setPreviews(prev);
         // На десктопе автоматически выбираем первого артиста
         if (rows.length > 0 && window.innerWidth >= 768) {
           setSelected(rows[0].id);
@@ -66,7 +67,26 @@ function MessagesInner({ org }: { org: MyOrg }) {
     [artists, selected]
   );
 
-  const thread = useMessageThread(selected);
+  // Открытую ветку опрашиваем: живого сокета нет, а ответ артиста
+  // должен появляться без перезагрузки страницы
+  const loadThread = useCallback(async () => {
+    if (!selected) return;
+    try {
+      setThread(await fetchThread(selected));
+    } catch {
+      /* сеть — оставляем показанное */
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    if (!selected) {
+      setThread([]);
+      return;
+    }
+    loadThread();
+    const t = setInterval(loadThread, POLL_MS);
+    return () => clearInterval(t);
+  }, [selected, loadThread]);
 
   // Auto-scroll to bottom when messages update
   useEffect(() => {
@@ -75,10 +95,10 @@ function MessagesInner({ org }: { org: MyOrg }) {
     }
   }, [thread, selected]);
 
-  const previewOf = useCallback((artistId: string) => {
-    const t = getThread(artistId);
-    return t[t.length - 1] ?? null;
-  }, []);
+  const previewOf = useCallback(
+    (artistId: string) => previews.get(artistId) ?? null,
+    [previews]
+  );
 
   const filteredArtists = useMemo(() => {
     return artists.filter((a) =>
@@ -86,17 +106,27 @@ function MessagesInner({ org }: { org: MyOrg }) {
     );
   }, [artists, search]);
 
-  const submit = (textToSend?: string) => {
+  const submit = async (textToSend?: string) => {
     const text = (textToSend || draft).trim();
-    if (!selected || !text) return;
+    if (!selected || !text || sending) return;
 
     setSending(true);
-    sendMessage(selected, "label", text);
-    if (!textToSend) setDraft("");
-
-    setTimeout(() => {
-      setSending(false);
-    }, 600);
+    setError(null);
+    try {
+      const row = await postMessage({
+        orgId: org.org_id,
+        artistId: selected,
+        side: "label",
+        body: text,
+      });
+      setThread((p) => [...p, row]);
+      setPreviews((m) => new Map(m).set(selected, row));
+      if (!textToSend) setDraft("");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Не удалось отправить");
+    } finally {
+      setTimeout(() => setSending(false), 600);
+    }
   };
 
   const quickPrompts = [
@@ -171,17 +201,17 @@ function MessagesInner({ org }: { org: MyOrg }) {
                           </span>
                           {last && (
                             <span className="text-[11px] text-[#A6A5AB] shrink-0">
-                              {fmtTime(last.createdAt)}
+                              {formatTime(last.created_at)}
                             </span>
                           )}
                         </div>
                         <p className="text-[12.5px] text-[#6E6D73] truncate leading-tight">
                           {last ? (
                             <>
-                              {last.from === "label" && (
+                              {last.from_side === "label" && (
                                 <span className="text-[#17161A] font-medium">Вы: </span>
                               )}
-                              {last.attachment ? `[${last.attachment.title}] ${last.text}` : last.text}
+                              {last.attachment ? `[${last.attachment.title}] ${last.body}` : last.body}
                             </>
                           ) : (
                             <span className="text-[#A6A5AB]">Нет сообщений</span>
@@ -250,7 +280,7 @@ function MessagesInner({ org }: { org: MyOrg }) {
                   </div>
                 ) : (
                   thread.map((m) => {
-                    const isLabel = m.from === "label";
+                    const isLabel = m.from_side === "label";
                     return (
                       <div
                         key={m.id}
@@ -293,14 +323,14 @@ function MessagesInner({ org }: { org: MyOrg }) {
                           )}
 
                           <p className="text-[13.5px] leading-[1.45] whitespace-pre-wrap">
-                            {m.text}
+                            {m.body}
                           </p>
                         </div>
 
                         {/* Timestamp & checkmarks */}
                         <div className="flex items-center gap-1 mt-1 px-1">
                           <span className="text-[10px] text-[#A6A5AB]">
-                            {fmtTime(m.createdAt)}
+                            {formatTime(m.created_at)}
                           </span>
                           {isLabel && (
                             <CheckCheck className="w-3 h-3 text-[#1F9D6B]" strokeWidth={2} />

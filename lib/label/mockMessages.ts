@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * ТОЛЬКО ДЛЯ ПЕСОЧНИЦЫ /preview.
+ *
+ * Настоящая переписка живёт в таблице messages — см. lib/supabase/messages.
+ * Здесь она осталась потому, что LabelMessengerWidget работает на мок-ростере
+ * из AppProvider (id вида «a1»), которого в базе нет: подставить туда
+ * artist_id из БД не получится, связывать нечего.
+ *
+ * Ничего из рабочих кабинетов сюда обращаться не должно.
+ */
+
 export interface MessageAttachment {
   type: "task" | "file" | "budget";
   title: string;
