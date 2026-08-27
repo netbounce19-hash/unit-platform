@@ -6,6 +6,7 @@ import { Check, Target, ListChecks, ArrowRight, Wallet } from "lucide-react";
 import EventsFeed from "@/components/artist/EventsFeed";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
+import StatsSection from "@/components/artist/StatsSection";
 import PromoConfirm from "@/components/artist/PromoConfirm";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
 import { listBudgetRequests } from "@/lib/supabase/cabinet";
@@ -155,6 +156,9 @@ export default function DashboardPage() {
 
       {/* Релизы */}
       <ReleaseCarousel />
+
+      {/* Показатели */}
+      <StatsSection />
 
       {/* Стратегия и заявки — две плитки в строку.
           Заявки показываем только когда есть что ждать; тогда стратегия

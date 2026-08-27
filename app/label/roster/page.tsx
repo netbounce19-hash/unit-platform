@@ -14,13 +14,13 @@ import {
   type RosterArtist,
   type ObligationStat,
 } from "@/lib/supabase/label";
-import { seedStreamsIfEmpty } from "@/lib/label/mockStreams";
-import { useStreams } from "@/lib/label/useStreams";
+import { fetchOrgStreamStats, type StreamStat } from "@/lib/supabase/streamStats";
 import { computeScores, fmtStreams } from "@/lib/label/ranking";
 
 function RosterInner({ org }: { org: MyOrg }) {
   const [rows, setRows] = useState<RosterArtist[]>([]);
   const [obligations, setObligations] = useState<ObligationStat[]>([]);
+  const [streamsMap, setStreamsMap] = useState<Map<string, StreamStat>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
@@ -29,13 +29,14 @@ function RosterInner({ org }: { org: MyOrg }) {
 
   const load = useCallback(async () => {
     try {
-      const [roster, obl] = await Promise.all([
+      const [roster, obl, streams] = await Promise.all([
         fetchRoster(org.org_id),
         fetchObligationStats(org.org_id),
+        fetchOrgStreamStats(org.org_id),
       ]);
       setRows(roster);
       setObligations(obl);
-      seedStreamsIfEmpty(roster.map((a) => a.id));
+      setStreamsMap(streams);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Не удалось загрузить ростер");
     } finally {
@@ -47,7 +48,6 @@ function RosterInner({ org }: { org: MyOrg }) {
     load();
   }, [load]);
 
-  const streamsMap = useStreams();
   const scores = useMemo(
     () => computeScores(rows, obligations, streamsMap),
     [rows, obligations, streamsMap]

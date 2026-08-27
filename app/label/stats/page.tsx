@@ -6,8 +6,7 @@ import { Loader2, TrendingUp, Gauge, ListChecks, Info } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { CardList, ListCard } from "@/components/label/LabelShell";
 import { fetchRoster, fetchObligationStats, type MyOrg, type RosterArtist, type ObligationStat } from "@/lib/supabase/label";
-import { seedStreamsIfEmpty } from "@/lib/label/mockStreams";
-import { useStreams } from "@/lib/label/useStreams";
+import { fetchOrgStreamStats, type StreamStat } from "@/lib/supabase/streamStats";
 import { computeScores, sortByMetric, fmtStreams, type Metric } from "@/lib/label/ranking";
 
 const METRICS: { key: Metric; label: string; icon: typeof TrendingUp }[] = [
@@ -19,22 +18,25 @@ const METRICS: { key: Metric; label: string; icon: typeof TrendingUp }[] = [
 function StatsInner({ org }: { org: MyOrg }) {
   const [artists, setArtists] = useState<RosterArtist[]>([]);
   const [obligations, setObligations] = useState<ObligationStat[]>([]);
+  const [streamsMap, setStreamsMap] = useState<Map<string, StreamStat>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [metric, setMetric] = useState<Metric>("efficiency");
 
   useEffect(() => {
-    Promise.all([fetchRoster(org.org_id), fetchObligationStats(org.org_id)])
-      .then(([rows, obl]) => {
+    Promise.all([
+      fetchRoster(org.org_id),
+      fetchObligationStats(org.org_id),
+      fetchOrgStreamStats(org.org_id),
+    ])
+      .then(([rows, obl, streams]) => {
         setArtists(rows);
         setObligations(obl);
-        seedStreamsIfEmpty(rows.map((a) => a.id));
+        setStreamsMap(streams);
       })
       .catch((e) => setError(e instanceof Error ? e.message : "Не удалось загрузить статистику"))
       .finally(() => setLoading(false));
   }, [org.org_id]);
-
-  const streamsMap = useStreams();
 
   const rows = useMemo(
     () => sortByMetric(computeScores(artists, obligations, streamsMap), metric),
@@ -75,14 +77,15 @@ function StatsInner({ org }: { org: MyOrg }) {
         </div>
       )}
 
-      <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] dark:text-[#E8B65A] bg-[#FBF1DE] dark:bg-[#3A2F14] border-[0.5px] border-[#F0E2BF] dark:border-[#4A3E1E] rounded-[12px] px-3 py-[9px] mb-4">
-        <Info className="w-[14px] h-[14px] shrink-0 mt-[1px]" strokeWidth={2} />
-        <span className="leading-[1.5]">
-          Стримы — демо-данные (мокаются в памяти вкладки). Реальные цифры появятся здесь после раздела
-          «Загрузка данных». Обязательность уже считается по настоящим задачам.
-          {metric === "efficiency" && " Эффективность = 60% нормированных стримов + 40% обязательности."}
-        </span>
-      </div>
+      {metric === "efficiency" && (
+        <div className="flex items-start gap-2 text-[12px] text-[#6E6D73] dark:text-[#9A98A0] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px] mb-4">
+          <Info className="w-[14px] h-[14px] shrink-0 mt-[1px]" strokeWidth={2} />
+          <span className="leading-[1.5]">
+            Эффективность = 60% нормированных стримов + 40% обязательности. Стримы вводятся
+            в разделе «Загрузка данных».
+          </span>
+        </div>
+      )}
 
       {loading ? (
         <div className="py-12 flex items-center justify-center text-[#A6A5AB] dark:text-[#6E6D73]">

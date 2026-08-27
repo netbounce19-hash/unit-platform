@@ -1,5 +1,9 @@
 import type { RosterArtist, ObligationStat } from "@/lib/supabase/label";
-import type { StreamEntry } from "@/lib/label/mockStreams";
+
+/** Минимум, который нужен рейтингу от строки статистики. */
+export interface HasStreams {
+  streams: number;
+}
 
 /**
  * Рейтинг артистов по трём метрикам. Формула жила внутри страницы
@@ -26,7 +30,7 @@ const STREAMS_WEIGHT = 0.6;
 export function computeScores(
   artists: RosterArtist[],
   obligations: ObligationStat[],
-  streamsMap: Map<string, StreamEntry>
+  streamsMap: Map<string, HasStreams>
 ): ArtistScore[] {
   const oblByArtist = new Map(obligations.map((o) => [o.artistId, o]));
   // Нормируем по лучшему в ростере: абсолютные стримы несопоставимы между лейблами
