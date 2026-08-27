@@ -2,7 +2,7 @@
 
 import { use, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2, ArrowLeft, Check, X } from "lucide-react";
+import { Loader2, Check, X } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { Badge } from "@/components/label/LabelShell";
 import {
@@ -108,15 +108,6 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
       org={org}
       title={release.title}
       subtitle={artist ? artist.stage_name : undefined}
-      actions={
-        <Link
-          href={artist ? `/label/artists/${artist.id}` : "/label/roster"}
-          className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] dark:text-[#9A98A0] px-[14px] py-[8px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
-        >
-          <ArrowLeft className="w-[15px] h-[15px]" strokeWidth={1.75} />
-          Назад
-        </Link>
-      }
     >
       {error && (
         <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px] mb-4">

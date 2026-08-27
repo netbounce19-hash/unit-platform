@@ -3,6 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
+import BackHome from "@/components/ui/BackHome";
+
+/** Разделы нижней навигации — на них «Назад» не нужен. */
+const ARTIST_ROOTS = ["/dashboard", "/materials", "/releases", "/finance", "/profile"];
 
 /**
  * Общая шапка артистских страниц. Аватар ведёт в профиль —
@@ -27,6 +31,7 @@ export default function ArtistTopbar() {
   }, []);
 
   return (
+    <>
     <div className="flex items-center justify-between mb-6">
       <Link href="/dashboard" className="font-semibold tracking-[0.16em] text-[17px]">
         UNIT
@@ -45,5 +50,8 @@ export default function ArtistTopbar() {
         </Link>
       </div>
     </div>
+
+    <BackHome homeHref="/dashboard" roots={ARTIST_ROOTS} />
+    </>
   );
 }

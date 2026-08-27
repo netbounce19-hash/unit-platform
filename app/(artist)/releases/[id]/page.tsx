@@ -1,9 +1,7 @@
 "use client";
 
 import { use, useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import {
-  ArrowLeft,
   CalendarDays,
   Disc3,
   Upload,
@@ -126,13 +124,6 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
   if (!release) {
     return (
       <>
-        <Link
-          href="/releases"
-          className="inline-flex items-center gap-[6px] text-[13px] text-[#6E6D73] hover:text-[#17161A] transition mb-5"
-        >
-          <ArrowLeft className="w-4 h-4" strokeWidth={2} />
-          К релизам
-        </Link>
         <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px]">
           <div className="text-[16px] font-semibold tracking-[-0.01em]">Релиз не найден</div>
           <p className="text-[13px] text-[#6E6D73] mt-2">
@@ -153,13 +144,6 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
 
   return (
     <>
-      <Link
-        href="/releases"
-        className="inline-flex items-center gap-[6px] text-[13px] text-[#6E6D73] hover:text-[#17161A] transition mb-5"
-      >
-        <ArrowLeft className="w-4 h-4" strokeWidth={2} />
-        К релизам
-      </Link>
 
       {/* Шапка релиза */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">

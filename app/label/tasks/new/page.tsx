@@ -1,9 +1,8 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, ArrowLeft, Check } from "lucide-react";
+import { Loader2, Check } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell from "@/components/label/LabelShell";
 import {
@@ -92,15 +91,6 @@ function NewTaskInner({ org }: { org: MyOrg }) {
       org={org}
       title="Новая задача"
       subtitle="Задача появится в кабинете артиста и уйдёт ему уведомлением"
-      actions={
-        <Link
-          href="/label/roster"
-          className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] dark:text-[#9A98A0] px-[14px] py-[8px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
-        >
-          <ArrowLeft className="w-[15px] h-[15px]" strokeWidth={1.75} />
-          Ростер
-        </Link>
-      }
     >
       {loading ? (
         <div className="py-12 flex items-center justify-center text-[#A6A5AB] dark:text-[#6E6D73]">

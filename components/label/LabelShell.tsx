@@ -4,6 +4,16 @@ import Link from "next/link";
 import type { MyOrg } from "@/lib/supabase/label";
 import { LabelThemeProvider } from "./LabelThemeProvider";
 import LabelNav from "./LabelNav";
+import BackHome from "@/components/ui/BackHome";
+
+/** Разделы нижней навигации — на них «Назад» не нужен. */
+const LABEL_ROOTS = [
+  "/label/roster",
+  "/label/budgets",
+  "/label/messages",
+  "/label/stats",
+  "/label/more",
+];
 
 const ROLE_LABEL: Record<string, string> = {
   label_admin: "Администратор",
@@ -47,6 +57,8 @@ function LabelShellInner({
             </div>
           </div>
         </div>
+
+        <BackHome homeHref="/label/roster" roots={LABEL_ROOTS} />
 
         {/* Заголовок страницы. Кнопки уходят под него: в строке с заголовком
             они на узком экране не помещаются. */}
