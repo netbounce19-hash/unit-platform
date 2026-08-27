@@ -18,7 +18,7 @@ export default function ReleasesPage() {
         </div>
         <button
           onClick={() => setUploadOpen(true)}
-          className="shrink-0 inline-flex items-center gap-[6px] bg-[#E23A34] text-white font-medium text-[13px] px-[14px] py-[9px] rounded-[10px] hover:brightness-95 transition mt-1"
+          className="shrink-0 inline-flex items-center gap-[6px] bg-[#E23A34] text-white font-medium text-[13px] px-[14px] py-[8px] rounded-full hover:brightness-95 transition mt-1"
         >
           <Plus className="w-4 h-4" strokeWidth={2.5} />
           Добавить релиз

@@ -25,10 +25,10 @@ function ThemeSection() {
   const { theme, setTheme } = useLabelTheme();
   return (
     <SectionCard title="Тема" hint="Влияет только на кабинет лейбла — остальной сайт не меняется">
-      <div className="inline-flex items-center gap-1 bg-[#FAFAF9] dark:bg-[#141316] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[10px] p-[3px]">
+      <div className="inline-flex items-center gap-1 bg-[#FAFAF9] dark:bg-[#141316] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-[3px]">
         <button
           onClick={() => setTheme("light")}
-          className={`inline-flex items-center gap-[6px] text-[13px] font-medium px-[14px] py-[7px] rounded-[8px] transition ${
+          className={`inline-flex items-center gap-[6px] text-[13px] font-medium px-[14px] py-[7px] rounded-full transition ${
             theme === "light"
               ? "bg-white text-[#17161A] shadow-sm"
               : "text-[#6E6D73] dark:text-[#9A98A0] hover:text-[#17161A] dark:hover:text-[#F5F4F2]"
@@ -39,7 +39,7 @@ function ThemeSection() {
         </button>
         <button
           onClick={() => setTheme("dark")}
-          className={`inline-flex items-center gap-[6px] text-[13px] font-medium px-[14px] py-[7px] rounded-[8px] transition ${
+          className={`inline-flex items-center gap-[6px] text-[13px] font-medium px-[14px] py-[7px] rounded-full transition ${
             theme === "dark"
               ? "bg-[#1A191D] text-[#F5F4F2] shadow-sm"
               : "text-[#6E6D73] dark:text-[#9A98A0] hover:text-[#17161A] dark:hover:text-[#F5F4F2]"
@@ -86,7 +86,7 @@ function TelegramSection() {
 
   return (
     <SectionCard title="Telegram-уведомления">
-      <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] dark:text-[#E8B65A] bg-[#FBF1DE] dark:bg-[#3A2F14] border-[0.5px] border-[#F0E2BF] dark:border-[#4A3E1E] rounded-[10px] px-3 py-[9px] mb-4">
+      <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] dark:text-[#E8B65A] bg-[#FBF1DE] dark:bg-[#3A2F14] border-[0.5px] border-[#F0E2BF] dark:border-[#4A3E1E] rounded-[12px] px-3 py-[9px] mb-4">
         <Info className="w-[14px] h-[14px] shrink-0 mt-[1px]" strokeWidth={2} />
         <span className="leading-[1.5]">
           Это заглушка: логин сохраняется только в браузере, бот к нему пока не подключён и сообщения не
@@ -115,12 +115,12 @@ function TelegramSection() {
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && connect()}
             placeholder="@username или chat_id"
-            className="flex-1 max-w-[280px] text-[13.5px] rounded-[9px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+            className="flex-1 max-w-[280px] text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
           />
           <button
             onClick={connect}
             disabled={!value.trim()}
-            className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
+            className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
           >
             {justSaved ? <Check className="w-4 h-4" strokeWidth={2.5} /> : <Send className="w-4 h-4" strokeWidth={1.75} />}
             Подключить
@@ -150,7 +150,7 @@ function BlacklistSection({ org }: { org: MyOrg }) {
       hint="Пока это UI-заглушка в памяти вкладки — реальное ограничение доступа потребует миграции и RLS-политики"
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[10px] px-3 py-[9px] mb-3">
+        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-3">
           {error}
         </div>
       )}
@@ -177,7 +177,7 @@ function BlacklistSection({ org }: { org: MyOrg }) {
                 </span>
                 <button
                   onClick={() => toggleBlacklisted(a.id)}
-                  className={`inline-flex items-center gap-[6px] text-[12px] font-medium px-[10px] py-[5px] rounded-[8px] transition ${
+                  className={`inline-flex items-center gap-[6px] text-[12px] font-medium px-[10px] py-[5px] rounded-full transition ${
                     isBlocked
                       ? "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]"
                       : "border border-[#E5E3DE] dark:border-[#33323A] text-[#6E6D73] dark:text-[#9A98A0] hover:text-[#A62018] dark:hover:text-[#F3928C] hover:border-[#F3C9C6] dark:hover:border-[#4A2F2C]"

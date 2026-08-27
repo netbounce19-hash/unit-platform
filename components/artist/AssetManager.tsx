@@ -127,7 +127,7 @@ export default function AssetManager({ kind: controlledKind, hideTabs = false }:
               key={k.key}
               onClick={() => setInternalKind(k.key)}
               disabled={uploading}
-              className={`flex items-center justify-center gap-2 text-[13px] font-medium rounded-[10px] px-3 py-[10px] border transition disabled:opacity-50 ${
+              className={`flex items-center justify-center gap-2 text-[13px] font-medium rounded-full px-[14px] py-[8px] border transition disabled:opacity-50 ${
                 kind === k.key
                   ? "border-[#E23A34] bg-[#FDEDEB] text-[#A62018]"
                   : "border-[#E5E3DE] bg-white text-[#6E6D73] hover:border-[#D2D0CB]"
@@ -171,7 +171,7 @@ export default function AssetManager({ kind: controlledKind, hideTabs = false }:
         )}
 
         {error && (
-          <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px] mt-3">
+          <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[12px] px-3 py-[9px] mt-3">
             {error}
           </div>
         )}
@@ -195,7 +195,7 @@ export default function AssetManager({ kind: controlledKind, hideTabs = false }:
                 i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""
               }`}
             >
-              <span className="w-9 h-9 rounded-[10px] bg-[#F0EEEA] text-[#6E6D73] flex items-center justify-center shrink-0">
+              <span className="w-9 h-9 rounded-[12px] bg-[#F0EEEA] text-[#6E6D73] flex items-center justify-center shrink-0">
                 {KINDS.find((k) => k.key === a.kind)?.icon}
               </span>
               <div className="min-w-0 flex-1">

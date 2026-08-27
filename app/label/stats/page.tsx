@@ -47,7 +47,7 @@ function StatsInner({ org }: { org: MyOrg }) {
       title="Статистика"
       subtitle="Рейтинг артистов по стримам, эффективности и обязательности"
       actions={
-        <div className="flex items-center gap-1 bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[9px] p-[3px]">
+        <div className="flex items-center gap-1 bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-[3px]">
           {METRICS.map((m) => {
             const Icon = m.icon;
             const active = metric === m.key;
@@ -55,7 +55,7 @@ function StatsInner({ org }: { org: MyOrg }) {
               <button
                 key={m.key}
                 onClick={() => setMetric(m.key)}
-                className={`inline-flex items-center gap-[6px] text-[12.5px] font-medium px-[11px] py-[5px] rounded-[7px] transition ${
+                className={`inline-flex items-center gap-[6px] text-[12.5px] font-medium px-[11px] py-[5px] rounded-full transition ${
                   active
                     ? "bg-[#FDEDEB] dark:bg-[#3A2422] text-[#A62018] dark:text-[#F3928C]"
                     : "text-[#6E6D73] dark:text-[#9A98A0] hover:text-[#17161A] dark:hover:text-[#F5F4F2]"
@@ -70,12 +70,12 @@ function StatsInner({ org }: { org: MyOrg }) {
       }
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[10px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
 
-      <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] dark:text-[#E8B65A] bg-[#FBF1DE] dark:bg-[#3A2F14] border-[0.5px] border-[#F0E2BF] dark:border-[#4A3E1E] rounded-[10px] px-3 py-[9px] mb-4">
+      <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] dark:text-[#E8B65A] bg-[#FBF1DE] dark:bg-[#3A2F14] border-[0.5px] border-[#F0E2BF] dark:border-[#4A3E1E] rounded-[12px] px-3 py-[9px] mb-4">
         <Info className="w-[14px] h-[14px] shrink-0 mt-[1px]" strokeWidth={2} />
         <span className="leading-[1.5]">
           Стримы — демо-данные (мокаются в памяти вкладки). Реальные цифры появятся здесь после раздела
@@ -115,7 +115,7 @@ function StatsInner({ org }: { org: MyOrg }) {
                 ).map((m) => (
                   <div
                     key={m.key}
-                    className={`rounded-[9px] px-[10px] py-[8px] ${
+                    className={`rounded-[12px] px-[10px] py-[8px] ${
                       metric === m.key
                         ? "bg-[#FDEDEB] dark:bg-[#3A2422]"
                         : "bg-[#FAFAF9] dark:bg-[#232227]"

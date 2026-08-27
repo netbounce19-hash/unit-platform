@@ -98,7 +98,7 @@ export default function LabelGate({ children }: { children: (ctx: LabelContext) 
           <div className="flex gap-3 mt-4">
             <button
               onClick={() => router.replace("/dashboard")}
-              className="flex-1 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition"
+              className="flex-1 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition"
             >
               В кабинет артиста
             </button>
@@ -107,7 +107,7 @@ export default function LabelGate({ children }: { children: (ctx: LabelContext) 
                 getSupabase().auth.signOut();
                 router.replace("/");
               }}
-              className="flex-1 border border-[#E5E3DE] text-[#6E6D73] font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:border-[#D2D0CB] transition"
+              className="flex-1 border border-[#E5E3DE] text-[#6E6D73] font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:border-[#D2D0CB] transition"
             >
               Сменить аккаунт
             </button>

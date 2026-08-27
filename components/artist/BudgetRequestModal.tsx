@@ -85,12 +85,12 @@ export default function BudgetRequestModal({
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.98, y: 24 }}
               transition={{ type: "spring", damping: 26, stiffness: 320 }}
-              className="bg-white w-full sm:max-w-[460px] max-h-[90vh] overflow-y-auto rounded-t-[20px] sm:rounded-[18px] border-[0.5px] border-[#ECEAE5] shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+              className="bg-white w-full sm:max-w-[460px] max-h-[90vh] overflow-y-auto rounded-t-[20px] sm:rounded-[16px] border-[0.5px] border-[#ECEAE5] shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-[22px] py-[18px] border-b-[0.5px] border-[#ECEAE5]">
                 <div className="flex items-center gap-[10px]">
-                  <span className="w-9 h-9 rounded-[10px] bg-[#F0EEEA] text-[#6E6D73] flex items-center justify-center">
+                  <span className="w-9 h-9 rounded-[12px] bg-[#F0EEEA] text-[#6E6D73] flex items-center justify-center">
                     <Wallet className="w-[18px] h-[18px]" strokeWidth={1.75} />
                   </span>
                   <div>
@@ -173,14 +173,14 @@ export default function BudgetRequestModal({
               <div className="flex items-center justify-between gap-3 px-[22px] py-[16px] border-t-[0.5px] border-[#ECEAE5]">
                 <button
                   onClick={onClose}
-                  className="text-[14px] font-medium text-[#6E6D73] px-[14px] py-[10px] rounded-[10px] hover:bg-[#F0EEEA] transition"
+                  className="text-[14px] font-medium text-[#6E6D73] px-[18px] py-[10px] rounded-full hover:bg-[#F0EEEA] transition"
                 >
                   Отмена
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={!canSubmit}
-                  className="inline-flex items-center gap-[7px] bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-[7px] bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Отправить на согласование
                   <ArrowUp className="w-[15px] h-[15px]" strokeWidth={2.5} />

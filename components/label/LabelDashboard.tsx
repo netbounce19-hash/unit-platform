@@ -1,25 +1,32 @@
 "use client";
 
+import LabelKPIHero from "./LabelKPIHero";
 import Leaderboard from "./Leaderboard";
-import ReleasePipeline from "./ReleasePipeline";
+import FinanceHub from "./FinanceHub";
 import TaskConstructor from "./TaskConstructor";
 import TargetManagement from "./TargetManagement";
-import FinanceHub from "./FinanceHub";
 import PromoInbox from "./PromoInbox";
 
 export default function LabelDashboard() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* 1. Hero KPI Cards */}
+      <LabelKPIHero />
+
+      {/* 2. Main Stream Dynamics & Ranking */}
       <Leaderboard />
-      <ReleasePipeline />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      {/* 3. Finance & Requests Hub */}
+      <FinanceHub />
+
+      {/* 4. Operational Grid (Tasks + Targets) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <TaskConstructor />
         <TargetManagement />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <FinanceHub />
-        <PromoInbox />
-      </div>
+
+      {/* 5. Promo inbox */}
+      <PromoInbox />
     </div>
   );
 }

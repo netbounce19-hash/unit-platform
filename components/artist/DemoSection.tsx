@@ -231,10 +231,10 @@ export default function DemoSection({ bare = false }: { bare?: boolean } = {}) {
 
             {/* Мини-плеер */}
             {cur && (
-              <div className="mt-4 rounded-[14px] border-[0.5px] border-[#ECEAE5] bg-[#FAFAF9] p-3">
+              <div className="mt-4 rounded-[12px] border-[0.5px] border-[#ECEAE5] bg-[#FAFAF9] p-3">
                 <div className="flex items-center gap-3 mb-3">
                   <span
-                    className="relative w-11 h-11 rounded-[10px] shrink-0 overflow-hidden flex items-center justify-center"
+                    className="relative w-11 h-11 rounded-[12px] shrink-0 overflow-hidden flex items-center justify-center"
                     style={{ background: cur.gradient }}
                   >
                     {cur.image ? (

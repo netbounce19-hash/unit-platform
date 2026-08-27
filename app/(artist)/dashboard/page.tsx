@@ -106,7 +106,7 @@ export default function DashboardPage() {
           <div className="text-[13px] text-white/60 mt-[3px]">{nextStep.meta}</div>
           <button
             onClick={() => toggle(nextStep.id)}
-            className="inline-flex items-center gap-[6px] bg-white text-[#17161A] font-medium text-[13px] px-[14px] py-[9px] rounded-[10px] hover:bg-white/90 transition mt-4"
+            className="inline-flex items-center gap-[6px] bg-white text-[#17161A] font-medium text-[13px] px-[14px] py-[8px] rounded-full hover:bg-white/90 transition mt-4"
           >
             Отметить выполненной
             <ArrowRight className="w-4 h-4" strokeWidth={2} />
@@ -134,7 +134,7 @@ export default function DashboardPage() {
             }`}
           >
             <span
-              className={`w-5 h-5 rounded-[6px] border-[1.5px] flex items-center justify-center shrink-0 transition ${
+              className={`w-5 h-5 rounded-[12px] border-[1.5px] flex items-center justify-center shrink-0 transition ${
                 t.done ? "bg-[#1F9D6B] border-[#1F9D6B]" : "border-[#D2D0CB]"
               }`}
             >
@@ -162,7 +162,7 @@ export default function DashboardPage() {
       <div className={`grid gap-3 mb-4 ${pending > 0 ? "grid-cols-2" : "grid-cols-1"}`}>
         <Link
           href="/strategy"
-          className="flex flex-col justify-between gap-4 min-h-[104px] bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[4px] p-4 hover:border-[#E3D0A4] transition"
+          className="flex flex-col justify-between gap-4 min-h-[104px] bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[12px] p-4 hover:border-[#E3D0A4] transition"
         >
           <Target className="w-[18px] h-[18px] text-[#8A5A16]" strokeWidth={1.75} />
           <span className="min-w-0">
@@ -174,7 +174,7 @@ export default function DashboardPage() {
         {pending > 0 && (
           <Link
             href="/finance"
-            className="flex flex-col justify-between gap-4 min-h-[104px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[4px] p-4 hover:border-[#D2D0CB] transition"
+            className="flex flex-col justify-between gap-4 min-h-[104px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] p-4 hover:border-[#D2D0CB] transition"
           >
             <Wallet className="w-[18px] h-[18px] text-[#6E6D73]" strokeWidth={1.75} />
             <span className="min-w-0">

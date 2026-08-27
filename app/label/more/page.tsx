@@ -59,7 +59,7 @@ function MoreInner({ org }: { org: MyOrg }) {
                 i > 0 ? "border-t-[0.5px] border-[#ECEAE5] dark:border-[#242327]" : ""
               }`}
             >
-              <span className="w-9 h-9 rounded-[10px] bg-[#F0EEEA] dark:bg-[#242327] text-[#6E6D73] dark:text-[#9A98A0] flex items-center justify-center shrink-0">
+              <span className="w-9 h-9 rounded-[12px] bg-[#F0EEEA] dark:bg-[#242327] text-[#6E6D73] dark:text-[#9A98A0] flex items-center justify-center shrink-0">
                 <Icon className="w-[17px] h-[17px]" strokeWidth={1.75} />
               </span>
               <span className="min-w-0 flex-1">

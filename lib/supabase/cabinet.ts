@@ -5,7 +5,11 @@ import { BUCKET, buildStoragePath, uploadAsset, type Asset, type AssetKind } fro
 
 // ── Заявки на финансирование ────────────────────────────────
 
-export type RequestStatus = "pending" | "approved" | "declined";
+/**
+ * Кабинет лейбла пишет "rejected", ранние заявки использовали "declined" —
+ * артист должен понимать оба, иначе отклонённая заявка роняет его экран.
+ */
+export type RequestStatus = "pending" | "approved" | "rejected" | "declined";
 
 export interface BudgetRequestRow {
   id: string;

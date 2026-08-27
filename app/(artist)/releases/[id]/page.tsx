@@ -233,12 +233,12 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="flex-1 text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition"
+            className="flex-1 text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition"
           />
           <button
             onClick={saveDate}
             disabled={!dateChanged || savingDate}
-            className="shrink-0 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="shrink-0 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {savingDate ? "Сохраняем…" : "Сохранить"}
           </button>
@@ -258,7 +258,7 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
               key={k.key}
               onClick={() => setKind(k.key)}
               disabled={uploading}
-              className={`flex items-center justify-center gap-2 text-[13px] font-medium rounded-[10px] px-3 py-[10px] border transition disabled:opacity-50 ${
+              className={`flex items-center justify-center gap-2 text-[13px] font-medium rounded-full px-[14px] py-[8px] border transition disabled:opacity-50 ${
                 kind === k.key
                   ? "border-[#E23A34] bg-[#FDEDEB] text-[#A62018]"
                   : "border-[#E5E3DE] bg-white text-[#6E6D73] hover:border-[#D2D0CB]"
@@ -316,7 +316,7 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
                 i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""
               }`}
             >
-              <span className="w-9 h-9 rounded-[10px] bg-[#F0EEEA] text-[#6E6D73] flex items-center justify-center shrink-0">
+              <span className="w-9 h-9 rounded-[12px] bg-[#F0EEEA] text-[#6E6D73] flex items-center justify-center shrink-0">
                 {KINDS.find((k) => k.key === a.kind)?.icon}
               </span>
               <div className="min-w-0 flex-1">
@@ -342,7 +342,7 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
       </div>
 
       {error && (
-        <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[9px]">
+        <div className="text-[13px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[12px] px-3 py-[9px]">
           {error}
         </div>
       )}

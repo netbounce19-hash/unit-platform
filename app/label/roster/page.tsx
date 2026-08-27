@@ -82,14 +82,14 @@ function RosterInner({ org }: { org: MyOrg }) {
         <>
           <Link
             href="/label/invites"
-            className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-[13px] py-[8px] rounded-[9px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
+            className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-[14px] py-[8px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
           >
             <UserPlus className="w-[15px] h-[15px]" strokeWidth={1.75} />
             Пригласить
           </Link>
           <button
             onClick={() => setAdding((v) => !v)}
-            className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#E23A34] text-white px-[13px] py-[8px] rounded-[9px] hover:brightness-95 transition"
+            className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition"
           >
             <Plus className="w-[15px] h-[15px]" strokeWidth={2} />
             Артист
@@ -111,13 +111,13 @@ function RosterInner({ org }: { org: MyOrg }) {
               onChange={(e) => setName(e.target.value)}
               autoFocus
               placeholder="KXDE"
-              className="w-full text-[13.5px] rounded-[9px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+              className="w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
             />
           </label>
           <button
             type="submit"
             disabled={!name.trim() || busy}
-            className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[10px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
+            className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
             Добавить
@@ -126,7 +126,7 @@ function RosterInner({ org }: { org: MyOrg }) {
       )}
 
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[10px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}

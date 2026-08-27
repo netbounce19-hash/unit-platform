@@ -43,7 +43,7 @@ function DataUploadInner({ org }: { org: MyOrg }) {
 
   return (
     <LabelShell org={org} title="Загрузка данных" subtitle="Свежие цифры по стримам для каждого артиста">
-      <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] dark:text-[#E8B65A] bg-[#FBF1DE] dark:bg-[#3A2F14] border-[0.5px] border-[#F0E2BF] dark:border-[#4A3E1E] rounded-[10px] px-3 py-[9px] mb-4">
+      <div className="flex items-start gap-2 text-[12px] text-[#8A5A16] dark:text-[#E8B65A] bg-[#FBF1DE] dark:bg-[#3A2F14] border-[0.5px] border-[#F0E2BF] dark:border-[#4A3E1E] rounded-[12px] px-3 py-[9px] mb-4">
         <Info className="w-[14px] h-[14px] shrink-0 mt-[1px]" strokeWidth={2} />
         <span className="leading-[1.5]">
           Пока это ручной ввод, который хранится только в памяти вкладки (страница обновится — данные сбросятся).
@@ -53,7 +53,7 @@ function DataUploadInner({ org }: { org: MyOrg }) {
       </div>
 
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[10px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
@@ -91,13 +91,13 @@ function DataUploadInner({ org }: { org: MyOrg }) {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") save(a.id);
                   }}
-                  className="w-[160px] text-[13.5px] rounded-[9px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[7px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                  className="w-[160px] text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[7px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
                 />
 
                 <button
                   onClick={() => save(a.id)}
                   disabled={!drafts[a.id]}
-                  className="inline-flex items-center gap-[6px] text-[12.5px] font-medium bg-[#E23A34] text-white px-[12px] py-[7px] rounded-[8px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-[6px] text-[12.5px] font-medium bg-[#E23A34] text-white px-[12px] py-[7px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {saved === a.id ? (
                     <>

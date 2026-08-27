@@ -83,7 +83,7 @@ export default function PromoConfirm() {
       {!open ? (
         <button
           onClick={() => setOpen(true)}
-          className="w-full flex items-center justify-center gap-[7px] bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[11px] rounded-[10px] hover:bg-[#2A282E] transition"
+          className="w-full flex items-center justify-center gap-[7px] bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:bg-[#2A282E] transition"
         >
           {sent ? (
             <>
@@ -105,7 +105,7 @@ export default function PromoConfirm() {
               <button
                 key={p}
                 onClick={() => setPlatform(p)}
-                className={`text-[12.5px] font-medium rounded-full px-[12px] py-[6px] border transition ${
+                className={`text-[12.5px] font-medium rounded-full px-[14px] py-[8px] border transition ${
                   platform === p
                     ? "border-[#E23A34] bg-[#FDEDEB] text-[#A62018]"
                     : "border-[#E5E3DE] bg-white text-[#6E6D73] hover:border-[#D2D0CB]"
@@ -128,13 +128,13 @@ export default function PromoConfirm() {
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && send()}
                 placeholder="https://tiktok.com/@…"
-                className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white pl-[34px] pr-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white pl-[34px] pr-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
               />
             </span>
             <button
               onClick={send}
               disabled={!looksLikeLink || busy}
-              className="shrink-0 inline-flex items-center gap-[6px] bg-[#E23A34] text-white font-medium text-[14px] px-[16px] py-[10px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              className="shrink-0 inline-flex items-center gap-[6px] bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {busy ? (
                 <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
@@ -163,7 +163,7 @@ export default function PromoConfirm() {
       )}
 
       {error && (
-        <div className="text-[12.5px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[8px] mt-2">
+        <div className="text-[12.5px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[12px] px-3 py-[8px] mt-2">
           {error}
         </div>
       )}

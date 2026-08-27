@@ -4,6 +4,7 @@ import { useApp } from "@/components/providers/AppProvider";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Modal from "@/components/shared/Modal";
+import { LockUnlockIconControlled } from "@/components/ui/animated-state-icons";
 
 export default function FinanceBudgets() {
   const { state, dispatch } = useApp();
@@ -127,10 +128,11 @@ export default function FinanceBudgets() {
               <p className="text-base font-bold text-brass">{formatRub(option.amount)}</p>
               {!unlocked && (
                 <div className="flex items-center gap-1.5 mt-2.5">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-alabaster-dim flex-shrink-0">
-                    <rect x="3" y="11" width="18" height="11" rx="2" />
-                    <path d="M7 11V7a5 5 0 0110 0v4" />
-                  </svg>
+                  <LockUnlockIconControlled
+                    size={16}
+                    color="rgba(247,243,233,0.5)"
+                    unlocked={false}
+                  />
                   <span className="text-[9px] tracking-wide text-alabaster-dim leading-tight">
                     Открывается при {formatListeners(option.unlockThreshold)} слушателях
                   </span>

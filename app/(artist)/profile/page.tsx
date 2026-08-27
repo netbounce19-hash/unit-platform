@@ -142,7 +142,7 @@ export default function ProfilePage() {
           <input
             value={draft.name}
             onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
-            className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+            className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
           />
         </label>
 
@@ -177,7 +177,7 @@ export default function ProfilePage() {
                 onClick={() => !opt.disabled && setDraft((d) => ({ ...d, status: opt.key }))}
                 disabled={opt.disabled}
                 title={opt.disabled ? "Недоступно — изменяет менеджер" : undefined}
-                className={`text-[13px] font-medium rounded-[10px] px-3 py-[10px] border transition ${
+                className={`text-[13px] font-medium rounded-[12px] px-[14px] py-[10px] border transition ${
                   draft.status === opt.key
                     ? "border-[#E23A34] bg-[#FDEDEB] text-[#A62018]"
                     : "border-[#E5E3DE] bg-white text-[#6E6D73] hover:border-[#D2D0CB]"
@@ -209,7 +209,7 @@ export default function ProfilePage() {
             <a
               href={CONTRACT_PDF}
               download
-              className="inline-flex items-center gap-[7px] text-[13px] font-medium text-[#17161A] bg-white border border-[#E5E3DE] rounded-[10px] px-[14px] py-[9px] hover:border-[#D2D0CB] transition"
+              className="inline-flex items-center gap-[7px] text-[13px] font-medium text-[#17161A] bg-white border border-[#E5E3DE] rounded-full px-[14px] py-[8px] hover:border-[#D2D0CB] transition"
             >
               <Download className="w-4 h-4" strokeWidth={2} />
               Скачать PDF копию
@@ -221,7 +221,7 @@ export default function ProfilePage() {
           <button
             onClick={() => setToast("Профиль сохранён")}
             disabled={!draft.name.trim()}
-            className="bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Сохранить
           </button>

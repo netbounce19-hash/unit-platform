@@ -97,7 +97,7 @@ function UploadField({
         onChange={(e) => onFile(e.target.files?.[0] ?? null)}
       />
       <span
-        className={`w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 ${
+        className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 ${
           file ? "bg-[#1F9D6B] text-white" : "bg-[#F0EEEA] text-[#6E6D73]"
         }`}
       >
@@ -162,7 +162,7 @@ function MultiFileField({
             e.target.value = "";
           }}
         />
-        <span className="w-9 h-9 rounded-[10px] bg-[#F0EEEA] text-[#6E6D73] flex items-center justify-center shrink-0">
+        <span className="w-9 h-9 rounded-[12px] bg-[#F0EEEA] text-[#6E6D73] flex items-center justify-center shrink-0">
           <Paperclip className="w-[18px] h-[18px]" strokeWidth={1.75} />
         </span>
         <div className="min-w-0">
@@ -178,14 +178,14 @@ function MultiFileField({
       {files.map((f, i) => (
         <div
           key={i}
-          className="flex items-center gap-2 rounded-[10px] bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] px-3 py-[8px]"
+          className="flex items-center gap-2 rounded-[12px] bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] px-3 py-[8px]"
         >
           <FileText className="w-[15px] h-[15px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
           <span className="text-[13px] text-[#17161A] truncate flex-1">{f.name}</span>
           <button
             onClick={() => onRemove(i)}
             aria-label="Удалить документ"
-            className="w-6 h-6 shrink-0 rounded-[6px] flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition"
+            className="w-6 h-6 shrink-0 rounded-[12px] flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition"
           >
             <Trash2 className="w-[14px] h-[14px]" strokeWidth={1.75} />
           </button>
@@ -335,7 +335,7 @@ export default function ReleaseUploadModal({
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.98, y: 24 }}
               transition={{ type: "spring", damping: 26, stiffness: 320 }}
-              className="bg-white w-full sm:max-w-[560px] max-h-[90vh] sm:max-h-[86vh] overflow-y-auto rounded-t-[20px] sm:rounded-[18px] border-[0.5px] border-[#ECEAE5] shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+              className="bg-white w-full sm:max-w-[560px] max-h-[90vh] sm:max-h-[86vh] overflow-y-auto rounded-t-[20px] sm:rounded-[16px] border-[0.5px] border-[#ECEAE5] shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
             >
               {/* Header */}
               <div className="sticky top-0 bg-white/95 backdrop-blur-sm flex items-center justify-between px-[22px] py-[18px] border-b-[0.5px] border-[#ECEAE5] z-10">
@@ -365,7 +365,7 @@ export default function ReleaseUploadModal({
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Например, Midnight Protocol"
-                      className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
                     />
                   </label>
 
@@ -378,7 +378,7 @@ export default function ReleaseUploadModal({
                       type="date"
                       value={plannedDate}
                       onChange={(e) => setPlannedDate(e.target.value)}
-                      className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition"
+                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition"
                     />
                   </label>
                 </section>
@@ -399,7 +399,7 @@ export default function ReleaseUploadModal({
                       className="hidden"
                       onChange={(e) => setCover(e.target.files?.[0] ?? null)}
                     />
-                    <span className="w-[64px] h-[64px] rounded-[10px] shrink-0 overflow-hidden bg-[#F0EEEA] flex items-center justify-center">
+                    <span className="w-[64px] h-[64px] rounded-[12px] shrink-0 overflow-hidden bg-[#F0EEEA] flex items-center justify-center">
                       {coverPreview ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={coverPreview} alt="Обложка" className="w-full h-full object-cover" />
@@ -473,7 +473,7 @@ export default function ReleaseUploadModal({
                             }`}
                           >
                             <span
-                              className="relative w-9 h-9 rounded-[8px] shrink-0 overflow-hidden flex items-center justify-center"
+                              className="relative w-9 h-9 rounded-[12px] shrink-0 overflow-hidden flex items-center justify-center"
                               style={{ background: d.gradient }}
                             >
                               {d.image ? (
@@ -514,7 +514,7 @@ export default function ReleaseUploadModal({
                       value={copyrightHolder}
                       onChange={(e) => setCopyrightHolder(e.target.value)}
                       placeholder="Напр. KXDE / UNIT Records"
-                      className="w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                      className="w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
                     />
                   </label>
                 </section>
@@ -547,14 +547,14 @@ export default function ReleaseUploadModal({
                             updateAuthor(a.id, { name: e.target.value })
                           }
                           placeholder="Имя"
-                          className="flex-1 min-w-0 text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                          className="flex-1 min-w-0 text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
                         />
                         <select
                           value={a.role}
                           onChange={(e) =>
                             updateAuthor(a.id, { role: e.target.value })
                           }
-                          className="text-[13px] rounded-[10px] border border-[#E5E3DE] bg-white px-2 py-[9px] outline-none focus:border-[#E23A34] transition text-[#17161A] cursor-pointer shrink-0 w-[130px]"
+                          className="text-[13px] rounded-[12px] border border-[#E5E3DE] bg-white px-2 py-[9px] outline-none focus:border-[#E23A34] transition text-[#17161A] cursor-pointer shrink-0 w-[130px]"
                         >
                           {ROLES.map((r) => (
                             <option key={r} value={r}>
@@ -572,7 +572,7 @@ export default function ReleaseUploadModal({
                             }
                             inputMode="decimal"
                             placeholder="0"
-                            className="w-full text-[14px] text-right rounded-[10px] border border-[#E5E3DE] bg-white pl-3 pr-6 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+                            className="w-full text-[14px] text-right rounded-[12px] border border-[#E5E3DE] bg-white pl-3 pr-6 py-[9px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
                           />
                           <span className="absolute right-[10px] top-1/2 -translate-y-1/2 text-[13px] text-[#A6A5AB] pointer-events-none">
                             %
@@ -582,7 +582,7 @@ export default function ReleaseUploadModal({
                           onClick={() => removeAuthor(a.id)}
                           disabled={coAuthors.length === 1}
                           aria-label="Удалить со-автора"
-                          className="w-8 h-8 shrink-0 rounded-[8px] flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#A6A5AB]"
+                          className="w-8 h-8 shrink-0 rounded-[12px] flex items-center justify-center text-[#A6A5AB] hover:text-[#A62018] hover:bg-[#FDEDEB] transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#A6A5AB]"
                         >
                           <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                         </button>
@@ -622,7 +622,7 @@ export default function ReleaseUploadModal({
               {/* Footer */}
               <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm px-[22px] py-[16px] border-t-[0.5px] border-[#ECEAE5]">
                 {uploadError && (
-                  <div className="text-[12px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[10px] px-3 py-[8px] mb-3">
+                  <div className="text-[12px] text-[#A62018] bg-[#FDEDEB] border-[0.5px] border-[#F3C9C6] rounded-[12px] px-3 py-[8px] mb-3">
                     {uploadError}
                   </div>
                 )}
@@ -649,14 +649,14 @@ export default function ReleaseUploadModal({
                     <button
                       onClick={onClose}
                       disabled={busy}
-                      className="text-[14px] font-medium text-[#6E6D73] px-[14px] py-[10px] rounded-[10px] hover:bg-[#F0EEEA] transition disabled:opacity-40"
+                      className="text-[14px] font-medium text-[#6E6D73] px-[18px] py-[10px] rounded-full hover:bg-[#F0EEEA] transition disabled:opacity-40"
                     >
                       Отмена
                     </button>
                     <button
                       onClick={handleSubmit}
                       disabled={!canSubmit || busy}
-                      className="inline-flex items-center gap-2 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-[10px] hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-2 bg-[#E23A34] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:brightness-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
                       Загрузить релиз

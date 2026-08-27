@@ -111,7 +111,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
       actions={
         <Link
           href={artist ? `/label/artists/${artist.id}` : "/label/roster"}
-          className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] dark:text-[#9A98A0] px-[12px] py-[8px] rounded-[9px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
+          className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#6E6D73] dark:text-[#9A98A0] px-[14px] py-[8px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
         >
           <ArrowLeft className="w-[15px] h-[15px]" strokeWidth={1.75} />
           Назад
@@ -119,7 +119,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
       }
     >
       {error && (
-        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[10px] px-3 py-[9px] mb-4">
+        <div className="text-[13px] text-[#A62018] dark:text-[#F3928C] bg-[#FDEDEB] dark:bg-[#3A2422] border-[0.5px] border-[#F3C9C6] dark:border-[#4A2F2C] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
         </div>
       )}
@@ -135,7 +135,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
             <button
               onClick={save}
               disabled={busy !== null}
-              className="inline-flex items-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[11px] py-[6px] rounded-[8px] hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition disabled:opacity-40"
+              className="inline-flex items-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[11px] py-[6px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition disabled:opacity-40"
             >
               {busy === "save" && <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2} />}
               {saved ? "Сохранено" : "Сохранить"}
@@ -146,7 +146,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
             onChange={(e) => setStrategy(e.target.value)}
             rows={12}
             placeholder="План продвижения, площадки, даты, бюджет…"
-            className="w-full resize-y text-[13.5px] leading-[1.55] rounded-[10px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+            className="w-full resize-y text-[13.5px] leading-[1.55] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
           />
         </div>
 
@@ -193,14 +193,14 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               placeholder="Комментарий при отклонении"
-              className="w-full resize-none text-[13px] rounded-[9px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8] mb-3"
+              className="w-full resize-none text-[13px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[8px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8] mb-3"
             />
 
             <div className="flex flex-col gap-2">
               <button
                 onClick={() => decide("approved")}
                 disabled={busy !== null}
-                className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#1F9D6B] text-white px-[14px] py-[9px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
+                className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#1F9D6B] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
               >
                 {busy === "approve" ? (
                   <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
@@ -212,7 +212,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
               <button
                 onClick={() => decide("rejected")}
                 disabled={busy !== null}
-                className="inline-flex items-center justify-center gap-2 text-[13px] font-medium text-[#A62018] dark:text-[#F3928C] border border-[#F3C9C6] dark:border-[#4A2F2C] bg-[#FDEDEB] dark:bg-[#3A2422] px-[14px] py-[9px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
+                className="inline-flex items-center justify-center gap-2 text-[13px] font-medium text-[#A62018] dark:text-[#F3928C] border border-[#F3C9C6] dark:border-[#4A2F2C] bg-[#FDEDEB] dark:bg-[#3A2422] px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
               >
                 {busy === "reject" ? (
                   <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />

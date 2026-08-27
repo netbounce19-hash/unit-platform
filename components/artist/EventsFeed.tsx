@@ -102,7 +102,7 @@ export default function EventsFeed() {
                       className={`flex items-center gap-3 py-[13px] ${i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""}`}
                     >
                       {/* Дата */}
-                      <div className="w-[46px] shrink-0 rounded-[10px] bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] py-[6px] text-center">
+                      <div className="w-[46px] shrink-0 rounded-[12px] bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] py-[6px] text-center">
                         <div className="text-[16px] font-medium leading-none">{e.day}</div>
                         <div className="text-[11px] text-[#A6A5AB] mt-[3px]">{e.month}</div>
                       </div>
@@ -126,7 +126,7 @@ export default function EventsFeed() {
                       <button
                         onClick={() => wantToGo(e)}
                         disabled={sent}
-                        className={`shrink-0 text-[13px] font-medium px-[14px] py-[8px] rounded-[10px] transition ${
+                        className={`shrink-0 text-[13px] font-medium px-[14px] py-[8px] rounded-full transition ${
                           sent
                             ? "bg-[#E9F6EF] text-[#166B49] cursor-default"
                             : "bg-[#17161A] text-white hover:brightness-125"

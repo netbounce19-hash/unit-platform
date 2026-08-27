@@ -2,6 +2,7 @@
 
 import { useState, useCallback, DragEvent } from "react";
 import { motion } from "framer-motion";
+import { DownloadDoneIconControlled } from "@/components/ui/animated-state-icons";
 
 interface FileDropZoneProps {
   label: string;
@@ -85,9 +86,14 @@ export default function FileDropZone({
             {label}
           </p>
           {droppedFile ? (
-            <p className="text-xs text-brass mt-1 truncate max-w-[200px]">
-              ✓ {droppedFile}
-            </p>
+            <div className="flex items-center gap-1.5 mt-1">
+              <DownloadDoneIconControlled
+                size={14}
+                color="#D4AF37"
+                done={true}
+              />
+              <p className="text-xs text-brass truncate max-w-[150px]">{droppedFile}</p>
+            </div>
           ) : (
             <p className="text-[10px] text-alabaster-dim/50 mt-1">
               Drop file or click

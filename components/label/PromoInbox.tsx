@@ -2,6 +2,8 @@
 
 import { useApp } from "@/components/providers/AppProvider";
 import { motion } from "framer-motion";
+import { NotificationIconControlled } from "@/components/ui/animated-state-icons";
+import { ExternalLink, Check } from "lucide-react";
 
 export default function PromoInbox() {
   const { state, dispatch } = useApp();
@@ -16,29 +18,44 @@ export default function PromoInbox() {
     return d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
   };
 
-  const getPlatformCode = (platform: string) => {
+  const getPlatformBadge = (platform: string) => {
     switch (platform) {
-      case "TikTok": return "TT";
-      case "Instagram Reels": return "IG";
-      case "YouTube Shorts": return "YT";
-      default: return "•";
+      case "TikTok":
+        return "bg-[#17161A] text-white";
+      case "Instagram Reels":
+        return "bg-[#FDEDEB] text-[#A62018]";
+      case "YouTube Shorts":
+        return "bg-[#FBF1DE] text-[#8A5A16]";
+      default:
+        return "bg-[#F0EEEA] text-[#6E6D73]";
     }
   };
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.5 }}
-      className="bg-navy/30 border border-navy rounded-xl p-6"
+      transition={{ duration: 0.4, delay: 0.15 }}
+      className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6"
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[11px] font-semibold tracking-[0.2em] uppercase text-alabaster">
-          Промо-входящие
-        </h3>
-        {unreviewed.length > 0 && (
-          <span className="px-2.5 py-1 bg-brass/20 text-brass text-[9px] tracking-wider uppercase rounded-full">
-            {unreviewed.length} новых
+        <div className="flex items-center gap-2">
+          <NotificationIconControlled
+            size={18}
+            color="#E23A34"
+            hasNotif={unreviewed.length > 0}
+          />
+          <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-[#17161A]">
+            Входящие промо-отчёты
+          </h3>
+        </div>
+        {unreviewed.length > 0 ? (
+          <span className="px-2.5 py-0.5 bg-[#FDEDEB] text-[#A62018] text-[11px] font-medium rounded-full">
+            {unreviewed.length} на проверке
+          </span>
+        ) : (
+          <span className="px-2.5 py-0.5 bg-[#E9F6EF] text-[#1F9D6B] text-[11px] font-medium rounded-full">
+            Все проверены
           </span>
         )}
       </div>
@@ -48,62 +65,77 @@ export default function PromoInbox() {
           <motion.div
             key={promo.id}
             layout
-            className={`rounded-lg border overflow-hidden transition-opacity ${
-              promo.reviewed ? "opacity-50 border-navy/30" : "border-navy/60"
+            className={`rounded-[12px] border transition-all p-3.5 flex flex-col justify-between ${
+              promo.reviewed
+                ? "border-[#ECEAE5] bg-[#FAFAF9] opacity-75"
+                : "border-[#ECEAE5] bg-white shadow-xs"
             }`}
           >
-            <div className="h-24 bg-navy/40 flex items-center justify-center relative">
-              <div className="text-center">
-                <span className="text-2xl font-bold text-alabaster-dim/20">
-                  {getPlatformCode(promo.platform)}
-                </span>
-                <p className="text-[8px] text-alabaster-dim/25 mt-1 px-2 truncate">{promo.screenshotName}</p>
-              </div>
-              <span className="absolute top-2 left-2 px-2 py-0.5 bg-sapphire/80 text-[8px] tracking-wider uppercase text-brass rounded">
-                {promo.platform}
-              </span>
-            </div>
-
-            <div className="p-3 bg-sapphire/20">
-              <div className="flex items-center gap-2 mb-1.5">
-                <div className="w-5 h-5 rounded-full bg-navy flex items-center justify-center text-[9px] font-bold text-alabaster">
-                  {getArtistName(promo.artistId)[0]}
+            <div>
+              {/* Header inside item */}
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-[#17161A] text-white flex items-center justify-center text-[10px] font-bold">
+                    {getArtistName(promo.artistId)[0]}
+                  </div>
+                  <span className="text-[13px] font-semibold text-[#17161A]">
+                    {getArtistName(promo.artistId)}
+                  </span>
                 </div>
-                <span className="text-xs font-medium text-alabaster">{getArtistName(promo.artistId)}</span>
-                <span className="text-[9px] text-alabaster-dim ml-auto">{formatDate(promo.submittedAt)}</span>
+                <span className="text-[11px] text-[#A6A5AB]">
+                  {formatDate(promo.submittedAt)}
+                </span>
               </div>
 
+              {/* Platform tag + file */}
+              <div className="flex items-center gap-2 mb-3">
+                <span
+                  className={`text-[10.5px] font-medium px-2 py-0.5 rounded-full ${getPlatformBadge(
+                    promo.platform
+                  )}`}
+                >
+                  {promo.platform}
+                </span>
+                <span className="text-[11px] text-[#6E6D73] truncate max-w-[130px]">
+                  {promo.screenshotName}
+                </span>
+              </div>
+
+              {/* Link */}
               <a
                 href={promo.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[9px] text-brass hover:text-brass-dim truncate block mb-2.5 transition-colors"
+                className="text-[12px] text-[#6E6D73] hover:text-[#E23A34] transition inline-flex items-center gap-1 mb-3 truncate max-w-full"
               >
-                {promo.link}
+                <span className="truncate">{promo.link}</span>
+                <ExternalLink className="w-3 h-3 shrink-0" />
               </a>
-
-              {!promo.reviewed ? (
-                <button
-                  onClick={() => dispatch({ type: "REVIEW_PROMO", payload: promo.id })}
-                  className="w-full py-1.5 bg-brass/20 text-brass text-[9px] font-semibold tracking-widest uppercase rounded hover:bg-brass/30 transition-colors cursor-pointer"
-                >
-                  Отметить проверенным
-                </button>
-              ) : (
-                <span className="block text-center text-[9px] tracking-widest uppercase text-success py-1.5">
-                  ✓ Проверено
-                </span>
-              )}
             </div>
+
+            {/* Action button */}
+            {!promo.reviewed ? (
+              <button
+                onClick={() =>
+                  dispatch({ type: "REVIEW_PROMO", payload: promo.id })
+                }
+                className="w-full py-1.5 bg-[#FDEDEB] text-[#A62018] hover:bg-[#FCE2DF] text-[12px] font-medium rounded-full transition cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                Отметить проверенным
+              </button>
+            ) : (
+              <div className="text-center py-1 text-[11px] font-medium text-[#1F9D6B] flex items-center justify-center gap-1">
+                <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+                Проверено менеджером
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
 
       {state.promos.length === 0 && (
-        <div className="py-8 text-center">
-          <p className="text-xs text-alabaster-dim/40 tracking-wider uppercase">
-            Нет промо-отчётов
-          </p>
+        <div className="py-8 text-center text-[13px] text-[#A6A5AB]">
+          Нет промо-отчётов
         </div>
       )}
     </motion.section>

@@ -71,12 +71,12 @@ function SupportInner({ org }: { org: MyOrg }) {
             onChange={(e) => setMessage(e.target.value)}
             rows={4}
             placeholder="Опишите вопрос или проблему…"
-            className="w-full resize-none text-[13.5px] leading-[1.45] rounded-[10px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
+            className="w-full resize-none text-[13.5px] leading-[1.45] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[10px] outline-none focus:border-[#E23A34] transition placeholder:text-[#C4C3C8]"
           />
           <button
             type="submit"
             disabled={!message.trim()}
-            className="self-start inline-flex items-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[9px] rounded-[9px] hover:brightness-95 transition disabled:opacity-40"
+            className="self-start inline-flex items-center gap-2 text-[13px] font-medium bg-[#E23A34] text-white px-[14px] py-[8px] rounded-full hover:brightness-95 transition disabled:opacity-40"
           >
             {sent ? <Check className="w-4 h-4" strokeWidth={2.5} /> : <Send className="w-4 h-4" strokeWidth={1.75} />}
             {sent ? "Отправлено" : "Отправить"}

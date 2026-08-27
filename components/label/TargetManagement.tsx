@@ -3,6 +3,7 @@
 import { useApp } from "@/components/providers/AppProvider";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Target, Check } from "lucide-react";
 
 export default function TargetManagement() {
   const { state, dispatch } = useApp();
@@ -24,86 +25,113 @@ export default function TargetManagement() {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
-      className="bg-navy/30 border border-navy rounded-xl p-7"
+      transition={{ duration: 0.4, delay: 0.1 }}
+      className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 flex flex-col justify-between"
     >
-      <h3 className="text-[11px] font-semibold tracking-[0.2em] uppercase text-alabaster mb-6">
-        Управление целями
-      </h3>
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Target className="w-4 h-4 text-[#6E6D73]" strokeWidth={2} />
+            <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-[#17161A]">
+              Цели по слушателям
+            </h3>
+          </div>
+          <span className="text-[11px] font-medium text-[#6E6D73] bg-[#FAFAF9] border border-[#ECEAE5] px-2 py-0.5 rounded-full">
+            Таргеты Q3
+          </span>
+        </div>
 
-      <div className="space-y-4">
-        {state.targets.map((target) => {
-          const artist = state.artists.find((a) => a.id === target.artistId);
-          if (!artist) return null;
-          const progress = Math.min(target.current / target.goal, 1);
-          const isEditing = editingId === target.artistId;
+        <div className="space-y-3.5">
+          {state.targets.map((target) => {
+            const artist = state.artists.find((a) => a.id === target.artistId);
+            if (!artist) return null;
+            const progress = Math.min(target.current / target.goal, 1);
+            const isEditing = editingId === target.artistId;
 
-          return (
-            <div key={target.artistId} className="bg-sapphire/40 rounded-lg p-5 border border-navy/30">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-7 h-7 rounded-full bg-navy flex items-center justify-center text-xs font-bold text-alabaster flex-shrink-0">
-                  {artist.avatar}
+            return (
+              <div
+                key={target.artistId}
+                className="bg-[#FAFAF9] rounded-[12px] p-4 border-[0.5px] border-[#ECEAE5] transition hover:border-[#D2D0CB]"
+              >
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className="w-7 h-7 rounded-full bg-[#17161A] text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+                    {artist.avatar}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13.5px] font-medium text-[#17161A] leading-tight">
+                      {artist.name}
+                    </p>
+                    <p className="text-[11px] text-[#A6A5AB] mt-0.5">
+                      {formatNumber(target.current)} из {formatNumber(target.goal)}
+                    </p>
+                  </div>
+                  <span
+                    className={`text-[12px] font-semibold tabular-nums shrink-0 ${
+                      progress >= 0.8 ? "text-[#1F9D6B]" : "text-[#17161A]"
+                    }`}
+                  >
+                    {Math.round(progress * 100)}%
+                  </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-alabaster mb-1">{artist.name}</p>
-                  <p className="text-[9px] text-alabaster-dim">
-                    {formatNumber(target.current)} / {formatNumber(target.goal)} слушателей
-                  </p>
-                </div>
-                <span className="text-xs font-bold text-brass flex-shrink-0">
-                  {Math.round(progress * 100)}%
-                </span>
-              </div>
 
-              <div className="h-1 bg-navy rounded-full overflow-hidden mb-3">
-                <motion.div
-                  className="h-full bg-brass rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress * 100}%` }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                />
-              </div>
-
-              {isEditing ? (
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    placeholder="Новая цель"
-                    autoFocus
-                    className="flex-1 bg-sapphire border border-navy rounded px-3 py-1.5 text-xs text-alabaster focus:outline-none focus:border-brass/50 transition-colors"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleSave(target.artistId);
-                      if (e.key === "Escape") setEditingId(null);
-                    }}
+                {/* Progress bar */}
+                <div className="h-1.5 bg-[#ECEAE5] rounded-full overflow-hidden mb-2.5">
+                  <motion.div
+                    className={`h-full rounded-full ${
+                      progress >= 0.8 ? "bg-[#1F9D6B]" : "bg-[#17161A]"
+                    }`}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress * 100}%` }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
                   />
-                  <button
-                    onClick={() => handleSave(target.artistId)}
-                    className="px-3 py-1.5 bg-brass text-sapphire text-xs font-semibold rounded hover:bg-brass-dim transition-colors cursor-pointer"
-                  >
-                    Сохранить
-                  </button>
-                  <button
-                    onClick={() => setEditingId(null)}
-                    className="px-2.5 py-1.5 bg-navy text-alabaster-dim text-xs rounded hover:text-alabaster transition-colors cursor-pointer"
-                  >
-                    ✕
-                  </button>
                 </div>
-              ) : (
-                <button
-                  onClick={() => { setEditingId(target.artistId); setEditValue(target.goal.toString()); }}
-                  className="text-[9px] tracking-widest uppercase text-brass hover:text-brass-dim transition-colors cursor-pointer"
-                >
-                  Изменить цель →
-                </button>
-              )}
-            </div>
-          );
-        })}
+
+                {isEditing ? (
+                  <div className="flex gap-2 mt-2">
+                    <input
+                      type="number"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      placeholder="Новая цель"
+                      autoFocus
+                      className="flex-1 bg-white border border-[#E5E3DE] rounded-[12px] px-2.5 py-1 text-[12px] text-[#17161A] outline-none focus:border-[#E23A34]"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSave(target.artistId);
+                        if (e.key === "Escape") setEditingId(null);
+                      }}
+                    />
+                    <button
+                      onClick={() => handleSave(target.artistId)}
+                      className="px-2.5 py-1 bg-[#17161A] text-white text-[11px] font-medium rounded-full hover:bg-[#2A292E] transition"
+                    >
+                      Сохранить
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="px-2 py-1 text-[#6E6D73] text-[11px] hover:text-[#17161A]"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => {
+                        setEditingId(target.artistId);
+                        setEditValue(target.goal.toString());
+                      }}
+                      className="text-[11px] font-medium text-[#6E6D73] hover:text-[#E23A34] transition cursor-pointer"
+                    >
+                      Изменить цель →
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </motion.section>
   );

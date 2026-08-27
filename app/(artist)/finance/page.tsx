@@ -13,11 +13,19 @@ import {
   type RequestStatus,
 } from "@/lib/supabase/cabinet";
 
+const DECLINED = { label: "Отклонена", cls: "bg-[#FDEDEB] text-[#A62018]" };
+
 const statusLabels: Record<RequestStatus, { label: string; cls: string }> = {
   pending: { label: "На рассмотрении", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
   approved: { label: "Одобрена", cls: "bg-[#E9F6EF] text-[#166B49]" },
-  declined: { label: "Отклонена", cls: "bg-[#FDEDEB] text-[#A62018]" },
+  rejected: DECLINED,
+  declined: DECLINED,
 };
+
+/** Незнакомый статус не должен ронять экран — показываем его как есть. */
+function statusOf(s: RequestStatus) {
+  return statusLabels[s] ?? { label: s, cls: "bg-[#F0EEEA] text-[#6E6D73]" };
+}
 
 // «отправлена сегодня / вчера / 5 июля»
 function formatSince(iso: string) {
@@ -105,7 +113,7 @@ export default function FinancePage() {
         </div>
         <button
           onClick={() => setBudgetOpen(true)}
-          className="shrink-0 inline-flex items-center gap-[6px] bg-[#E23A34] text-white font-medium text-[13px] px-[14px] py-[9px] rounded-[10px] hover:brightness-95 transition mt-1"
+          className="shrink-0 inline-flex items-center gap-[6px] bg-[#E23A34] text-white font-medium text-[13px] px-[14px] py-[8px] rounded-full hover:brightness-95 transition mt-1"
         >
           <Plus className="w-4 h-4" strokeWidth={2.5} />
           Сделать заявку
@@ -150,9 +158,9 @@ export default function FinancePage() {
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <span
-                      className={`text-[12px] font-medium px-[10px] py-[4px] rounded-full ${statusLabels[r.status].cls}`}
+                      className={`text-[12px] font-medium px-[10px] py-[4px] rounded-full ${statusOf(r.status).cls}`}
                     >
-                      {statusLabels[r.status].label}
+                      {statusOf(r.status).label}
                     </span>
                     <button
                       onClick={() => removeRequest(r.id)}

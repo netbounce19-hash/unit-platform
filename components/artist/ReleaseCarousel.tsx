@@ -199,7 +199,7 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
             <div className="text-[13px] text-[#6E6D73]">{statusHint[release.status]}</div>
             <Link
               href={`/releases/${release.id}`}
-              className={`inline-flex items-center gap-[7px] font-medium text-[14px] rounded-[10px] transition shrink-0 ${
+              className={`inline-flex items-center gap-[7px] font-medium text-[14px] rounded-full transition shrink-0 ${
                 isReleased
                   ? "bg-[#E23A34] text-white px-[18px] py-[10px] hover:brightness-95"
                   : "text-[#17161A] border border-[#E5E3DE] px-[16px] py-[9px] hover:bg-[#F0EEEA]"
@@ -266,13 +266,13 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
               <div className="flex items-center gap-2 mt-4">
                 <button
                   onClick={() => setConfirmOpen(false)}
-                  className="flex-1 text-[14px] font-medium text-[#17161A] px-4 py-[10px] rounded-[10px] border border-[#E5E3DE] hover:bg-[#F0EEEA] transition"
+                  className="flex-1 text-[14px] font-medium text-[#17161A] px-[18px] py-[10px] rounded-full border border-[#E5E3DE] hover:bg-[#F0EEEA] transition"
                 >
                   Нет
                 </button>
                 <button
                   onClick={remove}
-                  className="flex-1 text-[14px] font-medium text-white bg-[#E23A34] px-4 py-[10px] rounded-[10px] hover:brightness-95 transition"
+                  className="flex-1 text-[14px] font-medium text-white bg-[#E23A34] px-[18px] py-[10px] rounded-full hover:brightness-95 transition"
                 >
                   Да, удалить
                 </button>
