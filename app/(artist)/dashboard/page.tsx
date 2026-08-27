@@ -2,14 +2,21 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, Target, ListChecks, ArrowRight, Wallet } from "lucide-react";
+import { Check, Target, ListChecks, ArrowRight, Wallet, Loader2 } from "lucide-react";
 import EventsFeed from "@/components/artist/EventsFeed";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
 import StatsSection from "@/components/artist/StatsSection";
 import PromoConfirm from "@/components/artist/PromoConfirm";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
-import { listBudgetRequests } from "@/lib/supabase/cabinet";
+import {
+  listBudgetRequests,
+  fetchMyTasks,
+  setTaskDone,
+  formatDue,
+  isTaskOverdue,
+  type ArtistTask,
+} from "@/lib/supabase/cabinet";
 
 // «Четверг, 16 июля» — с заглавной буквы
 function formatToday(d: Date) {
@@ -25,17 +32,10 @@ function plural(n: number, one: string, few: string, many: string) {
   return many;
 }
 
-// ЗАГЛУШКА: задачи ставит менеджер из своего кабинета, таблицы для них
-// пока нет — до подключения бэкенда показываем фиксированный список.
-type Task = { id: number; title: string; meta: string; done: boolean };
-const initial: Task[] = [
-  { id: 1, title: "Загрузить финальный мастер", meta: "до 6 августа", done: false },
-  { id: 2, title: "Согласовать обложку релиза", meta: "до 8 августа", done: false },
-  { id: 3, title: "Записать промо-ролик для TikTok", meta: "до 10 августа", done: false },
-];
-
 export default function DashboardPage() {
-  const [items, setItems] = useState(initial);
+  const [items, setItems] = useState<ArtistTask[]>([]);
+  const [tasksLoading, setTasksLoading] = useState(true);
+  const [taskError, setTaskError] = useState<string | null>(null);
   const [name, setName] = useState("Артист");
   const [pending, setPending] = useState(0);
   const [today, setToday] = useState<string | null>(null);
@@ -73,11 +73,39 @@ export default function DashboardPage() {
     };
   }, []);
 
-  const openTasks = items.filter((t) => !t.done).length;
-  const nextStep = items.find((t) => !t.done) ?? null;
+  // Задачи ставит менеджер — RLS отдаёт только свои
+  useEffect(() => {
+    let cancelled = false;
+    fetchMyTasks()
+      .then((rows) => !cancelled && setItems(rows))
+      .catch((e) => {
+        if (!cancelled) setTaskError(e instanceof Error ? e.message : "Не удалось загрузить задачи");
+      })
+      .finally(() => !cancelled && setTasksLoading(false));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  const toggle = (id: number) =>
-    setItems((p) => p.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+  const openTasks = items.filter((t) => t.status !== "done").length;
+  const nextStep = items.find((t) => t.status !== "done") ?? null;
+
+  const toggle = async (id: string) => {
+    const task = items.find((t) => t.id === id);
+    if (!task) return;
+    const done = task.status !== "done";
+    const prev = items;
+    // Оптимистично: галочка не должна ждать сети
+    setItems((p) =>
+      p.map((t) => (t.id === id ? { ...t, status: done ? "done" : "todo" } : t))
+    );
+    try {
+      await setTaskDone(id, done);
+    } catch {
+      setItems(prev);
+      setTaskError("Не удалось сохранить отметку");
+    }
+  };
 
   // Три состояния, а не два: пустой список — это не «всё выполнено»
   const subtitle =
@@ -104,7 +132,7 @@ export default function DashboardPage() {
           <div className="text-[17px] font-medium tracking-[-0.01em] leading-[1.3]">
             {nextStep.title}
           </div>
-          <div className="text-[13px] text-white/60 mt-[3px]">{nextStep.meta}</div>
+          <div className="text-[13px] text-white/60 mt-[3px]">{formatDue(nextStep.due_date)}</div>
           <button
             onClick={() => toggle(nextStep.id)}
             className="inline-flex items-center gap-[6px] bg-white text-[#17161A] font-medium text-[13px] px-[14px] py-[8px] rounded-full hover:bg-white/90 transition mt-4"
@@ -121,34 +149,56 @@ export default function DashboardPage() {
           <ListChecks className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
           <div className="text-[16px] font-semibold tracking-[-0.01em]">Задачи на сегодня</div>
         </div>
-        {items.length === 0 && (
+        {taskError && (
+          <div className="text-[12.5px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[8px] my-2">
+            {taskError}
+          </div>
+        )}
+
+        {tasksLoading ? (
+          <div className="py-[18px] flex items-center justify-center text-[#A6A5AB]">
+            <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
+          </div>
+        ) : items.length === 0 ? (
           <div className="py-[18px] text-[13px] text-[#A6A5AB] text-center">
             Ожидаются от менеджера
           </div>
+        ) : (
+          items.map((t, i) => {
+            const done = t.status === "done";
+            const overdue = isTaskOverdue(t);
+            return (
+              <button
+                key={t.id}
+                onClick={() => toggle(t.id)}
+                className={`w-full flex items-center gap-3 py-[13px] text-left ${
+                  i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""
+                }`}
+              >
+                <span
+                  className={`w-5 h-5 rounded-[12px] border-[1.5px] flex items-center justify-center shrink-0 transition ${
+                    done ? "bg-[#1F9D6B] border-[#1F9D6B]" : "border-[#D2D0CB]"
+                  }`}
+                >
+                  {done && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                </span>
+                <span className="min-w-0">
+                  <span className={`block text-[14px] ${done ? "line-through text-[#A6A5AB]" : ""}`}>
+                    {t.title}
+                  </span>
+                  <span
+                    className={`block text-[12px] mt-[2px] ${
+                      overdue ? "text-[#17161A] font-medium" : "text-[#A6A5AB]"
+                    }`}
+                  >
+                    {formatDue(t.due_date)}
+                    {overdue && " · просрочена"}
+                  </span>
+                </span>
+              </button>
+            );
+          })
         )}
-        {items.map((t, i) => (
-          <button
-            key={t.id}
-            onClick={() => toggle(t.id)}
-            className={`w-full flex items-center gap-3 py-[13px] text-left ${
-              i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""
-            }`}
-          >
-            <span
-              className={`w-5 h-5 rounded-[12px] border-[1.5px] flex items-center justify-center shrink-0 transition ${
-                t.done ? "bg-[#1F9D6B] border-[#1F9D6B]" : "border-[#D2D0CB]"
-              }`}
-            >
-              {t.done && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-            </span>
-            <span>
-              <span className={`block text-[14px] ${t.done ? "line-through text-[#A6A5AB]" : ""}`}>
-                {t.title}
-              </span>
-              <span className="block text-[12px] text-[#A6A5AB] mt-[2px]">{t.meta}</span>
-            </span>
-          </button>
-        ))}
 
         {/* Задачи закрыты — подтверждаем промо ссылкой на публикацию */}
         {items.length > 0 && openTasks === 0 && <PromoConfirm />}

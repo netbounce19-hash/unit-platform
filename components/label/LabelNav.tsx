@@ -25,7 +25,7 @@ const ITEMS: { href: string; label: string; icon: LucideIcon; match: string[] }[
     href: "/label/more",
     label: "Ещё",
     icon: MoreHorizontal,
-    match: ["/label/more", "/label/data-upload", "/label/invites", "/label/settings", "/label/support"],
+    match: ["/label/more", "/label/data-upload", "/label/invites", "/label/promo", "/label/settings", "/label/support"],
   },
 ];
 

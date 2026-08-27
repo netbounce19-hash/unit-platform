@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   UploadCloud,
   Mail,
+  Megaphone,
   Settings,
   LifeBuoy,
   LogOut,
@@ -22,6 +23,12 @@ const ITEMS: { href: string; label: string; hint: string; icon: LucideIcon }[] =
     label: "Загрузка данных",
     hint: "Стримы по артистам вручную",
     icon: UploadCloud,
+  },
+  {
+    href: "/label/promo",
+    label: "Промо-отчёты",
+    hint: "Ссылки на публикации от артистов",
+    icon: Megaphone,
   },
   {
     href: "/label/invites",

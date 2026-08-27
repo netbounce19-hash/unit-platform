@@ -295,6 +295,61 @@ export async function addReleaseAsset(
   if (error) throw error;
 }
 
+// ── Задачи ──────────────────────────────────────────────────
+
+export type TaskStatus = "todo" | "done";
+
+export interface ArtistTask {
+  id: string;
+  title: string;
+  description: string | null;
+  due_date: string | null; // YYYY-MM-DD
+  status: TaskStatus;
+  release_id: string | null;
+  completed_at: string | null;
+}
+
+/**
+ * Свои задачи. Ставит их менеджер из кабинета лейбла — RLS отдаёт
+ * артисту строки, где artist_id совпадает с его артистом.
+ */
+export async function fetchMyTasks(): Promise<ArtistTask[]> {
+  const { data, error } = await getSupabase()
+    .from("tasks")
+    .select("id, title, description, due_date, status, release_id, completed_at")
+    .order("due_date", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as ArtistTask[];
+}
+
+/** Отметить задачу выполненной или вернуть в работу. */
+export async function setTaskDone(id: string, done: boolean): Promise<void> {
+  const { error } = await getSupabase()
+    .from("tasks")
+    .update({
+      status: done ? "done" : "todo",
+      completed_at: done ? new Date().toISOString() : null,
+    })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+/** «2026-08-06» → «до 6 августа»; без срока — понятная подпись. */
+export function formatDue(d: string | null): string {
+  if (!d) return "без срока";
+  return (
+    "до " +
+    new Date(`${d}T00:00:00`).toLocaleDateString("ru-RU", { day: "numeric", month: "long" })
+  );
+}
+
+/** Срок прошёл, а задача ещё открыта. */
+export function isTaskOverdue(t: ArtistTask): boolean {
+  if (!t.due_date || t.status === "done") return false;
+  return new Date(`${t.due_date}T23:59:59`).getTime() < Date.now();
+}
+
 // ── Подтверждения промо-действий ────────────────────────────
 
 export type PromoStatus = "submitted" | "accepted" | "needs_changes";

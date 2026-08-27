@@ -463,3 +463,37 @@ export function isOverdue(dueDate: string | null, status: TaskStatus): boolean {
   if (!dueDate || status === "done") return false;
   return dueDate < new Date().toISOString().slice(0, 10);
 }
+
+// ── Промо-отчёты ────────────────────────────────────────────────────────────
+
+
+export interface PromoRow {
+  id: string;
+  org_id: string;
+  artist_id: string;
+  release_id: string | null;
+  platform: string;
+  url: string | null;
+  status: PromoStatus;
+  created_at: string;
+}
+
+export const promoStatusLabels: Record<PromoStatus, { label: string; cls: string }> = {
+  submitted: { label: "На проверке", cls: "bg-[#FBF1DE] dark:bg-[#3A2F14] text-[#8A5A16] dark:text-[#E8B65A]" },
+  accepted: { label: "Принято", cls: "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]" },
+  needs_changes: { label: "Нужны правки", cls: "bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2]" },
+};
+
+export async function fetchPromoReports(orgId: string, artistId?: string): Promise<PromoRow[]> {
+  let q = getSupabase().from("promo_reports").select("*").eq("org_id", orgId);
+  if (artistId) q = q.eq("artist_id", artistId);
+  const { data, error } = await q.order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as PromoRow[];
+}
+
+/** Вердикт по промо-отчёту. Артисту запись закрыта политикой. */
+export async function decidePromo(id: string, status: PromoStatus): Promise<void> {
+  const { error } = await getSupabase().from("promo_reports").update({ status }).eq("id", id);
+  if (error) throw error;
+}
