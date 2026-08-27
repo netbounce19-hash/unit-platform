@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Headphones,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -16,6 +15,7 @@ import {
   Disc3,
   Pencil,
 } from "lucide-react";
+import { DemoIcon } from "@/components/ui/icons";
 import { useDemos } from "@/components/artist/DemoContext";
 
 const PAGE_SIZE = 3;
@@ -130,7 +130,7 @@ export default function DemoSection({ bare = false }: { bare?: boolean } = {}) {
           disabled={bare}
           className="flex items-center gap-2 flex-1 min-w-0 -my-1 py-1 text-left disabled:cursor-default"
         >
-          <Headphones className="w-[17px] h-[17px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
+          <DemoIcon className="w-[17px] h-[17px] text-[#6E6D73] shrink-0" strokeWidth={1.75} />
           <div className="text-[16px] font-semibold tracking-[-0.01em] shrink-0">Демо</div>
           {!bare && (
             <motion.span

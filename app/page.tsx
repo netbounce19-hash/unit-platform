@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Music, Building2, UserPlus } from "lucide-react";
+import { Loader2, UserPlus } from "lucide-react";
+import { ArtistIcon, LabelIcon } from "@/components/ui/icons";
 import { getSupabase } from "@/lib/supabase/client";
 
 /**
@@ -66,7 +67,7 @@ export default function Home() {
           {busy === "artist" ? (
             <Loader2 className="w-8 h-8 mx-auto animate-spin text-[#17161A]" strokeWidth={2} />
           ) : (
-            <Music className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#17161A] transition" strokeWidth={1.5} />
+            <ArtistIcon className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#17161A] transition" strokeWidth={1.5} />
           )}
           <div className="text-[15px] font-semibold mt-3 group-hover:text-[#17161A] transition">Артист</div>
           <div className="text-[12px] text-[#A6A5AB] mt-1">Кабинет артиста</div>
@@ -80,7 +81,7 @@ export default function Home() {
           {busy === "label" ? (
             <Loader2 className="w-8 h-8 mx-auto animate-spin text-[#17161A]" strokeWidth={2} />
           ) : (
-            <Building2 className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#17161A] transition" strokeWidth={1.5} />
+            <LabelIcon className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#17161A] transition" strokeWidth={1.5} />
           )}
           <div className="text-[15px] font-semibold mt-3 group-hover:text-[#17161A] transition">Лейбл</div>
           <div className="text-[12px] text-[#A6A5AB] mt-1">Кабинет лейбла</div>
