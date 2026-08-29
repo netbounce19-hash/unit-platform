@@ -79,24 +79,16 @@ export default function Home() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="relative z-10 w-full max-w-[560px] flex flex-col items-center text-center"
       >
-        {/* Логотип и брендинг */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-white/80 backdrop-blur-md border-[0.5px] border-[#ECEAE5] shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-[#E23A34] animate-pulse" />
-          <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#17161A]">
-            MUSIC OPERATING SYSTEM
-          </span>
-        </div>
-
         <h1 className="font-semibold tracking-[0.14em] text-[34px] sm:text-[40px] text-[#17161A] mb-2 leading-tight">
           UNIT
         </h1>
 
-        {/* Ёмкий слоган с сутью приложения */}
-        <p className="text-[14.5px] sm:text-[15px] text-[#17161A] font-medium max-w-[460px] leading-snug mb-1">
-          Единое пространство взаимодействия артистов и музыкальных лейблов
+        {/* Ёмкий слоган с акцентом на эффективность и прозрачность */}
+        <p className="text-[14.5px] sm:text-[15.5px] text-[#17161A] font-medium max-w-[480px] leading-snug mb-2">
+          Единая платформа для эффективного и прозрачного взаимодействия артистов и лейблов
         </p>
-        <p className="text-[12.5px] text-[#6E6D73] max-w-[420px] leading-relaxed mb-8">
-          Управление релизами, согласование бюджетов, промо-отчёты и аналитика стриминга
+        <p className="text-[12.5px] text-[#6E6D73] max-w-[460px] leading-relaxed mb-7">
+          Управление релизами · Согласование бюджетов · Менеджер задач · Аналитика стримов
         </p>
 
         {/* Режим тестирования */}
