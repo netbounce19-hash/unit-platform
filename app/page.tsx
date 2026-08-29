@@ -84,18 +84,19 @@ export default function Home() {
         </h1>
 
         {/* Ёмкий слоган с акцентом на эффективность и прозрачность */}
-        <p className="text-[14.5px] sm:text-[15.5px] text-[#17161A] font-medium max-w-[480px] leading-snug mb-2">
+        <p className="text-[14.5px] sm:text-[15.5px] text-[#17161A] font-medium max-w-[480px] leading-snug mb-4">
           Единая платформа для эффективного и прозрачного взаимодействия артистов и лейблов
         </p>
-        <p className="text-[12.5px] text-[#6E6D73] max-w-[460px] leading-relaxed mb-7">
-          Управление релизами · Согласование бюджетов · Менеджер задач · Аналитика стримов
-        </p>
 
-        {/* Режим тестирования */}
-        <div className="inline-flex items-center gap-1.5 text-[11.5px] text-[#6E6D73] bg-white/70 backdrop-blur-xs px-2.5 py-0.5 rounded-full border-[0.5px] border-[#ECEAE5] mb-5">
-          <span className="font-semibold text-[#17161A]">DEV MODE</span>
-          <span>·</span>
-          <span>выберите кабинет для входа</span>
+        {/* Описание возможностей через точки */}
+        <div className="inline-flex flex-wrap items-center justify-center text-[12px] text-[#6E6D73] bg-white/85 backdrop-blur-xs px-3.5 py-1.5 rounded-full border-[0.5px] border-[#ECEAE5] shadow-2xs mb-8 gap-y-1">
+          <span>Управление релизами</span>
+          <span className="mx-1.5 text-[#A6A5AB]">·</span>
+          <span>Согласование бюджетов</span>
+          <span className="mx-1.5 text-[#A6A5AB]">·</span>
+          <span>Менеджер задач</span>
+          <span className="mx-1.5 text-[#A6A5AB]">·</span>
+          <span>Аналитика стримов</span>
         </div>
 
         {/* ── Карточки выбора роли (Артист / Лейбл) ── */}
