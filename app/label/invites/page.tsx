@@ -1,7 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Send, Copy, Check, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  Send,
+  Copy,
+  Check,
+  Trash2,
+  Mail,
+  UserPlus,
+  Clock,
+  CheckCircle2,
+  Calendar,
+  AlertTriangle,
+} from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { CardList, ListCard, Field, Badge } from "@/components/label/LabelShell";
 import {
@@ -20,10 +32,20 @@ const inputCls =
   "w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[9px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]";
 
 function inviteState(inv: InviteRow): { label: string; cls: string } {
-  if (inv.accepted_at) return { label: "Принято", cls: "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]" };
+  if (inv.accepted_at)
+    return {
+      label: "Принято",
+      cls: "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]",
+    };
   if (new Date(inv.expires_at) < new Date())
-    return { label: "Истекло", cls: "bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2]" };
-  return { label: "Ожидает", cls: "bg-[#FBF1DE] dark:bg-[#3A2F14] text-[#8A5A16] dark:text-[#E8B65A]" };
+    return {
+      label: "Истекло",
+      cls: "bg-[#FDF0EE] dark:bg-[#341B1A] text-[#E23A34] dark:text-[#F87171]",
+    };
+  return {
+    label: "Ожидает",
+    cls: "bg-[#FBF1DE] dark:bg-[#3A2F14] text-[#8A5A16] dark:text-[#E8B65A]",
+  };
 }
 
 function InvitesInner({ org }: { org: MyOrg }) {
@@ -90,8 +112,9 @@ function InvitesInner({ org }: { org: MyOrg }) {
     }
   };
 
-  // Артисты без аккаунта — им и нужны приглашения.
   const unlinked = artists.filter((a) => !a.user_id);
+  const pendingCount = rows.filter((r) => !r.accepted_at && new Date(r.expires_at) >= new Date()).length;
+  const acceptedCount = rows.filter((r) => r.accepted_at).length;
 
   return (
     <LabelShell
@@ -99,12 +122,62 @@ function InvitesInner({ org }: { org: MyOrg }) {
       title="Приглашения"
       subtitle="Ссылка привязывает аккаунт артиста к вашему лейблу"
     >
+      {/* Сводные микро-показатели */}
+      {rows.length > 0 && (
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-2.5 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2] flex items-center justify-center shrink-0">
+              <Mail className="w-4 h-4" strokeWidth={1.75} />
+            </div>
+            <div className="min-w-0">
+              <div className="text-[14px] font-semibold text-[#17161A] dark:text-[#F5F4F2] leading-none mb-1">
+                {rows.length}
+              </div>
+              <div className="text-[10.5px] text-[#6E6D73] dark:text-[#9A98A0] leading-none truncate">
+                создано
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-2.5 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#FBF1DE] dark:bg-[#3A2F14] text-[#8A5A16] dark:text-[#E8B65A] flex items-center justify-center shrink-0">
+              <Clock className="w-4 h-4" strokeWidth={1.75} />
+            </div>
+            <div className="min-w-0">
+              <div className="text-[14px] font-semibold text-[#17161A] dark:text-[#F5F4F2] leading-none mb-1">
+                {pendingCount}
+              </div>
+              <div className="text-[10.5px] text-[#6E6D73] dark:text-[#9A98A0] leading-none truncate">
+                ожидают
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-2.5 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B] flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4" strokeWidth={2} />
+            </div>
+            <div className="min-w-0">
+              <div className="text-[14px] font-semibold text-[#17161A] dark:text-[#F5F4F2] leading-none mb-1">
+                {acceptedCount}
+              </div>
+              <div className="text-[10.5px] text-[#6E6D73] dark:text-[#9A98A0] leading-none truncate">
+                принято
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <form
         onSubmit={submit}
         className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 mb-5 flex flex-col gap-3"
       >
         <label className="block">
-          <span className="block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">Email артиста</span>
+          <span className="flex items-center gap-1 text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">
+            <Mail className="w-3.5 h-3.5" />
+            Email артиста
+          </span>
           <input
             type="email"
             value={email}
@@ -115,7 +188,8 @@ function InvitesInner({ org }: { org: MyOrg }) {
         </label>
 
         <label className="block">
-          <span className="block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">
+          <span className="flex items-center gap-1 text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">
+            <UserPlus className="w-3.5 h-3.5" />
             Привязать к артисту
           </span>
           <select
@@ -123,7 +197,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
             onChange={(e) => setArtistId(e.target.value)}
             className={`${inputCls} cursor-pointer`}
           >
-            <option value="">Создать нового</option>
+            <option value="">Создать нового артиста</option>
             {unlinked.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.stage_name}
@@ -135,14 +209,14 @@ function InvitesInner({ org }: { org: MyOrg }) {
         <button
           type="submit"
           disabled={!email.trim() || busy}
-          className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40"
+          className="inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 cursor-pointer"
         >
           {busy ? (
             <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
           ) : (
             <Send className="w-4 h-4" strokeWidth={2} />
           )}
-          Создать ссылку
+          Создать ссылку приглашения
         </button>
       </form>
 
@@ -153,7 +227,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
       )}
 
       <p className="text-[12.5px] text-[#A6A5AB] dark:text-[#6E6D73] mb-3">
-        Письма пока не отправляются — скопируйте ссылку и передайте артисту сами.
+        Скопируйте ссылку и передайте артисту в мессенджере или почте.
       </p>
 
       {loading ? (
@@ -167,17 +241,18 @@ function InvitesInner({ org }: { org: MyOrg }) {
             return (
               <ListCard key={inv.id}>
                 <div className="flex items-start justify-between gap-3 mb-[6px]">
-                  <div className="text-[14px] font-medium truncate min-w-0 dark:text-[#F5F4F2]">
-                    {inv.email}
+                  <div className="text-[14px] font-medium truncate min-w-0 text-[#17161A] dark:text-[#F5F4F2] flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-[#A6A5AB] shrink-0" />
+                    <span className="truncate">{inv.email}</span>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <Badge label={s.label} cls={s.cls} />
+                    <Badge label={s.label} cls={s.cls} dot />
                     {!inv.accepted_at && (
                       <button
                         onClick={() => revoke(inv.id)}
                         aria-label="Отозвать приглашение"
                         title="Отозвать"
-                        className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#17161A] dark:hover:text-[#F5F4F2] hover:bg-[#F0EEEA] dark:hover:bg-[#242327] transition"
+                        className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#E23A34] dark:hover:text-[#F87171] hover:bg-[#FDF0EE] dark:hover:bg-[#341B1A] transition cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                       </button>
@@ -185,17 +260,22 @@ function InvitesInner({ org }: { org: MyOrg }) {
                   </div>
                 </div>
 
-                <Field label="Действует до">{formatDate(inv.expires_at)}</Field>
+                <Field label="Действует до">
+                  <span className="inline-flex items-center gap-1">
+                    <Calendar className="w-3 h-3 text-[#A6A5AB]" />
+                    {formatDate(inv.expires_at)}
+                  </span>
+                </Field>
 
                 {!inv.accepted_at && (
                   <button
                     onClick={() => copy(inv.token)}
-                    className="w-full mt-3 inline-flex items-center justify-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[10px] py-[9px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
+                    className="w-full mt-3 inline-flex items-center justify-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[10px] py-[9px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition cursor-pointer"
                   >
                     {copied === inv.token ? (
                       <>
                         <Check className="w-3.5 h-3.5 text-[#166B49] dark:text-[#5FCB9B]" strokeWidth={2.5} />
-                        Скопировано
+                        Ссылка скопирована
                       </>
                     ) : (
                       <>

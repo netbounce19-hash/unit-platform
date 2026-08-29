@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Check, UploadCloud } from "lucide-react";
+import { Loader2, Check, UploadCloud, TrendingUp, Users, Clock } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { panelCls } from "@/components/label/LabelShell";
 import { fetchRoster, type MyOrg, type RosterArtist } from "@/lib/supabase/label";
@@ -93,25 +93,35 @@ function DataUploadInner({ org }: { org: MyOrg }) {
           В ростере пока нет артистов
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {artists.map((a) => {
             const cur = stats.get(a.id);
             const d = draftOf(a.id);
             const rowBusy = busy === a.id;
             return (
-              <div key={a.id} className={`${panelCls} px-4 py-[13px]`}>
-                <div className="text-[14px] font-medium text-[#17161A] dark:text-[#F5F4F2]">
-                  {a.stage_name}
-                </div>
-                <div className="text-[11.5px] text-[#A6A5AB] dark:text-[#6E6D73] mb-3">
-                  {cur
-                    ? `Сейчас: ${cur.streams.toLocaleString("ru-RU")} стримов · ${cur.listeners.toLocaleString("ru-RU")} слушателей · обновлено ${new Date(cur.updated_at).toLocaleDateString("ru-RU")}`
-                    : "Данных ещё нет"}
+              <div key={a.id} className={`${panelCls} p-4`}>
+                <div className="flex items-center gap-2.5 mb-1.5">
+                  <div className="w-7 h-7 rounded-full bg-[#17161A] dark:bg-[#242327] text-white dark:text-[#F5F4F2] flex items-center justify-center text-[11.5px] font-semibold shrink-0">
+                    {a.stage_name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="text-[14.5px] font-semibold text-[#17161A] dark:text-[#F5F4F2] truncate">
+                    {a.stage_name}
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 mb-2">
+                <div className="text-[11.5px] text-[#A6A5AB] dark:text-[#6E6D73] mb-3 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">
+                    {cur
+                      ? `${cur.streams.toLocaleString("ru-RU")} стримов · ${cur.listeners.toLocaleString("ru-RU")} слуш./мес. · ${new Date(cur.updated_at).toLocaleDateString("ru-RU")}`
+                      : "Данных ещё нет"}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5 mb-3">
                   <label className="block">
-                    <span className="block text-[11.5px] text-[#A6A5AB] dark:text-[#6E6D73] mb-[4px]">
+                    <span className="flex items-center gap-1 text-[11.5px] text-[#6E6D73] dark:text-[#9A98A0] mb-[4px]">
+                      <TrendingUp className="w-3 h-3 text-[#A6A5AB]" />
                       Стримы
                     </span>
                     <input
@@ -128,7 +138,8 @@ function DataUploadInner({ org }: { org: MyOrg }) {
                     />
                   </label>
                   <label className="block">
-                    <span className="block text-[11.5px] text-[#A6A5AB] dark:text-[#6E6D73] mb-[4px]">
+                    <span className="flex items-center gap-1 text-[11.5px] text-[#6E6D73] dark:text-[#9A98A0] mb-[4px]">
+                      <Users className="w-3 h-3 text-[#A6A5AB]" />
                       Слушатели в месяц
                     </span>
                     <input
@@ -149,19 +160,19 @@ function DataUploadInner({ org }: { org: MyOrg }) {
                 <button
                   onClick={() => save(a.id)}
                   disabled={rowBusy || (d.streams === "" && d.listeners === "")}
-                  className="w-full inline-flex items-center justify-center gap-[6px] text-[12.5px] font-medium bg-[#17161A] text-white px-[12px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-full inline-flex items-center justify-center gap-[6px] text-[12.5px] font-medium bg-[#17161A] text-white px-[12px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {rowBusy ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2} />
                   ) : saved === a.id ? (
                     <>
                       <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
-                      Готово
+                      Сохранено
                     </>
                   ) : (
                     <>
                       <UploadCloud className="w-3.5 h-3.5" strokeWidth={1.75} />
-                      Сохранить
+                      Сохранить показатели
                     </>
                   )}
                 </button>

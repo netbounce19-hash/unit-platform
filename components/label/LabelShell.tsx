@@ -90,10 +90,22 @@ export default function LabelShell(props: Parameters<typeof LabelShellInner>[0])
 export const panelCls =
   "bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px]";
 
-export function Badge({ label, cls }: { label: string; cls: string }) {
+export function Badge({
+  label,
+  cls,
+  icon: Icon,
+  dot = false,
+}: {
+  label: string;
+  cls: string;
+  icon?: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  dot?: boolean;
+}) {
   return (
-    <span className={`inline-block text-[11.5px] font-medium px-[8px] py-[3px] rounded-full ${cls}`}>
-      {label}
+    <span className={`inline-flex items-center gap-[5px] text-[11.5px] font-medium px-[8px] py-[3px] rounded-full ${cls}`}>
+      {dot && <span className="w-1.5 h-1.5 rounded-full bg-current opacity-80" />}
+      {Icon && <Icon className="w-[12px] h-[12px] shrink-0" strokeWidth={2} />}
+      <span>{label}</span>
     </span>
   );
 }
