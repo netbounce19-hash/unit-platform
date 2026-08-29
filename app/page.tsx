@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, UserPlus } from "lucide-react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Loader2, UserPlus, Disc, ArrowRight, Sparkles } from "lucide-react";
 import { ArtistIcon, LabelIcon } from "@/components/ui/icons";
 import { getSupabase } from "@/lib/supabase/client";
 
@@ -54,58 +56,107 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-5 py-10 bg-[#FAFAF9]">
-      <div className="font-semibold tracking-[0.16em] text-[20px] mb-2">UNIT</div>
-      <p className="text-[13px] text-[#A6A5AB] mb-8">DEV MODE · выберите кабинет для тестирования</p>
-
-      <div className="flex gap-4">
-        <button
-          onClick={() => enter("artist")}
-          disabled={busy !== null}
-          className="group w-[200px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#17161A] hover:shadow-lg transition text-center disabled:opacity-50"
-        >
-          {busy === "artist" ? (
-            <Loader2 className="w-8 h-8 mx-auto animate-spin text-[#17161A]" strokeWidth={2} />
-          ) : (
-            <ArtistIcon className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#17161A] transition" strokeWidth={1.5} />
-          )}
-          <div className="text-[15px] font-semibold mt-3 group-hover:text-[#17161A] transition">Артист</div>
-          <div className="text-[12px] text-[#A6A5AB] mt-1">Кабинет артиста</div>
-        </button>
-
-        <button
-          onClick={() => enter("label")}
-          disabled={busy !== null}
-          className="group w-[200px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#17161A] hover:shadow-lg transition text-center disabled:opacity-50"
-        >
-          {busy === "label" ? (
-            <Loader2 className="w-8 h-8 mx-auto animate-spin text-[#17161A]" strokeWidth={2} />
-          ) : (
-            <LabelIcon className="w-8 h-8 mx-auto text-[#6E6D73] group-hover:text-[#17161A] transition" strokeWidth={1.5} />
-          )}
-          <div className="text-[15px] font-semibold mt-3 group-hover:text-[#17161A] transition">Лейбл</div>
-          <div className="text-[12px] text-[#A6A5AB] mt-1">Кабинет лейбла</div>
-        </button>
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-5 py-12 bg-[#FAFAF9] overflow-hidden select-none">
+      {/* ── Текстурный конструктивистский фон с музыкальными элементами ── */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <Image
+          src="/landing-bg.jpg"
+          alt="Constructivist Music Texture Background"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center opacity-35 mix-blend-multiply transition-opacity duration-1000"
+        />
+        {/* Мягкие градиенты для идеальной читаемости интерфейса */}
+        <div className="absolute inset-0 bg-radial from-transparent via-[#FAFAF9]/40 to-[#FAFAF9]/85" />
+        <div className="absolute inset-0 bg-linear-to-b from-[#FAFAF9]/30 via-transparent to-[#FAFAF9]/75" />
       </div>
 
-      {error && (
-        <div className="mt-5 max-w-[420px] text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px]">
-          {error}
+      {/* ── Основной контент ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative z-10 w-full max-w-[540px] flex flex-col items-center text-center"
+      >
+        {/* Логотип и брендинг */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-white/80 backdrop-blur-md border-[0.5px] border-[#ECEAE5] shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-[#E23A34] animate-pulse" />
+          <span className="text-[11.5px] font-semibold tracking-[0.14em] uppercase text-[#17161A]">
+            UNIT PLATFORM
+          </span>
         </div>
-      )}
 
-      {/* Кнопки выше — быстрый вход тестовыми аккаунтами. Здесь настоящая
-          регистрация: новый пользователь и, для лейбла, своя организация. */}
-      <div className="mt-8 text-center">
-        <div className="text-[13px] text-[#A6A5AB] mb-3">Нет аккаунта?</div>
-        <Link
-          href="/signup"
-          className="inline-flex items-center gap-[8px] bg-white border border-[#E5E3DE] text-[#17161A] font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:border-[#D2D0CB] transition"
-        >
-          <UserPlus className="w-[16px] h-[16px]" strokeWidth={1.75} />
-          Создать аккаунт
-        </Link>
-      </div>
+        <h1 className="font-semibold tracking-[0.12em] text-[32px] sm:text-[36px] text-[#17161A] mb-1.5 leading-tight">
+          UNIT
+        </h1>
+        <p className="text-[13px] text-[#6E6D73] max-w-[340px] mb-8 font-medium">
+          DEV MODE · выберите кабинет для тестирования
+        </p>
+
+        {/* ── Карточки выбора роли (Артист / Лейбл) ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[440px]">
+          {/* Кнопка входа: Артист */}
+          <button
+            onClick={() => enter("artist")}
+            disabled={busy !== null}
+            className="group relative bg-white/90 backdrop-blur-md border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#17161A] hover:bg-white hover:shadow-md transition-all text-center disabled:opacity-50 cursor-pointer active:scale-[0.98]"
+          >
+            <div className="w-12 h-12 rounded-full bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] group-hover:border-[#17161A] group-hover:bg-[#17161A] group-hover:text-white transition-all mx-auto flex items-center justify-center mb-3">
+              {busy === "artist" ? (
+                <Loader2 className="w-5 h-5 animate-spin text-[#17161A] group-hover:text-white" strokeWidth={2} />
+              ) : (
+                <ArtistIcon className="w-5 h-5 text-[#6E6D73] group-hover:text-white transition-colors" strokeWidth={1.75} />
+              )}
+            </div>
+            <div className="text-[15px] font-semibold text-[#17161A] transition">
+              Артист
+            </div>
+            <div className="text-[12px] text-[#6E6D73] mt-1">
+              Кабинет артиста
+            </div>
+          </button>
+
+          {/* Кнопка входа: Лейбл */}
+          <button
+            onClick={() => enter("label")}
+            disabled={busy !== null}
+            className="group relative bg-white/90 backdrop-blur-md border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#17161A] hover:bg-white hover:shadow-md transition-all text-center disabled:opacity-50 cursor-pointer active:scale-[0.98]"
+          >
+            <div className="w-12 h-12 rounded-full bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] group-hover:border-[#17161A] group-hover:bg-[#17161A] group-hover:text-white transition-all mx-auto flex items-center justify-center mb-3">
+              {busy === "label" ? (
+                <Loader2 className="w-5 h-5 animate-spin text-[#17161A] group-hover:text-white" strokeWidth={2} />
+              ) : (
+                <LabelIcon className="w-5 h-5 text-[#6E6D73] group-hover:text-white transition-colors" strokeWidth={1.75} />
+              )}
+            </div>
+            <div className="text-[15px] font-semibold text-[#17161A] transition">
+              Лейбл
+            </div>
+            <div className="text-[12px] text-[#6E6D73] mt-1">
+              Кабинет лейбла
+            </div>
+          </button>
+        </div>
+
+        {error && (
+          <div className="mt-5 w-full max-w-[440px] text-[13px] text-[#17161A] bg-white/95 backdrop-blur-md border-[0.5px] border-[#E23A34]/30 rounded-[12px] px-3 py-[9px] shadow-xs">
+            {error}
+          </div>
+        )}
+
+        {/* Кнопка регистрации */}
+        <div className="mt-8 text-center">
+          <div className="text-[12.5px] text-[#6E6D73] mb-2.5 font-medium">Нет аккаунта?</div>
+          <Link
+            href="/signup"
+            className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md border border-[#E5E3DE] text-[#17161A] font-medium text-[13.5px] px-[18px] py-[9px] rounded-full hover:border-[#D2D0CB] hover:bg-white transition shadow-2xs"
+          >
+            <UserPlus className="w-4 h-4 text-[#6E6D73]" strokeWidth={1.75} />
+            <span>Создать аккаунт</span>
+          </Link>
+        </div>
+      </motion.div>
     </div>
   );
 }
