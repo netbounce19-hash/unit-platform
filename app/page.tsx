@@ -57,19 +57,19 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-5 py-12 bg-[#FAFAF9] overflow-hidden select-none">
-      {/* ── Текстурный конструктивистский фон с музыкальными элементами ── */}
+      {/* ── Текстурный минималистичный конструктивистский фон ── */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <Image
           src="/landing-bg.jpg"
-          alt="Constructivist Music Texture Background"
+          alt="Constructivist Music Minimal Background"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center opacity-35 mix-blend-multiply transition-opacity duration-1000"
+          className="object-cover object-center opacity-45 mix-blend-multiply transition-opacity duration-1000"
         />
         {/* Мягкие градиенты для идеальной читаемости интерфейса */}
-        <div className="absolute inset-0 bg-radial from-transparent via-[#FAFAF9]/40 to-[#FAFAF9]/85" />
-        <div className="absolute inset-0 bg-linear-to-b from-[#FAFAF9]/30 via-transparent to-[#FAFAF9]/75" />
+        <div className="absolute inset-0 bg-radial from-transparent via-[#FAFAF9]/30 to-[#FAFAF9]/80" />
+        <div className="absolute inset-0 bg-linear-to-b from-[#FAFAF9]/20 via-transparent to-[#FAFAF9]/70" />
       </div>
 
       {/* ── Основной контент ── */}
@@ -77,22 +77,34 @@ export default function Home() {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-[540px] flex flex-col items-center text-center"
+        className="relative z-10 w-full max-w-[560px] flex flex-col items-center text-center"
       >
         {/* Логотип и брендинг */}
         <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-white/80 backdrop-blur-md border-[0.5px] border-[#ECEAE5] shadow-xs">
           <span className="w-2 h-2 rounded-full bg-[#E23A34] animate-pulse" />
-          <span className="text-[11.5px] font-semibold tracking-[0.14em] uppercase text-[#17161A]">
-            UNIT PLATFORM
+          <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#17161A]">
+            MUSIC OPERATING SYSTEM
           </span>
         </div>
 
-        <h1 className="font-semibold tracking-[0.12em] text-[32px] sm:text-[36px] text-[#17161A] mb-1.5 leading-tight">
+        <h1 className="font-semibold tracking-[0.14em] text-[34px] sm:text-[40px] text-[#17161A] mb-2 leading-tight">
           UNIT
         </h1>
-        <p className="text-[13px] text-[#6E6D73] max-w-[340px] mb-8 font-medium">
-          DEV MODE · выберите кабинет для тестирования
+
+        {/* Ёмкий слоган с сутью приложения */}
+        <p className="text-[14.5px] sm:text-[15px] text-[#17161A] font-medium max-w-[460px] leading-snug mb-1">
+          Единое пространство взаимодействия артистов и музыкальных лейблов
         </p>
+        <p className="text-[12.5px] text-[#6E6D73] max-w-[420px] leading-relaxed mb-8">
+          Управление релизами, согласование бюджетов, промо-отчёты и аналитика стриминга
+        </p>
+
+        {/* Режим тестирования */}
+        <div className="inline-flex items-center gap-1.5 text-[11.5px] text-[#6E6D73] bg-white/70 backdrop-blur-xs px-2.5 py-0.5 rounded-full border-[0.5px] border-[#ECEAE5] mb-5">
+          <span className="font-semibold text-[#17161A]">DEV MODE</span>
+          <span>·</span>
+          <span>выберите кабинет для входа</span>
+        </div>
 
         {/* ── Карточки выбора роли (Артист / Лейбл) ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[440px]">
