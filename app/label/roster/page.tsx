@@ -130,7 +130,7 @@ function RosterInner({ org }: { org: MyOrg }) {
           <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-2.5 flex items-center gap-2.5">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
               totalOverdue > 0
-                ? "bg-[#FDF0EE] dark:bg-[#341B1A] text-[#E23A34] dark:text-[#F87171]"
+                ? "bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2]"
                 : "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]"
             }`}>
               {totalOverdue > 0 ? (
@@ -251,7 +251,7 @@ function RosterInner({ org }: { org: MyOrg }) {
               {/* Метки задач, бюджета и условий */}
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[12px] my-2">
                 {a.overdueTasks > 0 ? (
-                  <span className="inline-flex items-center gap-[4px] text-[#E23A34] dark:text-[#F87171] font-medium bg-[#FDF0EE] dark:bg-[#341B1A] px-2 py-0.5 rounded-[8px]">
+                  <span className="inline-flex items-center gap-[4px] text-[#17161A] dark:text-[#F5F4F2] font-medium bg-[#F0EEEA] dark:bg-[#242327] px-2 py-0.5 rounded-[8px]">
                     <AlertTriangle className="w-[12px] h-[12px]" strokeWidth={2.2} />
                     {a.overdueTasks} просрочено
                   </span>

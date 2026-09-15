@@ -23,11 +23,9 @@ import {
 } from "@/lib/supabase/cabinet";
 
 interface ReleaseCarouselProps {
-  /** меняется при создании релиза — триггерит перезагрузку из БД */
   refreshKey?: number;
 }
 
-/** «2026-09-05» → «5 сентября 2026 г.» */
 export function formatPlannedDate(d: string | null): string | null {
   if (!d) return null;
   return new Date(`${d}T00:00:00`).toLocaleDateString("ru-RU", {
@@ -37,15 +35,33 @@ export function formatPlannedDate(d: string | null): string | null {
   });
 }
 
-/** Что артисту делать дальше при таком статусе. */
 const statusHint: Record<ReleaseStatus, string> = {
   draft: "Черновик — заполните данные и отправьте менеджеру",
   pending_approval: "Ждёт решения менеджера",
-  approved: "Принят менеджером — готовим материалы",
+  approved: "Принят — готовим материалы",
   in_progress: "В работе у лейбла",
-  released: "Трек в ротации — доступна статистика",
-  rejected: "Отклонён — менеджер оставил комментарий",
+  released: "Вышел на площадках",
+  rejected: "Отклонён — причину уточните в чате",
 };
+
+/** Этапы, которые проходит релиз. «Принят» и «в работе» — один этап для артиста. */
+const STAGES = ["Черновик", "Согласование", "В работе", "Вышел"] as const;
+
+/** Индекс текущего этапа. Отклонённый релиз остаётся на согласовании. */
+function stageOf(status: ReleaseStatus): number {
+  switch (status) {
+    case "draft":
+      return 0;
+    case "pending_approval":
+    case "rejected":
+      return 1;
+    case "approved":
+    case "in_progress":
+      return 2;
+    case "released":
+      return 3;
+  }
+}
 
 export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps) {
   const [releases, setReleases] = useState<ReleaseView[]>([]);
@@ -58,7 +74,6 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
     try {
       setReleases(await listReleases());
     } catch {
-      /* не залогинен / сеть — оставляем пусто */
     } finally {
       setLoading(false);
     }
@@ -91,20 +106,21 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
 
   if (loading) {
     return (
-      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4 flex items-center gap-3 text-[#A6A5AB]">
+      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 mb-4 flex items-center gap-3 text-[#A6A5AB]">
         <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
-        <span className="text-[13px]">Загружаем релизы…</span>
+        <span className="text-[13px] font-mono">Загружаем релизы…</span>
       </div>
     );
   }
 
-  // Пока релизов нет — приглашение вместо карусели
   if (!release) {
     return (
-      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">
-        <div className="text-[16px] font-semibold tracking-[-0.01em] text-[#17161A]">Релизы</div>
-        <p className="text-[13px] text-[#6E6D73] mt-2">
-          Релизов пока нет. Добавьте первый — загрузите аудио, обложку и данные об авторах.
+      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-[15px] font-semibold text-[#17161A]">Релизы</div>
+        </div>
+        <p className="text-[13px] text-[#6E6D73]">
+          Релизов пока нет. Добавьте первый — аудио, обложку и данные об авторах.
         </p>
       </div>
     );
@@ -118,11 +134,14 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
   const planned = formatPlannedDate(release.planned_date);
 
   return (
-    <div className="relative bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4 overflow-hidden">
+    <div className="relative bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 mb-4 overflow-hidden">
       {/* Заголовок секции + навигация */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="text-[16px] font-semibold tracking-[-0.01em] text-[#17161A]">
-          {releases.length === 1 ? "Релиз" : `Релиз · ${safeIndex + 1} из ${releases.length}`}
+      <div className="flex items-center justify-between mb-4 pb-3 border-b-[0.5px] border-[#ECEAE5]">
+        <div className="flex items-center gap-2">
+          <Disc3 className="w-[18px] h-[18px] text-[#17161A]" strokeWidth={2} />
+          <div className="text-[15px] font-semibold text-[#17161A] tracking-tight">
+            {releases.length === 1 ? "Текущий релиз" : `Релиз · ${safeIndex + 1} из ${releases.length}`}
+          </div>
         </div>
         {releases.length > 1 && (
           <div className="flex items-center gap-1">
@@ -130,7 +149,7 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
               onClick={() => go(-1)}
               disabled={safeIndex === 0}
               aria-label="Предыдущий релиз"
-              className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronLeft className="w-[17px] h-[17px]" strokeWidth={2} />
             </button>
@@ -138,7 +157,7 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
               onClick={() => go(1)}
               disabled={safeIndex === releases.length - 1}
               aria-label="Следующие релизы"
-              className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] transition disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronRight className="w-[17px] h-[17px]" strokeWidth={2} />
             </button>
@@ -149,14 +168,14 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={release.id}
-          initial={{ opacity: 0, x: dir * 24 }}
+          initial={{ opacity: 0, x: dir * 20 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: dir * -24 }}
+          exit={{ opacity: 0, x: dir * -20 }}
           transition={{ duration: 0.18, ease: "easeOut" }}
         >
-          {/* Обложка + название */}
-          <div className="flex items-center gap-4 mb-[18px]">
-            <div className="w-[72px] h-[72px] rounded-[12px] overflow-hidden border-[0.5px] border-[#ECEAE5] shrink-0 bg-[#17161A] flex items-center justify-center">
+          {/* Обложка + метаданные */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-[76px] h-[76px] rounded-[12px] overflow-hidden border border-[#ECEAE5] shrink-0 bg-[#141316] flex items-center justify-center shadow-xs">
               {release.coverUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -165,55 +184,91 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Disc3 className="w-8 h-8 text-white/60" strokeWidth={1.5} />
+                <Disc3 className="w-8 h-8 text-white/50" strokeWidth={1.5} />
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-[3px] flex-wrap">
-                <span className="text-[18px] font-medium tracking-[-0.01em]">{release.title}</span>
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className="text-[17px] font-semibold tracking-tight text-[#17161A]">{release.title}</span>
                 <span
-                  className={`inline-flex items-center gap-[5px] text-[12px] font-medium px-[10px] py-[3px] rounded-full ${badge.cls}`}
+                  className={`inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-full ${
+                    isReleased
+                      ? "bg-[#E9F6EF] text-[#166B49] border border-[#BDE8D3]"
+                      : badge.cls
+                  }`}
                 >
                   {isReleased && (
-                    <span className="w-[6px] h-[6px] rounded-full bg-[#1F9D6B] animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1F9D6B] animate-pulse" />
                   )}
                   {badge.label}
                 </span>
               </div>
-              <div className="flex items-center gap-[6px] text-[13px] text-[#6E6D73]">
-                <CalendarDays className="w-[14px] h-[14px] shrink-0" strokeWidth={1.75} />
-                {planned ?? <span className="text-[#A6A5AB]">Дата релиза не назначена</span>}
+              <div className="flex items-center gap-3 text-[12px] text-[#6E6D73] font-mono">
+                <span className="flex items-center gap-1">
+                  <CalendarDays className="w-3.5 h-3.5" />
+                  {planned ?? "Дата не назначена"}
+                </span>
               </div>
             </div>
             <button
               onClick={() => setConfirmOpen(true)}
               aria-label="Удалить релиз"
               title="Удалить релиз"
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition shrink-0 self-start"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[#A6A5AB] hover:text-[#17161A] hover:bg-[#F0EEEA] transition shrink-0 self-start cursor-pointer"
             >
-              <X className="w-[18px] h-[18px]" strokeWidth={2} />
+              <X className="w-4 h-4" strokeWidth={2} />
             </button>
           </div>
 
-          <div className="flex items-center justify-between gap-4">
-            <div className="text-[13px] text-[#6E6D73]">{statusHint[release.status]}</div>
+          {/* Прогресс по этапам: где релиз сейчас и что дальше */}
+          <div className="mb-4">
+            <div className="grid grid-cols-4 gap-1.5">
+              {STAGES.map((label, i) => {
+                const current = stageOf(release.status);
+                const rejected = release.status === "rejected" && i === current;
+                return (
+                  <div key={label} className="min-w-0">
+                    <div
+                      className={`h-1.5 rounded-full ${
+                        rejected
+                          ? "bg-[#A6A5AB]"
+                          : i <= current
+                            ? "bg-[#17161A]"
+                            : "bg-[#ECEAE5]"
+                      }`}
+                    />
+                    <div
+                      className={`text-[11px] mt-1.5 truncate ${
+                        i === current ? "text-[#17161A] font-medium" : "text-[#A6A5AB]"
+                      }`}
+                    >
+                      {label}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-[12.5px] text-[#6E6D73] mt-2">{statusHint[release.status]}</p>
+          </div>
+
+          <div className="flex items-center justify-end">
             <Link
               href={`/releases/${release.id}`}
-              className={`inline-flex items-center gap-[7px] font-medium text-[14px] rounded-full transition shrink-0 ${
+              className={`inline-flex items-center gap-2 font-medium text-[13px] rounded-full transition cursor-pointer ${
                 isReleased
-                  ? "bg-[#17161A] text-white px-[18px] py-[10px] hover:bg-[#2A282E]"
-                  : "text-[#17161A] border border-[#E5E3DE] px-[16px] py-[9px] hover:bg-[#F0EEEA]"
+                  ? "bg-[#17161A] text-white px-5 py-2 hover:bg-[#2A282E]"
+                  : "bg-[#17161A] text-white px-5 py-2 hover:bg-[#2A282E]"
               }`}
             >
               {isReleased ? (
                 <>
-                  <BarChart3 className="w-[16px] h-[16px]" strokeWidth={2} />
+                  <BarChart3 className="w-4 h-4" strokeWidth={2} />
                   Смотреть данные
                 </>
               ) : (
                 <>
-                  Открыть
-                  <ArrowRight className="w-[14px] h-[14px]" strokeWidth={2} />
+                  Открыть релиз
+                  <ArrowRight className="w-4 h-4" strokeWidth={2} />
                 </>
               )}
             </Link>
@@ -223,7 +278,7 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
 
       {/* Индикаторы */}
       {releases.length > 1 && (
-        <div className="flex items-center justify-center gap-[6px] mt-[18px]">
+        <div className="flex items-center justify-center gap-1.5 mt-4">
           {releases.map((r, i) => (
             <button
               key={r.id}
@@ -232,8 +287,8 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
                 setIndex(i);
               }}
               aria-label={`Релиз ${r.title}`}
-              className={`h-[6px] rounded-full transition-all ${
-                i === safeIndex ? "w-5 bg-[#17161A]" : "w-[6px] bg-[#D2D0CB] hover:bg-[#A6A5AB]"
+              className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                i === safeIndex ? "w-6 bg-[#17161A]" : "w-1.5 bg-[#D2D0CB] hover:bg-[#A6A5AB]"
               }`}
             />
           ))}
@@ -247,32 +302,32 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 backdrop-blur-sm p-5"
+            className="absolute inset-0 z-10 flex items-center justify-center bg-white/90 backdrop-blur-xs p-5"
           >
             <motion.div
               initial={{ scale: 0.96, y: 8 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.96, y: 8 }}
               transition={{ type: "spring", damping: 26, stiffness: 320 }}
-              className="w-full max-w-[360px] rounded-[16px] border-[0.5px] border-[#ECEAE5] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] p-5 text-center"
+              className="w-full max-w-[360px] rounded-[16px] border border-[#ECEAE5] bg-white shadow-xl p-5 text-center"
             >
-              <span className="w-11 h-11 rounded-full bg-[#F0EEEA] text-[#17161A] flex items-center justify-center mx-auto mb-3">
+              <span className="w-10 h-10 rounded-full bg-[#F0EEEA] text-[#17161A] flex items-center justify-center mx-auto mb-3">
                 <Trash2 className="w-5 h-5" strokeWidth={1.75} />
               </span>
-              <div className="text-[15px] font-semibold tracking-[-0.01em]">Удалить релиз?</div>
+              <div className="text-[15px] font-semibold text-[#17161A]">Удалить релиз?</div>
               <div className="text-[13px] text-[#6E6D73] mt-1">
                 «{release.title}» будет удалён без возможности восстановления.
               </div>
-              <div className="flex items-center gap-2 mt-4">
+              <div className="flex items-center gap-2 mt-5">
                 <button
                   onClick={() => setConfirmOpen(false)}
-                  className="flex-1 text-[14px] font-medium text-[#17161A] px-[18px] py-[10px] rounded-full border border-[#E5E3DE] hover:bg-[#F0EEEA] transition"
+                  className="flex-1 text-[13px] font-medium text-[#17161A] px-4 py-2 rounded-full border border-[#E5E3DE] hover:bg-[#FAFAF9] transition cursor-pointer"
                 >
-                  Нет
+                  Отмена
                 </button>
                 <button
                   onClick={remove}
-                  className="flex-1 text-[14px] font-medium text-white bg-[#17161A] px-[18px] py-[10px] rounded-full hover:bg-[#2A282E] transition"
+                  className="flex-1 text-[13px] font-medium text-white bg-[#17161A] px-4 py-2 rounded-full hover:bg-[#2A282E] transition cursor-pointer"
                 >
                   Да, удалить
                 </button>

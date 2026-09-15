@@ -40,7 +40,7 @@ function inviteState(inv: InviteRow): { label: string; cls: string } {
   if (new Date(inv.expires_at) < new Date())
     return {
       label: "Истекло",
-      cls: "bg-[#FDF0EE] dark:bg-[#341B1A] text-[#E23A34] dark:text-[#F87171]",
+      cls: "bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2]",
     };
   return {
     label: "Ожидает",
@@ -255,7 +255,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
                         onClick={() => revoke(inv.id)}
                         aria-label="Отозвать приглашение"
                         title="Отозвать"
-                        className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#E23A34] dark:hover:text-[#F87171] hover:bg-[#FDF0EE] dark:hover:bg-[#341B1A] transition cursor-pointer"
+                        className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[#C4C3C8] hover:text-[#17161A] dark:hover:text-[#F5F4F2] hover:bg-[#F0EEEA] dark:hover:bg-[#242327] transition cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                       </button>

@@ -176,7 +176,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center mb-1.5 transition ${
                     isRejected
-                      ? "bg-[#FDF0EE] dark:bg-[#341B1A] text-[#E23A34] dark:text-[#F87171] ring-1 ring-[#E23A34]"
+                      ? "bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2] ring-1 ring-[#17161A]"
                       : isCompleted
                       ? "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]"
                       : isCurrent

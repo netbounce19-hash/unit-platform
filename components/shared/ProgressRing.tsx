@@ -36,7 +36,7 @@ export default function ProgressRing({
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-3">
       <div className="relative" style={{ width: size, height: size }}>
         <svg
           width={size}
@@ -50,9 +50,8 @@ export default function ProgressRing({
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="#415A77"
+            stroke="#ECEAE5"
             strokeWidth={strokeWidth}
-            opacity={0.4}
           />
           {/* Progress arc */}
           <circle
@@ -60,7 +59,7 @@ export default function ProgressRing({
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="#D4AF37"
+            stroke={progress >= 1 ? "#1F9D6B" : "#17161A"}
             strokeWidth={strokeWidth}
             strokeLinecap="round"
             strokeDasharray={circumference}
@@ -72,23 +71,22 @@ export default function ProgressRing({
         </svg>
         {/* Center text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-3xl font-bold text-brass tracking-tight">
+          <span className="text-3xl font-semibold text-[#17161A] tracking-tight">
             {formatNumber(current)}
           </span>
-          <span className="text-xs text-alabaster-dim tracking-widest uppercase mt-1">
-            / {formatNumber(goal)}
+          <span className="text-[11px] text-[#A6A5AB] font-mono tracking-wider mt-0.5">
+            из {formatNumber(goal)}
           </span>
         </div>
       </div>
       <div className="text-center">
-        <p className="text-[9px] tracking-[0.25em] uppercase text-alabaster-dim">
+        <p className="text-[11px] font-mono tracking-wider text-[#6E6D73] uppercase">
           {label}
         </p>
-        <p className="text-base font-semibold text-alabaster mt-1">
+        <p className="text-sm font-semibold text-[#17161A] mt-0.5">
           {Math.round(progress * 100)}%
         </p>
       </div>
-
     </div>
   );
 }

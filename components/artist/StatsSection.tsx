@@ -21,7 +21,7 @@ interface Counts {
  * Стримы и слушателей вводит менеджер в «Загрузке данных» — сюда они
  * приходят из artist_stream_stats. Остальное считается по собственным
  * строкам артиста, поэтому цифры честные: если менеджер ещё ничего не
- * загрузил, так и написано, а не показан ноль.
+ * загрузил, так и написано, а не показан ноль или выдуманное число.
  */
 export default function StatsSection() {
   const [stat, setStat] = useState<StreamStat | null>(null);
@@ -68,10 +68,10 @@ export default function StatsSection() {
   }, []);
 
   return (
-    <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[18px] pb-[18px] mb-4">
-      <div className="flex items-center gap-2 mb-3">
-        <BarChart3 className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-        <div className="text-[16px] font-semibold tracking-[-0.01em]">Статистика</div>
+    <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6">
+      <div className="flex items-center gap-2 pb-3 mb-4 border-b-[0.5px] border-[#ECEAE5]">
+        <BarChart3 className="w-[18px] h-[18px] text-[#17161A]" strokeWidth={2} />
+        <div className="text-[15px] font-semibold tracking-tight text-[#17161A]">Статистика</div>
       </div>
 
       {loading ? (
@@ -83,11 +83,13 @@ export default function StatsSection() {
           {/* Стримы и слушатели — от менеджера */}
           <div className="grid grid-cols-2 gap-3 mb-3">
             <Tile
+              big
               label="Стримы"
               value={stat ? formatCount(stat.streams) : "—"}
               hint={stat ? "всего" : "менеджер ещё не загрузил"}
             />
             <Tile
+              big
               label="Слушатели"
               value={stat ? formatCount(stat.listeners) : "—"}
               hint={stat ? "в месяц" : "менеджер ещё не загрузил"}
@@ -99,7 +101,7 @@ export default function StatsSection() {
             <Tile
               label="Релизы"
               value={String(counts?.releases ?? 0)}
-              hint={counts?.released ? `${counts.released} вышло` : "в работе"}
+              hint={`${counts?.released ?? 0} вышло`}
             />
             <Tile
               label="Заявки"
@@ -119,30 +121,31 @@ export default function StatsSection() {
             </p>
           )}
 
-          {stat && (
-            <div className="text-[11.5px] text-[#A6A5AB] mt-3">
-              Обновлено {new Date(stat.updated_at).toLocaleDateString("ru-RU")}
-            </div>
-          )}
-
-          <Link
-            href="/profile"
-            className="flex items-center gap-2 text-[13px] font-medium text-[#17161A] hover:text-[#6E6D73] transition mt-4"
-          >
-            Все показатели в профиле
-            <ChevronRight className="w-[15px] h-[15px]" strokeWidth={2} />
-          </Link>
+          <div className="flex items-center justify-between gap-3 mt-4">
+            <span className="text-[11.5px] text-[#A6A5AB]">
+              {stat ? `Обновлено ${new Date(stat.updated_at).toLocaleDateString("ru-RU")}` : ""}
+            </span>
+            <Link
+              href="/profile"
+              className="inline-flex items-center gap-1 text-[13px] font-medium text-[#17161A] hover:text-[#6E6D73] transition"
+            >
+              Все показатели
+              <ChevronRight className="w-[15px] h-[15px]" strokeWidth={2} />
+            </Link>
+          </div>
         </>
       )}
     </div>
   );
 }
 
-function Tile({ label, value, hint }: { label: string; value: string; hint: string }) {
+function Tile({ label, value, hint, big = false }: { label: string; value: string; hint: string; big?: boolean }) {
   return (
-    <div className="rounded-[12px] bg-[#FAFAF9] px-[12px] py-[10px]">
+    <div className={`rounded-[12px] bg-[#FAFAF9] ${big ? "px-4 py-[14px]" : "px-3 py-[10px]"}`}>
       <div className="text-[11.5px] text-[#A6A5AB] truncate">{label}</div>
-      <div className="text-[20px] font-medium mt-[2px] tabular-nums">{value}</div>
+      <div className={`${big ? "text-[24px]" : "text-[20px]"} font-medium mt-[2px] tabular-nums text-[#17161A]`}>
+        {value}
+      </div>
       <div className="text-[11.5px] text-[#6E6D73] mt-[1px] truncate">{hint}</div>
     </div>
   );

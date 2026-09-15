@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, Target, ListChecks, ArrowRight, Wallet, Loader2 } from "lucide-react";
+import { Check, Target, ListChecks, ArrowRight, Wallet, Loader2, Disc3 } from "lucide-react";
 import EventsFeed from "@/components/artist/EventsFeed";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
@@ -18,7 +18,6 @@ import {
   type ArtistTask,
 } from "@/lib/supabase/cabinet";
 
-// «Четверг, 16 июля» — с заглавной буквы
 function formatToday(d: Date) {
   const s = d.toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" });
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -40,7 +39,6 @@ export default function DashboardPage() {
   const [pending, setPending] = useState(0);
   const [today, setToday] = useState<string | null>(null);
 
-  // Дата считается на клиенте, чтобы не расходиться с версией сервера
   useEffect(() => setToday(formatToday(new Date())), []);
 
   useEffect(() => {
@@ -50,9 +48,7 @@ export default function DashboardPage() {
         if (cancelled || !p) return;
         setName(displayNameOf(p));
       })
-      .catch(() => {
-        /* профиль недоступен — оставляем значение по умолчанию */
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -65,15 +61,12 @@ export default function DashboardPage() {
         if (cancelled) return;
         setPending(rows.filter((r) => r.status === "pending").length);
       })
-      .catch(() => {
-        /* не залогинен или сеть — счётчик остаётся нулевым */
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
   }, []);
 
-  // Задачи ставит менеджер — RLS отдаёт только свои
   useEffect(() => {
     let cancelled = false;
     fetchMyTasks()
@@ -95,7 +88,6 @@ export default function DashboardPage() {
     if (!task) return;
     const done = task.status !== "done";
     const prev = items;
-    // Оптимистично: галочка не должна ждать сети
     setItems((p) =>
       p.map((t) => (t.id === id ? { ...t, status: done ? "done" : "todo" } : t))
     );
@@ -107,7 +99,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Три состояния, а не два: пустой список — это не «всё выполнено»
   const subtitle =
     items.length === 0
       ? "задач пока нет"
@@ -117,143 +108,175 @@ export default function DashboardPage() {
 
   return (
     <>
-      {/* Приветствие */}
-      <div className="mb-4">
-        <div className="text-[22px] font-medium tracking-[-0.01em]">С возвращением, {name}</div>
-        <div className="text-[14px] text-[#6E6D73] mt-[3px]">
-          {today ?? " "} · {subtitle}
+      {/* Студийная шапка */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b-[0.5px] border-[#ECEAE5]">
+        <div>
+          <div className="text-[26px] font-semibold tracking-tight text-[#17161A]">
+            С возвращением, {name}
+          </div>
+          <div className="text-[13px] text-[#6E6D73] mt-0.5">
+            {today ?? " "} · <span className="text-[#17161A] font-medium">{subtitle}</span>
+          </div>
         </div>
+
       </div>
 
-      {/* На десктопе — две колонки: работа слева, связь и новости справа.
-          Порядок блоков в разметке тот же, что на телефоне. */}
+      {/* Основная сетка: работа слева, связь и аналитика справа */}
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-6 lg:items-start">
-      <div className="min-w-0">
-      {/* Следующий шаг — одно приоритетное действие */}
-      {nextStep && (
-        <div className="bg-[#17161A] text-white rounded-[16px] p-[22px] mb-4">
-          <div className="text-[12px] text-white/50 mb-[6px]">Следующий шаг</div>
-          <div className="text-[17px] font-medium tracking-[-0.01em] leading-[1.3]">
-            {nextStep.title}
-          </div>
-          <div className="text-[13px] text-white/60 mt-[3px]">{formatDue(nextStep.due_date)}</div>
-          <button
-            onClick={() => toggle(nextStep.id)}
-            className="inline-flex items-center gap-[6px] bg-white text-[#17161A] font-medium text-[13px] px-[14px] py-[8px] rounded-full hover:bg-white/90 transition mt-4"
-          >
-            Отметить выполненной
-            <ArrowRight className="w-4 h-4" strokeWidth={2} />
-          </button>
-        </div>
-      )}
-
-      {/* Задачи */}
-      <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[6px] pb-[14px] mb-4">
-        <div className="flex items-center gap-2 pt-4 pb-1">
-          <ListChecks className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
-          <div className="text-[16px] font-semibold tracking-[-0.01em]">Задачи на сегодня</div>
-        </div>
-        {taskError && (
-          <div className="text-[12.5px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[8px] my-2">
-            {taskError}
-          </div>
-        )}
-
-        {tasksLoading ? (
-          <div className="py-[18px] flex items-center justify-center text-[#A6A5AB]">
-            <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
-          </div>
-        ) : items.length === 0 ? (
-          <div className="py-[18px] text-[13px] text-[#A6A5AB] text-center">
-            Ожидаются от менеджера
-          </div>
-        ) : (
-          items.map((t, i) => {
-            const done = t.status === "done";
-            const overdue = isTaskOverdue(t);
-            return (
-              <button
-                key={t.id}
-                onClick={() => toggle(t.id)}
-                className={`w-full flex items-center gap-3 py-[13px] text-left ${
-                  i > 0 ? "border-t-[0.5px] border-[#ECEAE5]" : ""
-                }`}
-              >
-                <span
-                  className={`w-5 h-5 rounded-[12px] border-[1.5px] flex items-center justify-center shrink-0 transition ${
-                    done ? "bg-[#1F9D6B] border-[#1F9D6B]" : "border-[#D2D0CB]"
-                  }`}
-                >
-                  {done && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-                </span>
-                <span className="min-w-0">
-                  <span className={`block text-[14px] ${done ? "line-through text-[#A6A5AB]" : ""}`}>
-                    {t.title}
+        <div className="min-w-0 space-y-5">
+          {/* Следующий шаг — фокусный баннер */}
+          {nextStep && (
+            <div className="bg-[#141316] text-white rounded-[16px] p-6 shadow-md relative overflow-hidden">
+              <div className="absolute right-4 top-4 opacity-10">
+                <Disc3 className="w-24 h-24 text-white" />
+              </div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] font-mono tracking-wider uppercase text-white/70">
+                    Следующий шаг
                   </span>
-                  <span
-                    className={`block text-[12px] mt-[2px] ${
-                      overdue ? "text-[#17161A] font-medium" : "text-[#A6A5AB]"
-                    }`}
+                  <span className="text-[11px] font-mono text-white/60 font-medium">
+                    {formatDue(nextStep.due_date)}
+                  </span>
+                </div>
+                <div className="text-[19px] font-semibold tracking-tight text-white leading-snug">
+                  {nextStep.title}
+                </div>
+                <div className="mt-5">
+                  <button
+                    onClick={() => toggle(nextStep.id)}
+                    className="inline-flex items-center gap-2 bg-white text-[#17161A] font-medium text-[13px] px-[14px] py-[8px] rounded-full hover:bg-white/90 transition cursor-pointer shadow-sm"
                   >
-                    {formatDue(t.due_date)}
-                    {overdue && " · просрочена"}
-                  </span>
-                </span>
-              </button>
-            );
-          })
-        )}
+                    Отметить выполненной
+                    <ArrowRight className="w-4 h-4" strokeWidth={2} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
-        {/* Задачи закрыты — подтверждаем промо ссылкой на публикацию */}
-        {items.length > 0 && openTasks === 0 && <PromoConfirm />}
-      </div>
-
-      {/* Релизы */}
-      <ReleaseCarousel />
-
-      {/* Показатели */}
-      <StatsSection />
-      </div>
-
-      <div className="min-w-0">
-
-      {/* Стратегия и заявки — две плитки в строку.
-          Заявки показываем только когда есть что ждать; тогда стратегия
-          занимает всю ширину, чтобы не оставлять пустую половину. */}
-      <div className={`grid gap-3 mb-4 ${pending > 0 ? "grid-cols-2" : "grid-cols-1"}`}>
-        <Link
-          href="/strategy"
-          className="flex flex-col justify-between gap-4 min-h-[104px] bg-[#FBF1DE] border-[0.5px] border-[#F0E2BF] rounded-[12px] p-4 hover:border-[#E3D0A4] transition"
-        >
-          <Target className="w-[18px] h-[18px] text-[#8A5A16]" strokeWidth={1.75} />
-          <span className="min-w-0">
-            <span className="block text-[14px] font-medium truncate">Стратегия III кв.</span>
-            <span className="block text-[12px] text-[#166B49] mt-[2px]">Утверждена</span>
-          </span>
-        </Link>
-
-        {pending > 0 && (
-          <Link
-            href="/finance"
-            className="flex flex-col justify-between gap-4 min-h-[104px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] p-4 hover:border-[#D2D0CB] transition"
-          >
-            <Wallet className="w-[18px] h-[18px] text-[#6E6D73]" strokeWidth={1.75} />
-            <span className="min-w-0">
-              <span className="block text-[14px] font-medium truncate">Заявки</span>
-              <span className="block text-[12px] text-[#6E6D73] mt-[2px]">
-                {pending} на рассмотрении
+          {/* Задачи на сегодня */}
+          <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b-[0.5px] border-[#ECEAE5]">
+              <div className="flex items-center gap-2">
+                <ListChecks className="w-[18px] h-[18px] text-[#17161A]" strokeWidth={2} />
+                <div className="text-[15px] font-semibold tracking-tight text-[#17161A]">Задачи от менеджера</div>
+              </div>
+              <span className="text-[11px] font-mono text-[#6E6D73] bg-[#F0EEEA] px-2.5 py-0.5 rounded-full">
+                {openTasks} в работе
               </span>
-            </span>
-          </Link>
-        )}
-      </div>
+            </div>
 
-      {/* Переписка с менеджером */}
-      <ManagerMessenger />
+            {taskError && (
+              <div className="text-[12.5px] text-[#17161A] bg-[#F0EEEA] border border-[#D2D0CB] rounded-[12px] px-3.5 py-2 my-2 font-mono">
+                {taskError}
+              </div>
+            )}
 
-      {/* Новости и мероприятия */}
-      <EventsFeed />
-      </div>
+            {tasksLoading ? (
+              <div className="py-6 flex items-center justify-center text-[#A6A5AB]">
+                <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
+              </div>
+            ) : items.length === 0 ? (
+              <div className="py-6 text-[13px] text-[#A6A5AB] font-mono text-center">
+                Задач пока нет — их ставит менеджер
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                {items.map((t) => {
+                  const done = t.status === "done";
+                  const overdue = isTaskOverdue(t);
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => toggle(t.id)}
+                      className={`w-full flex items-center gap-3 p-3 rounded-[12px] text-left border transition cursor-pointer group ${
+                        done
+                          ? "bg-[#FAFAF9] border-transparent opacity-50"
+                          : "bg-[#FAFAF9] hover:bg-white border-[#ECEAE5] hover:border-[#D2D0CB] hover:shadow-2xs"
+                      }`}
+                    >
+                      <span
+                        className={`w-5 h-5 rounded-[6px] border flex items-center justify-center shrink-0 transition ${
+                          done ? "bg-[#1F9D6B] border-[#1F9D6B] text-white" : "border-[#D2D0CB] group-hover:border-[#17161A]"
+                        }`}
+                      >
+                        {done && <Check className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className={`block text-[13.5px] font-medium leading-snug ${done ? "line-through text-[#A6A5AB]" : "text-[#17161A]"}`}>
+                          {t.title}
+                        </span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span
+                            className={`text-[11px] font-mono ${
+                              overdue && !done ? "text-[#17161A] font-semibold" : "text-[#A6A5AB]"
+                            }`}
+                          >
+                            {formatDue(t.due_date)}
+                            {overdue && !done && " · просрочена"}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {items.length > 0 && openTasks === 0 && <PromoConfirm />}
+          </div>
+
+          {/* Релизы */}
+          <ReleaseCarousel />
+
+          {/* Показатели */}
+          <StatsSection />
+        </div>
+
+        <div className="min-w-0 space-y-4 mt-5 lg:mt-0">
+          {/* Стратегия и заявки */}
+          <div className={`grid gap-3 ${pending > 0 ? "grid-cols-2" : "grid-cols-1"}`}>
+            <Link
+              href="/strategy"
+              className="flex flex-col justify-between gap-4 min-h-[104px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-4 hover:border-[#17161A] hover:shadow-2xs transition"
+            >
+              <div className="flex items-center justify-between">
+                <Target className="w-[18px] h-[18px] text-[#17161A]" strokeWidth={2} />
+                <span className="text-[10px] font-mono text-[#166B49] bg-[#E9F6EF] px-2 py-0.5 rounded-full font-medium">
+                  Утверждена
+                </span>
+              </div>
+              <div>
+                <span className="block text-[14px] font-semibold text-[#17161A]">Стратегия III кв.</span>
+                <span className="block text-[11px] font-mono text-[#6E6D73] mt-0.5">План релизов и промо</span>
+              </div>
+            </Link>
+
+            {pending > 0 && (
+              <Link
+                href="/finance"
+                className="flex flex-col justify-between gap-4 min-h-[104px] bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-4 hover:border-[#17161A] hover:shadow-2xs transition"
+              >
+                <div className="flex items-center justify-between">
+                  <Wallet className="w-[18px] h-[18px] text-[#17161A]" strokeWidth={2} />
+                  <span className="text-[10px] font-mono text-[#8A5A16] bg-[#FBF1DE] px-2 py-0.5 rounded-full font-medium">
+                    {pending} на согласовании
+                  </span>
+                </div>
+                <div>
+                  <span className="block text-[14px] font-semibold text-[#17161A]">Заявки на бюджет</span>
+                </div>
+              </Link>
+            )}
+          </div>
+
+          {/* Переписка с менеджером */}
+          <ManagerMessenger />
+
+          {/* Новости и мероприятия */}
+          <EventsFeed />
+        </div>
       </div>
     </>
   );

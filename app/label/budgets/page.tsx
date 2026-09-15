@@ -207,7 +207,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
     >
       {error && (
         <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-4 py-3 mb-5 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0 text-[#E23A34]" />
+          <AlertCircle className="w-4 h-4 shrink-0 text-[#17161A] dark:text-[#F5F4F2]" />
           <span>{error}</span>
         </div>
       )}
@@ -422,7 +422,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                     <Calendar className="w-3.5 h-3.5 text-[#6E6D73] dark:text-[#9A98A0]" />
                     <span className="text-[#6E6D73] dark:text-[#9A98A0]">Нужны к: {formatDate(b.needed_by)}</span>
                     {daysRemaining !== null && daysRemaining <= 5 && b.status === "pending" && (
-                      <span className="text-[10.5px] font-semibold px-2 py-0.5 rounded bg-[#FDF0EE] dark:bg-[#341B1A] text-[#E23A34] dark:text-[#F87171] flex items-center gap-1">
+                      <span className="text-[10.5px] font-semibold px-2 py-0.5 rounded bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2] flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
                         {daysRemaining <= 0 ? "Срок истёк" : `Осталось ${daysRemaining} дн.`}
                       </span>

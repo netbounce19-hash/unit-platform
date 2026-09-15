@@ -3,6 +3,7 @@
 import { useApp } from "@/components/providers/AppProvider";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Megaphone, Link2, UploadCloud, CheckCircle2, Clock } from "lucide-react";
 
 export default function PromoReports() {
   const { state, dispatch } = useApp();
@@ -32,99 +33,110 @@ export default function PromoReports() {
     setTimeout(() => setSubmitted(false), 2000);
   };
 
-  const platforms = ["TikTok", "Instagram Reels", "YouTube Shorts"];
+  const platforms = ["TikTok", "Instagram Reels", "YouTube Shorts", "VK Клипы"];
 
   return (
     <motion.section
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
-      className="bg-navy/30 border border-navy rounded-xl p-7"
+      transition={{ duration: 0.4, delay: 0.4 }}
+      className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 lg:p-7 flex flex-col justify-between"
     >
-      <h3 className="text-[11px] font-semibold tracking-[0.2em] uppercase text-alabaster mb-6">
-        Промо-отчёты
-      </h3>
-
-      <div className="space-y-4">
-        <div className="flex gap-2 flex-wrap">
-          {platforms.map((p) => (
-            <button
-              key={p}
-              onClick={() => setPlatform(p)}
-              className={`
-                px-3 py-1.5 rounded-md text-[9px] tracking-wider uppercase transition-all cursor-pointer
-                ${platform === p
-                  ? "bg-brass text-sapphire font-semibold"
-                  : "bg-sapphire/50 text-alabaster-dim hover:text-alabaster border border-navy"
-                }
-              `}
-            >
-              {p}
-            </button>
-          ))}
+      <div>
+        <div className="flex items-center justify-between mb-5 pb-3 border-b-[0.5px] border-[#ECEAE5]">
+          <div className="flex items-center gap-2">
+            <Megaphone className="w-4 h-4 text-[#17161A]" />
+            <h3 className="text-[14px] font-semibold text-[#17161A] tracking-tight">
+              Промо-отчёты
+            </h3>
+          </div>
+          <span className="text-[10px] font-mono tracking-wider text-[#A6A5AB] uppercase">
+            [VIRAL PITCHING]
+          </span>
         </div>
 
-        <input
-          type="url"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-          placeholder={`Вставьте ссылку ${platform}...`}
-          className="w-full bg-sapphire border border-navy rounded-lg px-4 py-3 text-sm text-alabaster placeholder-alabaster-dim/50 focus:outline-none focus:border-brass/50 transition-colors"
-        />
+        <div className="space-y-3.5">
+          <div className="flex gap-1.5 flex-wrap">
+            {platforms.map((p) => (
+              <button
+                key={p}
+                onClick={() => setPlatform(p)}
+                className={`
+                  px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer
+                  ${platform === p
+                    ? "bg-[#17161A] text-white font-semibold"
+                    : "bg-[#FAFAF9] text-[#6E6D73] hover:text-[#17161A] border border-[#E5E3DE] hover:border-[#D2D0CB]"
+                  }
+                `}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
 
-        <div
-          className="border-2 border-dashed border-navy rounded-lg p-5 text-center hover:border-brass/50 transition-colors cursor-pointer"
-          onClick={() => {
-            const input = document.createElement("input");
-            input.type = "file";
-            input.accept = "image/*";
-            input.click();
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto text-alabaster-dim mb-2">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <path d="M21 15l-5-5L5 21" />
-          </svg>
-          <p className="text-[9px] tracking-widest uppercase text-alabaster-dim">
-            Загрузить скриншот
-          </p>
+          <div className="relative">
+            <input
+              type="url"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              placeholder={`Вставьте ссылку на видео (${platform})...`}
+              className="w-full bg-[#FAFAF9] border border-[#E5E3DE] focus:border-[#17161A] rounded-[12px] pl-3.5 pr-10 py-2.5 text-[13.5px] text-[#17161A] placeholder-[#A6A5AB] focus:outline-none transition-colors"
+            />
+            <Link2 className="w-4 h-4 text-[#A6A5AB] absolute right-3.5 top-3 pointer-events-none" />
+          </div>
+
+          <div
+            className="border border-dashed border-[#D2D0CB] hover:border-[#17161A] rounded-[12px] p-4 text-center bg-[#FAFAF9] hover:bg-white transition-colors cursor-pointer"
+            onClick={() => {
+              const input = document.createElement("input");
+              input.type = "file";
+              input.accept = "image/*";
+              input.click();
+            }}
+          >
+            <UploadCloud className="w-4 h-4 text-[#6E6D73] mx-auto mb-1" />
+            <p className="text-[11px] font-medium text-[#6E6D73]">
+              Прикрепить скриншот статистики / охватов
+            </p>
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            disabled={!link}
+            className={`
+              w-full py-2.5 rounded-full text-[13px] font-medium tracking-wide transition-all cursor-pointer
+              ${link
+                ? "bg-[#17161A] text-white hover:bg-[#2A282E]"
+                : "bg-[#F0EEEA] text-[#A6A5AB] cursor-not-allowed"
+              }
+            `}
+          >
+            {submitted ? "✓ Отчёт принят в трекинг" : "Отправить отчёт"}
+          </button>
         </div>
-
-        <button
-          onClick={handleSubmit}
-          disabled={!link}
-          className={`
-            w-full py-3 rounded-lg text-xs font-semibold tracking-widest uppercase transition-all cursor-pointer
-            ${link
-              ? "bg-brass text-sapphire hover:bg-brass-dim"
-              : "bg-navy/50 text-alabaster-dim cursor-not-allowed"
-            }
-          `}
-        >
-          {submitted ? "✓ Отправлено" : "Отправить отчёт"}
-        </button>
       </div>
 
       {artistPromos.length > 0 && (
-        <div className="mt-5 pt-5 border-t border-navy/40">
-          <p className="text-[9px] tracking-widest uppercase text-alabaster-dim mb-3">
+        <div className="mt-5 pt-4 border-t border-[#ECEAE5]">
+          <p className="text-[11px] font-mono tracking-wider uppercase text-[#6E6D73] mb-2.5">
             История отчётов
           </p>
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {artistPromos.slice(-3).reverse().map((promo) => (
               <div
                 key={promo.id}
-                className="flex items-center justify-between bg-sapphire/40 rounded-lg px-4 py-3"
+                className="flex items-center justify-between bg-[#FAFAF9] border border-[#ECEAE5] rounded-[12px] px-3.5 py-2.5"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="text-[9px] tracking-wider uppercase text-brass flex-shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[10px] font-mono tracking-wider uppercase text-[#17161A] bg-[#F0EEEA] px-2 py-0.5 rounded-md flex-shrink-0">
                     {promo.platform}
                   </span>
-                  <span className="text-xs text-alabaster truncate">{promo.link}</span>
+                  <span className="text-[12px] font-mono text-[#17161A] truncate">{promo.link}</span>
                 </div>
-                <span className={`text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full flex-shrink-0 ml-3 ${
-                  promo.reviewed ? "bg-success/20 text-success" : "bg-navy/50 text-alabaster-dim"
+                <span className={`text-[10px] font-medium px-2.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${
+                  promo.reviewed
+                    ? "bg-[#E9F6EF] text-[#166B49] border border-[#BDE8D3]"
+                    : "bg-[#FBF1DE] text-[#8A5A16] border border-[#F4E1BA]"
                 }`}>
                   {promo.reviewed ? "Проверено" : "Ожидание"}
                 </span>

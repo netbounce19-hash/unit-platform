@@ -68,35 +68,35 @@ export default function FileDropZone({
       onDrop={handleDrop}
       onClick={handleClick}
       className={`
-        relative border-2 border-dashed rounded-lg cursor-pointer
-        transition-all duration-300 group
+        relative border border-dashed rounded-[12px] cursor-pointer
+        transition-all duration-200 group
         ${isDragging
-          ? "border-brass bg-brass/5"
-          : "border-navy hover:border-brass/50"
+          ? "border-[#17161A] bg-[#F0EEEA]"
+          : "border-[#D2D0CB] hover:border-[#17161A] bg-[#FAFAF9] hover:bg-white"
         }
-        ${compact ? "p-4" : "p-6"}
+        ${compact ? "p-3.5" : "p-5"}
       `}
     >
-      <div className={`flex ${compact ? "flex-row items-center gap-3" : "flex-col items-center gap-3"}`}>
-        <div className={`text-alabaster-dim group-hover:text-brass transition-colors ${isDragging ? "text-brass" : ""}`}>
+      <div className={`flex ${compact ? "flex-row items-center gap-3" : "flex-col items-center gap-2.5"}`}>
+        <div className={`text-[#6E6D73] group-hover:text-[#17161A] transition-colors ${isDragging ? "text-[#17161A]" : ""}`}>
           {icon}
         </div>
         <div className={compact ? "" : "text-center"}>
-          <p className="text-xs font-medium tracking-widest uppercase text-alabaster-dim">
+          <p className="text-[12px] font-medium text-[#17161A]">
             {label}
           </p>
           {droppedFile ? (
             <div className="flex items-center gap-1.5 mt-1">
               <DownloadDoneIconControlled
                 size={14}
-                color="#D4AF37"
+                color="#1F9D6B"
                 done={true}
               />
-              <p className="text-xs text-brass truncate max-w-[150px]">{droppedFile}</p>
+              <p className="text-[11px] text-[#1F9D6B] font-mono truncate max-w-[150px]">{droppedFile}</p>
             </div>
           ) : (
-            <p className="text-[10px] text-alabaster-dim/50 mt-1">
-              Drop file or click
+            <p className="text-[10px] text-[#A6A5AB] mt-0.5">
+              Нажмите или перетащите
             </p>
           )}
         </div>

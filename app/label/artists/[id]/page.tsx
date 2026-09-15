@@ -235,7 +235,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
           <div className="text-[15px] font-semibold text-[#17161A] dark:text-[#F5F4F2] leading-tight">
             {doneTasks}/{tasks.length}
             {overdueTasks > 0 && (
-              <span className="text-[11px] font-medium text-[#E23A34] dark:text-[#F87171] ml-1">
+              <span className="text-[11px] font-medium text-[#17161A] dark:text-[#F5F4F2] ml-1">
                 ({overdueTasks} ⚠)
               </span>
             )}
@@ -303,7 +303,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
                         {isDone ? (
                           <CheckCircle2 className="w-4 h-4 text-[#1F9D6B] shrink-0" strokeWidth={2.2} />
                         ) : overdue ? (
-                          <AlertTriangle className="w-4 h-4 text-[#E23A34] shrink-0" strokeWidth={2.2} />
+                          <AlertTriangle className="w-4 h-4 text-[#17161A] dark:text-[#F5F4F2] shrink-0" strokeWidth={2.2} />
                         ) : (
                           <Clock className="w-4 h-4 text-[#D97706] shrink-0" strokeWidth={2} />
                         )}
@@ -315,7 +315,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
                           isDone
                             ? "bg-[#E9F6EF] dark:bg-[#1C3B2E] text-[#166B49] dark:text-[#5FCB9B]"
                             : overdue
-                            ? "bg-[#FDF0EE] dark:bg-[#341B1A] text-[#E23A34] dark:text-[#F87171]"
+                            ? "bg-[#F0EEEA] dark:bg-[#242327] text-[#17161A] dark:text-[#F5F4F2]"
                             : "bg-[#FBF1DE] dark:bg-[#3A2F14] text-[#8A5A16] dark:text-[#E8B65A]"
                         }
                         dot
@@ -329,7 +329,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
                     <Field label="Дедлайн">
                       <span
                         className={`inline-flex items-center gap-1 ${
-                          overdue ? "text-[#E23A34] dark:text-[#F87171] font-medium" : ""
+                          overdue ? "text-[#17161A] dark:text-[#F5F4F2] font-medium" : ""
                         }`}
                       >
                         <Calendar className="w-3 h-3 text-[#A6A5AB]" />
