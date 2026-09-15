@@ -5,46 +5,95 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Loader2, UserPlus } from "lucide-react";
+import { Loader2, UserPlus, ArrowLeft } from "lucide-react";
 import { ArtistIcon, LabelIcon } from "@/components/ui/icons";
 import { getSupabase } from "@/lib/supabase/client";
 
-const LABEL_EMAIL = process.env.NEXT_PUBLIC_LABEL_DEV_EMAIL || "unit-qa2-1784972128733@mailinator.com";
-const LABEL_PASSWORD = process.env.NEXT_PUBLIC_LABEL_DEV_PASSWORD || "qa-passw0rd-456";
-const ARTIST_EMAIL = process.env.NEXT_PUBLIC_ARTIST_DEV_EMAIL || "unit-artist-qa-1785487830683@mailinator.com";
-const ARTIST_PASSWORD = process.env.NEXT_PUBLIC_ARTIST_DEV_PASSWORD || "qa-artist-passw0rd-789";
+type Role = "artist" | "label";
+
+/**
+ * Быстрый вход тестовыми аккаунтами — только в `next dev` и только если
+ * данные заданы в локальном .env.local. NODE_ENV подставляется при сборке,
+ * поэтому в продакшн-бандл ни ветка, ни значения не попадают. Паролей в
+ * коде нет: репозиторий публичный.
+ */
+const DEV_ACCOUNTS: Partial<Record<Role, { email: string; password: string }>> =
+  process.env.NODE_ENV === "development"
+    ? {
+        ...(process.env.NEXT_PUBLIC_ARTIST_DEV_EMAIL && process.env.NEXT_PUBLIC_ARTIST_DEV_PASSWORD
+          ? {
+              artist: {
+                email: process.env.NEXT_PUBLIC_ARTIST_DEV_EMAIL,
+                password: process.env.NEXT_PUBLIC_ARTIST_DEV_PASSWORD,
+              },
+            }
+          : {}),
+        ...(process.env.NEXT_PUBLIC_LABEL_DEV_EMAIL && process.env.NEXT_PUBLIC_LABEL_DEV_PASSWORD
+          ? {
+              label: {
+                email: process.env.NEXT_PUBLIC_LABEL_DEV_EMAIL,
+                password: process.env.NEXT_PUBLIC_LABEL_DEV_PASSWORD,
+              },
+            }
+          : {}),
+      }
+    : {};
+
+const HOME: Record<Role, string> = { artist: "/dashboard", label: "/label/roster" };
+
+const inputCls =
+  "w-full text-[14px] rounded-[12px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]";
 
 export default function Home() {
   const router = useRouter();
-  const [busy, setBusy] = useState<"artist" | "label" | null>(null);
+  const [role, setRole] = useState<Role | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
-  const enter = async (role: "artist" | "label") => {
-    const email = role === "label" ? LABEL_EMAIL : ARTIST_EMAIL;
-    const password = role === "label" ? LABEL_PASSWORD : ARTIST_PASSWORD;
-
-    if (!email || !password) {
-      setError(
-        `Переменные NEXT_PUBLIC_${role === "label" ? "LABEL" : "ARTIST"}_DEV_EMAIL/PASSWORD не заданы в .env.local`
-      );
-      return;
-    }
-
-    setBusy(role);
+  const signIn = async (r: Role, creds: { email: string; password: string }) => {
+    setBusy(true);
     setError(null);
-
+    setNotice(null);
     const sb = getSupabase();
     await sb.auth.signOut();
-
-    const { error: authErr } = await sb.auth.signInWithPassword({ email, password });
+    const { error: authErr } = await sb.auth.signInWithPassword(creds);
     if (authErr) {
-      setError(authErr.message);
-      setBusy(null);
+      setError(
+        authErr.message === "Invalid login credentials"
+          ? "Неверная почта или пароль"
+          : authErr.message === "Email not confirmed"
+            ? "Почта не подтверждена — откройте ссылку из письма"
+            : authErr.message
+      );
+      setBusy(false);
       return;
     }
-
-    router.push(role === "label" ? "/label/roster" : "/dashboard");
+    router.push(HOME[r]);
   };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!role || busy || !email.trim() || !password) return;
+    signIn(role, { email: email.trim(), password });
+  };
+
+  const resetPassword = async () => {
+    if (!email.trim()) {
+      setError("Введите почту — пришлём на неё ссылку для сброса");
+      return;
+    }
+    setError(null);
+    const { error: resetErr } = await getSupabase().auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (resetErr) setError(resetErr.message);
+    else setNotice(`Ссылка для сброса пароля отправлена на ${email.trim()}`);
+  };
+
+  const dev = role ? DEV_ACCOUNTS[role] : undefined;
 
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-5 py-12 bg-[#FAFAF9] overflow-hidden select-none">
@@ -89,20 +138,16 @@ export default function Home() {
           <span>Аналитика стримов</span>
         </div>
 
-        {/* ── Карточки выбора роли (Артист / Лейбл) ── */}
+        {/* ── Выбор кабинета, затем форма входа ── */}
+        {role === null ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[440px]">
           {/* Кнопка входа: Артист */}
           <button
-            onClick={() => enter("artist")}
-            disabled={busy !== null}
+            onClick={() => setRole("artist")}
             className="group relative bg-white/95 backdrop-blur-md border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#17161A] hover:shadow-md transition-all text-center disabled:opacity-50 cursor-pointer active:scale-[0.98]"
           >
             <div className="w-12 h-12 rounded-full bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] group-hover:border-[#17161A] group-hover:bg-[#17161A] group-hover:text-white transition-all mx-auto flex items-center justify-center mb-3">
-              {busy === "artist" ? (
-                <Loader2 className="w-5 h-5 animate-spin text-[#17161A] group-hover:text-white" strokeWidth={2} />
-              ) : (
-                <ArtistIcon className="w-5 h-5 text-[#6E6D73] group-hover:text-white transition-colors" strokeWidth={1.75} />
-              )}
+              <ArtistIcon className="w-5 h-5 text-[#6E6D73] group-hover:text-white transition-colors" strokeWidth={1.75} />
             </div>
             <div className="text-[15px] font-semibold text-[#17161A] transition">
               Артист
@@ -114,16 +159,11 @@ export default function Home() {
 
           {/* Кнопка входа: Лейбл */}
           <button
-            onClick={() => enter("label")}
-            disabled={busy !== null}
+            onClick={() => setRole("label")}
             className="group relative bg-white/95 backdrop-blur-md border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 hover:border-[#17161A] hover:shadow-md transition-all text-center disabled:opacity-50 cursor-pointer active:scale-[0.98]"
           >
             <div className="w-12 h-12 rounded-full bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] group-hover:border-[#17161A] group-hover:bg-[#17161A] group-hover:text-white transition-all mx-auto flex items-center justify-center mb-3">
-              {busy === "label" ? (
-                <Loader2 className="w-5 h-5 animate-spin text-[#17161A] group-hover:text-white" strokeWidth={2} />
-              ) : (
-                <LabelIcon className="w-5 h-5 text-[#6E6D73] group-hover:text-white transition-colors" strokeWidth={1.75} />
-              )}
+              <LabelIcon className="w-5 h-5 text-[#6E6D73] group-hover:text-white transition-colors" strokeWidth={1.75} />
             </div>
             <div className="text-[15px] font-semibold text-[#17161A] transition">
               Лейбл
@@ -134,10 +174,93 @@ export default function Home() {
           </button>
         </div>
 
-        {error && (
-          <div className="mt-5 w-full max-w-[440px] text-[13px] text-[#17161A] bg-[#F0EEEA] border border-[#D2D0CB] rounded-[12px] px-3.5 py-2 font-mono shadow-xs">
-            {error}
-          </div>
+        ) : (
+          <form
+            onSubmit={submit}
+            className="w-full max-w-[380px] bg-white/95 backdrop-blur-md border-[0.5px] border-[#ECEAE5] rounded-[16px] p-6 text-left select-text"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setRole(null);
+                  setError(null);
+                  setNotice(null);
+                }}
+                aria-label="Назад к выбору кабинета"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#F0EEEA] hover:text-[#17161A] transition -ml-1"
+              >
+                <ArrowLeft className="w-4 h-4" strokeWidth={2} />
+              </button>
+              <div className="text-[16px] font-semibold text-[#17161A]">
+                {role === "artist" ? "Вход для артиста" : "Вход для лейбла"}
+              </div>
+            </div>
+
+            <label className="block mb-3">
+              <span className="block text-[12.5px] font-medium text-[#6E6D73] mb-[6px]">Почта</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                autoFocus
+                placeholder="you@example.com"
+                className={inputCls}
+              />
+            </label>
+
+            <label className="block">
+              <span className="flex items-center justify-between mb-[6px]">
+                <span className="text-[12.5px] font-medium text-[#6E6D73]">Пароль</span>
+                <button
+                  type="button"
+                  onClick={resetPassword}
+                  className="text-[12px] font-medium text-[#17161A] hover:text-[#6E6D73] transition"
+                >
+                  Забыли пароль?
+                </button>
+              </span>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                className={inputCls}
+              />
+            </label>
+
+            {error && (
+              <div className="mt-3 text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px]">
+                {error}
+              </div>
+            )}
+            {notice && (
+              <div className="mt-3 text-[13px] text-[#166B49] bg-[#E9F6EF] rounded-[12px] px-3 py-[9px]">
+                {notice}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={busy || !email.trim() || !password}
+              className="w-full mt-4 inline-flex items-center justify-center gap-2 bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {busy && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />}
+              Войти
+            </button>
+
+            {dev && (
+              <button
+                type="button"
+                onClick={() => signIn(role, dev)}
+                disabled={busy}
+                className="w-full mt-2 text-[12.5px] font-medium text-[#6E6D73] hover:text-[#17161A] px-[14px] py-[8px] rounded-full transition"
+              >
+                Тестовый аккаунт (только локально)
+              </button>
+            )}
+          </form>
         )}
 
         {/* Кнопка регистрации */}

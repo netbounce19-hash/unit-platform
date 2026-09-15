@@ -13,6 +13,7 @@ import {
   Medal,
   Zap,
   Activity,
+  FileDown,
 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { CardList, ListCard } from "@/components/label/LabelShell";
@@ -25,6 +26,7 @@ import {
 } from "@/lib/supabase/label";
 import { fetchOrgStreamStats, type StreamStat } from "@/lib/supabase/streamStats";
 import { computeScores, sortByMetric, fmtStreams, type Metric } from "@/lib/label/ranking";
+import { downloadStatsPdf } from "@/lib/label/statsPdf";
 
 const METRICS: { key: Metric; label: string; icon: typeof TrendingUp }[] = [
   { key: "efficiency", label: "Эффективность", icon: Zap },
@@ -39,6 +41,7 @@ function StatsInner({ org }: { org: MyOrg }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [metric, setMetric] = useState<Metric>("efficiency");
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -60,12 +63,25 @@ function StatsInner({ org }: { org: MyOrg }) {
     [artists, obligations, streamsMap, metric]
   );
 
+  const exportPdf = async () => {
+    setExporting(true);
+    setError(null);
+    try {
+      await downloadStatsPdf({ org, rows, obligations, streams: streamsMap, metric });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Не удалось собрать PDF");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <LabelShell
       org={org}
       title="Статистика"
       subtitle="Рейтинг артистов по стримам, эффективности и обязательности"
       actions={
+        <>
         <div className="flex items-center gap-1 bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-[3px]">
           {METRICS.map((m) => {
             const Icon = m.icon;
@@ -86,6 +102,19 @@ function StatsInner({ org }: { org: MyOrg }) {
             );
           })}
         </div>
+        <button
+          onClick={exportPdf}
+          disabled={loading || exporting}
+          className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#17161A] dark:text-[#F5F4F2] bg-white dark:bg-[#1A191D] border border-[#E5E3DE] dark:border-[#33323A] hover:border-[#D2D0CB] dark:hover:border-[#4A4952] px-[14px] py-[8px] rounded-full transition disabled:opacity-40 cursor-pointer"
+        >
+          {exporting ? (
+            <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
+          ) : (
+            <FileDown className="w-4 h-4" strokeWidth={1.75} />
+          )}
+          Скачать PDF
+        </button>
+        </>
       }
     >
       {error && (
