@@ -4,7 +4,7 @@ import { TrendingUp, CheckCircle2, Zap, type LucideIcon } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Стримы: TrendingUp,
-  Обязательность: CheckCircle2,
+  "Выполнение задач": CheckCircle2,
   Эффективность: Zap,
 };
 
@@ -36,7 +36,7 @@ export default function ScoreMeter({
   let barCls = "bg-[#C4C3C8] dark:bg-[#4A4952]";
   if (accent) {
     barCls = "bg-[#17161A] dark:bg-[#F5F4F2]";
-  } else if (label === "Обязательность" && value !== null) {
+  } else if (label === "Выполнение задач" && value !== null) {
     if (value >= 80) barCls = "bg-[#1F9D6B] dark:bg-[#5FCB9B]";
     else if (value >= 50) barCls = "bg-[#D97706] dark:bg-[#E8B65A]";
     else barCls = "bg-[#C4C3C8] dark:bg-[#4A4952]";

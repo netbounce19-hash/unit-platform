@@ -31,7 +31,7 @@ import { downloadStatsPdf } from "@/lib/label/statsPdf";
 const METRICS: { key: Metric; label: string; icon: typeof TrendingUp }[] = [
   { key: "efficiency", label: "Эффективность", icon: Zap },
   { key: "streams", label: "Стримы", icon: TrendingUp },
-  { key: "obligation", label: "Обязательность", icon: ListChecks },
+  { key: "obligation", label: "Задачи", icon: ListChecks },
 ];
 
 function StatsInner({ org }: { org: MyOrg }) {
@@ -79,7 +79,7 @@ function StatsInner({ org }: { org: MyOrg }) {
     <LabelShell
       org={org}
       title="Статистика"
-      subtitle="Рейтинг артистов по стримам, эффективности и обязательности"
+      subtitle="Стримы, выполнение задач и общий индекс по каждому артисту"
       actions={
         <>
         <div className="flex items-center gap-1 bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-[3px]">
@@ -136,7 +136,7 @@ function StatsInner({ org }: { org: MyOrg }) {
 
           <div className="h-2 w-full rounded-full bg-[#ECEAE5] dark:bg-[#242327] overflow-hidden flex">
             <div className="h-full bg-[#17161A] dark:bg-[#F5F4F2]" style={{ width: "60%" }} title="60% Стримы" />
-            <div className="h-full bg-[#1F9D6B] dark:bg-[#5FCB9B]" style={{ width: "40%" }} title="40% Обязательность" />
+            <div className="h-full bg-[#1F9D6B] dark:bg-[#5FCB9B]" style={{ width: "40%" }} title="40% выполнение задач" />
           </div>
 
           <div className="flex items-center justify-between text-[11px] text-[#6E6D73] dark:text-[#9A98A0] pt-0.5">
@@ -146,7 +146,7 @@ function StatsInner({ org }: { org: MyOrg }) {
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-[#1F9D6B] dark:bg-[#5FCB9B]" />
-              40% обязательность задач
+              40% выполнение задач
             </span>
           </div>
         </div>
@@ -221,7 +221,7 @@ function StatsInner({ org }: { org: MyOrg }) {
                       },
                       {
                         key: "obligation",
-                        label: "Обязательность",
+                        label: "Задачи",
                         value: r.obligationScore === null ? "—" : `${r.obligationScore}%`,
                         scoreVal: r.obligationScore ?? 0,
                         icon: ListChecks,

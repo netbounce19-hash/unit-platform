@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -53,13 +53,27 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
+  // Письмо подтверждения ведёт сюда (Site URL) и приносит сессию в адресе.
+  // Если человек регистрировался по приглашению — отправляем его принять его.
+  useEffect(() => {
+    const sb = getSupabase();
+    const route = (token: unknown) => {
+      if (typeof token === "string" && token) router.replace(`/invite/${token}`);
+    };
+    sb.auth.getSession().then(({ data }) => route(data.session?.user.user_metadata?.pending_invite_token));
+    const {
+      data: { subscription },
+    } = sb.auth.onAuthStateChange((_e, next) => route(next?.user.user_metadata?.pending_invite_token));
+    return () => subscription.unsubscribe();
+  }, [router]);
+
   const signIn = async (r: Role, creds: { email: string; password: string }) => {
     setBusy(true);
     setError(null);
     setNotice(null);
     const sb = getSupabase();
     await sb.auth.signOut();
-    const { error: authErr } = await sb.auth.signInWithPassword(creds);
+    const { data: authData, error: authErr } = await sb.auth.signInWithPassword(creds);
     if (authErr) {
       setError(
         authErr.message === "Invalid login credentials"
@@ -71,7 +85,8 @@ export default function Home() {
       setBusy(false);
       return;
     }
-    router.push(HOME[r]);
+    const pendingInvite = authData.user?.user_metadata?.pending_invite_token;
+    router.push(typeof pendingInvite === "string" && pendingInvite ? `/invite/${pendingInvite}` : HOME[r]);
   };
 
   const submit = (e: React.FormEvent) => {
@@ -124,16 +139,16 @@ export default function Home() {
 
         {/* Слоган */}
         <p className="text-[15px] sm:text-[16px] text-[#17161A] font-medium max-w-[480px] leading-snug mb-4">
-          Единая платформа для прозрачного и эффективного взаимодействия артистов и лейблов
+          Артист и лейбл работают на равных: релизы, промо, бюджеты и аналитика — прозрачно для обеих сторон
         </p>
 
         {/* Описание возможностей через точки */}
-        <div className="inline-flex flex-wrap items-center justify-center text-[12px] text-[#6E6D73] bg-white/90 backdrop-blur-xs px-4 py-1.5 rounded-full border-[0.5px] border-[#ECEAE5] shadow-2xs mb-8 gap-y-1">
-          <span>Управление релизами</span>
+        <div className="inline-flex flex-wrap items-center justify-center text-[12px] text-[#6E6D73] bg-white/90 backdrop-blur-xs px-4 py-1.5 rounded-[12px] sm:rounded-full border-[0.5px] border-[#ECEAE5] shadow-2xs mb-8 gap-y-1">
+          <span>Релизы и отгрузка</span>
           <span className="mx-1.5 text-[#A6A5AB]">·</span>
           <span>Согласование бюджетов</span>
           <span className="mx-1.5 text-[#A6A5AB]">·</span>
-          <span>Менеджер задач</span>
+          <span>Промо и задачи</span>
           <span className="mx-1.5 text-[#A6A5AB]">·</span>
           <span>Аналитика стримов</span>
         </div>

@@ -290,7 +290,7 @@ function RosterInner({ org }: { org: MyOrg }) {
               <div className="grid grid-cols-3 gap-3 mt-3 pt-3 border-t-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
                 <ScoreMeter label="Стримы" value={streamsScore} display={fmtStreams(streams)} />
                 <ScoreMeter
-                  label="Обязательность"
+                  label="Выполнение задач"
                   value={obligationScore}
                   display={obligationScore === null ? "—" : `${obligationScore}%`}
                 />

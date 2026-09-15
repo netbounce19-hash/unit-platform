@@ -36,6 +36,13 @@ export default function AuthGate({
         router.replace("/");
         return;
       }
+      // Зарегистрировался по приглашению, но письмо подтверждения увело не
+      // на приглашение — возвращаем туда, пока оно не принято
+      const pendingInvite = s.user.user_metadata?.pending_invite_token as string | undefined;
+      if (pendingInvite) {
+        router.replace(`/invite/${pendingInvite}`);
+        return;
+      }
       setSession(s);
       setReady(true);
     };

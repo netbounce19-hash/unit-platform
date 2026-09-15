@@ -1,42 +1,20 @@
 import type { MyOrg, ObligationStat } from "@/lib/supabase/label";
 import type { StreamStat } from "@/lib/supabase/streamStats";
 import type { ArtistScore, Metric } from "@/lib/label/ranking";
+import { createPdf, fmtInt, INK, INK2, INK3, LINE, TINT } from "@/lib/pdf/base";
 
 /**
  * Отчёт по статистике лейбла в PDF.
  *
  * Собирается в браузере из тех же строк, что показывает /label/stats, —
- * чтобы файл не расходился с экраном. jsPDF грузится только по клику:
- * библиотека тяжёлая, а отчёт нужен не каждый визит.
- *
- * Стандартные шрифты PDF не знают кириллицы, поэтому в документ
- * встраивается Geist (OFL) из /public/fonts — тот же, что в интерфейсе.
+ * чтобы файл не расходился с экраном.
  */
 
 const METRIC_LABEL: Record<Metric, string> = {
   efficiency: "эффективности",
   streams: "стримам",
-  obligation: "обязательности",
+  obligation: "выполнению задач",
 };
-
-const INK: [number, number, number] = [23, 22, 26];
-const INK2: [number, number, number] = [110, 109, 115];
-const INK3: [number, number, number] = [166, 165, 171];
-const LINE: [number, number, number] = [236, 234, 229];
-const TINT: [number, number, number] = [250, 250, 249];
-
-async function fontBase64(url: string): Promise<string> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Не удалось загрузить шрифт ${url}`);
-  const bytes = new Uint8Array(await res.arrayBuffer());
-  let bin = "";
-  for (let i = 0; i < bytes.length; i += 0x8000) {
-    bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  }
-  return btoa(bin);
-}
-
-const fmtInt = (n: number) => n.toLocaleString("ru-RU");
 
 export async function downloadStatsPdf(args: {
   org: MyOrg;
@@ -46,35 +24,9 @@ export async function downloadStatsPdf(args: {
   metric: Metric;
 }): Promise<void> {
   const { org, rows, obligations, streams, metric } = args;
-  const [{ jsPDF }, regular, semibold] = await Promise.all([
-    import("jspdf"),
-    fontBase64("/fonts/Geist-Regular.ttf"),
-    fontBase64("/fonts/Geist-SemiBold.ttf"),
-  ]);
-
-  const doc = new jsPDF({ unit: "mm", format: "a4" });
-  doc.addFileToVFS("Geist-Regular.ttf", regular);
-  doc.addFont("Geist-Regular.ttf", "Geist", "normal");
-  doc.addFileToVFS("Geist-SemiBold.ttf", semibold);
-  doc.addFont("Geist-SemiBold.ttf", "Geist", "bold");
-
-  const W = doc.internal.pageSize.getWidth();
-  const H = doc.internal.pageSize.getHeight();
-  const M = 16;
+  const { doc, W, H, M, text, footer } = await createPdf();
   const now = new Date();
   const dateStr = now.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
-
-  const text = (
-    s: string,
-    x: number,
-    y: number,
-    o: { size?: number; bold?: boolean; color?: [number, number, number]; align?: "left" | "right" | "center" } = {}
-  ) => {
-    doc.setFont("Geist", o.bold ? "bold" : "normal");
-    doc.setFontSize(o.size ?? 9);
-    doc.setTextColor(...(o.color ?? INK));
-    doc.text(s, x, y, { align: o.align ?? "left" });
-  };
 
   // ── Шапка
   let y = M + 4;
@@ -100,7 +52,7 @@ export async function downloadStatsPdf(args: {
     ["Артистов", String(rows.length)],
     ["Стримы, всего", fmtInt(totalStreams)],
     ["Слушатели в месяц", fmtInt(totalListeners)],
-    ["Обязательность, ср.", avgObl === null ? "—" : `${avgObl}%`],
+    ["Выполнение задач, ср.", avgObl === null ? "—" : `${avgObl}%`],
     ["Эффективность, ср.", String(avgEff)],
   ];
   const gap = 3;
@@ -122,7 +74,7 @@ export async function downloadStatsPdf(args: {
     { title: "Стримы", w: 24, align: "right" as const },
     { title: "Слушатели", w: 24, align: "right" as const },
     { title: "Задачи", w: 18, align: "right" as const },
-    { title: "Обязат.", w: 18, align: "right" as const },
+    { title: "Выполн.", w: 18, align: "right" as const },
     { title: "Эффект.", w: 18, align: "right" as const },
     { title: "Просроч.", w: 18, align: "right" as const },
   ];
@@ -194,8 +146,8 @@ export async function downloadStatsPdf(args: {
   y += 5;
   const notes = [
     "Стримы и слушатели — цифры, которые менеджер внёс в «Загрузке данных».",
-    "Обязательность — доля выполненных задач от всех, поставленных артисту.",
-    "Эффективность — 60% стримов, нормированных по лучшему артисту ростера, и 40% обязательности; без задач — только стримы.",
+    "Выполнение задач — доля закрытых задач от всех, поставленных артисту.",
+    "Эффективность — 60% стримов, нормированных по лучшему артисту ростера, и 40% выполнения задач; без задач — только стримы.",
   ];
   notes.forEach((n) => {
     const lines = doc.splitTextToSize(n, W - 2 * M) as string[];
@@ -205,13 +157,7 @@ export async function downloadStatsPdf(args: {
     });
   });
 
-  // ── Номера страниц
-  const pages = doc.getNumberOfPages();
-  for (let p = 1; p <= pages; p++) {
-    doc.setPage(p);
-    text(`${org.name} · UNIT`, M, H - 8, { size: 7, color: INK3 });
-    text(`${p} / ${pages}`, W - M, H - 8, { size: 7, color: INK3, align: "right" });
-  }
+  footer(`${org.name} · UNIT`);
 
   const slug = now.toISOString().slice(0, 10);
   doc.save(`unit-stats-${slug}.pdf`);

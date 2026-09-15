@@ -35,7 +35,13 @@ const inputCls =
   "w-full text-[14px] rounded-[10px] border border-[#E5E3DE] bg-white px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]";
 const labelCls = "block text-[13px] font-medium text-[#6E6D73] mb-[7px]";
 
-export default function AuthPanel() {
+/**
+ * @param inviteToken — если форма открыта со страницы приглашения. Токен
+ *   уходит в метаданные аккаунта: письмо подтверждения ведёт на Site URL,
+ *   а не обратно на приглашение, поэтому без этого приглашение терялось.
+ *   AuthGate и главная по нему возвращают артиста на /invite/<token>.
+ */
+export default function AuthPanel({ inviteToken }: { inviteToken?: string } = {}) {
   const [mode, setMode] = useState<Mode>("signup");
   const [role, setRole] = useState<AccountRole>("artist");
 
@@ -96,7 +102,13 @@ export default function AuthPanel() {
               artist_name: isArtist ? displayName.trim() : null,
               label_name: isArtist ? null : displayName.trim(),
               telegram: telegram.trim().replace(/^@/, "") || null,
+              pending_invite_token: inviteToken ?? null,
             },
+            // Сработает, если адрес есть в Redirect URLs проекта Supabase;
+            // иначе письмо ведёт на Site URL — тогда выручит pending_invite_token
+            emailRedirectTo: inviteToken
+              ? `${window.location.origin}/invite/${inviteToken}`
+              : undefined,
           },
         });
         if (error) throw error;

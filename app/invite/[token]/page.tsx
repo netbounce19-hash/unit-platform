@@ -38,9 +38,12 @@ function InviteInner({ token }: { token: string }) {
     setError(null);
     try {
       await acceptInvite(token);
+      await getSupabase().auth.updateUser({ data: { pending_invite_token: null } });
       setDone(true);
       setTimeout(() => router.replace("/dashboard"), 1500);
     } catch (e) {
+      // Недействительный токен не должен снова и снова возвращать сюда из кабинета
+      await getSupabase().auth.updateUser({ data: { pending_invite_token: null } });
       setError(e instanceof Error ? e.message : "Не удалось принять приглашение");
     } finally {
       setBusy(false);
@@ -64,7 +67,7 @@ function InviteInner({ token }: { token: string }) {
           Вас пригласили в лейбл. Войдите или создайте аккаунт — и мы привяжем приглашение
           к нему.
         </p>
-        <AuthPanel />
+        <AuthPanel inviteToken={token} />
       </div>
     );
   }
@@ -94,6 +97,15 @@ function InviteInner({ token }: { token: string }) {
               <div className="text-[13px] text-[#17161A] bg-[#F0EEEA] border-[0.5px] border-[#D2D0CB] rounded-[12px] px-3 py-[9px] mt-4 text-left">
                 {error}
               </div>
+            )}
+
+            {error && (
+              <button
+                onClick={() => getSupabase().auth.signOut()}
+                className="w-full mt-2 text-[13px] font-medium text-[#6E6D73] hover:text-[#17161A] px-[14px] py-[8px] rounded-full transition"
+              >
+                Войти под другой почтой
+              </button>
             )}
 
             <button
