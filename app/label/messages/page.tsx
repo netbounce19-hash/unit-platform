@@ -54,7 +54,7 @@ function MessagesInner({ org }: { org: MyOrg }) {
         setArtists(rows);
         setPreviews(prev);
         // На десктопе автоматически выбираем первого артиста
-        if (rows.length > 0 && window.innerWidth >= 768) {
+        if (rows.length > 0 && window.innerWidth >= 1024) {
           setSelected(rows[0].id);
         }
       })
@@ -157,10 +157,12 @@ function MessagesInner({ org }: { org: MyOrg }) {
           В ростере пока нет артистов — переписка появится после добавления артистов
         </div>
       ) : (
-        <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] overflow-hidden shadow-xs">
-          {/* ── 1. Mobile Artist List Screen (when no active artist selected) ── */}
-          {!activeArtist && (
-            <div>
+        <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] overflow-hidden shadow-xs lg:flex lg:h-[calc(100dvh-190px)] lg:min-h-[560px]">
+          {/* ── 1. Список диалогов. На телефоне — отдельный экран до выбора
+                 артиста; на десктопе — постоянная левая панель ── */}
+          <div
+            className={`${activeArtist ? "hidden" : ""} lg:flex lg:flex-col lg:w-[320px] lg:shrink-0 lg:border-r-[0.5px] lg:border-[#ECEAE5]`}
+          >
               {/* Search Header */}
               <div className="p-3.5 border-b-[0.5px] border-[#ECEAE5] bg-[#FAFAF9]">
                 <div className="relative">
@@ -176,14 +178,17 @@ function MessagesInner({ org }: { org: MyOrg }) {
               </div>
 
               {/* Roster Dialogs List */}
-              <div className="divide-y-[0.5px] divide-[#ECEAE5]">
+              <div className="divide-y-[0.5px] divide-[#ECEAE5] lg:flex-1 lg:overflow-y-auto">
                 {filteredArtists.map((a) => {
                   const last = previewOf(a.id);
                   return (
                     <button
                       key={a.id}
                       onClick={() => setSelected(a.id)}
-                      className="w-full text-left px-4 py-3.5 hover:bg-[#FAFAF9] transition flex items-center gap-3 cursor-pointer group"
+                      aria-current={a.id === selected ? "true" : undefined}
+                      className={`w-full text-left px-4 py-3.5 hover:bg-[#FAFAF9] transition flex items-center gap-3 cursor-pointer group ${
+                        a.id === selected ? "lg:bg-[#F0EEEA] lg:hover:bg-[#F0EEEA]" : ""
+                      }`}
                     >
                       {/* Avatar with online status */}
                       <div className="relative shrink-0">
@@ -219,24 +224,32 @@ function MessagesInner({ org }: { org: MyOrg }) {
                         </p>
                       </div>
 
-                      <ChevronRight className="w-4 h-4 text-[#A6A5AB] shrink-0 group-hover:translate-x-0.5 transition" />
+                      <ChevronRight className="w-4 h-4 text-[#A6A5AB] shrink-0 group-hover:translate-x-0.5 transition lg:hidden" />
                     </button>
                   );
                 })}
               </div>
+          </div>
+
+          {/* На десктопе без выбранного артиста правая панель не пустует */}
+          {!activeArtist && (
+            <div className="hidden lg:flex flex-1 flex-col items-center justify-center text-center px-8 text-[#A6A5AB]">
+              <MessagesSquare className="w-8 h-8 mb-3" strokeWidth={1.5} />
+              <div className="text-[14px] font-medium text-[#6E6D73]">Выберите артиста слева</div>
+              <div className="text-[12.5px] mt-1">Переписка откроется здесь</div>
             </div>
           )}
 
           {/* ── 2. Active Chat Conversation ── */}
           {activeArtist && (
-            <div className="flex flex-col h-[calc(100dvh-240px)] min-h-[480px]">
+            <div className="flex flex-col h-[calc(100dvh-240px)] min-h-[480px] lg:h-auto lg:min-h-0 lg:flex-1 lg:min-w-0">
               {/* Chat Topbar */}
               <div className="flex items-center justify-between px-4 py-3 border-b-[0.5px] border-[#ECEAE5] bg-white">
                 <div className="flex items-center gap-3 min-w-0">
                   <button
                     onClick={() => setSelected(null)}
                     aria-label="К списку артистов"
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#FAFAF9] hover:text-[#17161A] transition shrink-0 cursor-pointer"
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-[#6E6D73] hover:bg-[#FAFAF9] hover:text-[#17161A] transition shrink-0 cursor-pointer lg:hidden"
                   >
                     <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />
                   </button>

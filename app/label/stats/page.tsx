@@ -128,7 +128,7 @@ function StatsInner({ org }: { org: MyOrg }) {
           <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
         </div>
       ) : (
-        <CardList empty={rows.length === 0 ? "В ростере пока нет артистов" : null}>
+        <CardList columns={1} empty={rows.length === 0 ? "В ростере пока нет артистов" : null}>
           {rows.map((r, i) => {
             const isTop1 = i === 0;
             const isTop2 = i === 1;

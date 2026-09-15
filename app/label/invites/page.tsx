@@ -169,9 +169,11 @@ function InvitesInner({ org }: { org: MyOrg }) {
         </div>
       )}
 
+      {/* На десктопе форма — слева и липнет, список приглашений — справа */}
+      <div className="lg:grid lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-6 lg:items-start">
       <form
         onSubmit={submit}
-        className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 mb-5 flex flex-col gap-3"
+        className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 mb-5 lg:mb-0 lg:sticky lg:top-8 flex flex-col gap-3"
       >
         <label className="block">
           <span className="flex items-center gap-1 text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">
@@ -220,6 +222,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
         </button>
       </form>
 
+      <div className="min-w-0">
       {error && (
         <div className="text-[13px] text-[#17161A] dark:text-[#F5F4F2] bg-[#F0EEEA] dark:bg-[#242327] border-[0.5px] border-[#D2D0CB] dark:border-[#33323A] rounded-[12px] px-3 py-[9px] mb-4">
           {error}
@@ -290,6 +293,8 @@ function InvitesInner({ org }: { org: MyOrg }) {
           })}
         </CardList>
       )}
+      </div>
+      </div>
     </LabelShell>
   );
 }

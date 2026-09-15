@@ -253,7 +253,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
         </div>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-5 lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6 lg:items-start">
         <div className="min-w-0">
           {/* Релизы */}
           <Panel title="Релизы" icon={Disc3} count={releases.length}>
@@ -423,7 +423,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
         </div>
 
         {/* Условия контракта */}
-        <aside className="xl:sticky xl:top-[76px] self-start">
+        <aside className="lg:sticky lg:top-8 self-start">
           <Panel title="Условия контракта" icon={ShieldCheck}>
             <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4 space-y-3">
               <label className="block">

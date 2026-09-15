@@ -205,7 +205,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
         </div>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-5 lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6 lg:items-start">
         {/* Стратегия */}
         <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
           <div className="flex items-center justify-between mb-3">
@@ -238,7 +238,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
         </div>
 
         {/* Решение и Метаданные */}
-        <aside className="space-y-4 xl:sticky xl:top-[76px] self-start">
+        <aside className="space-y-4 lg:sticky lg:top-8 self-start">
           <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
             <h2 className="text-[12.5px] font-semibold text-[#6E6D73] dark:text-[#9A98A0] uppercase tracking-[0.05em] mb-3">
               Статус и даты

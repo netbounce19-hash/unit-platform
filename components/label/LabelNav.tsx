@@ -33,7 +33,7 @@ export default function LabelNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#1A191D]/95 backdrop-blur-sm border-t-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#1A191D]/95 backdrop-blur-sm border-t-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
       <div className="max-w-[720px] mx-auto px-2 flex items-stretch">
         {ITEMS.map((item) => {
           const Icon = item.icon;

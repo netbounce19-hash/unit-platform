@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { MyOrg } from "@/lib/supabase/label";
 import { LabelThemeProvider } from "./LabelThemeProvider";
 import LabelNav from "./LabelNav";
+import LabelSidebar from "./LabelSidebar";
 import BackHome from "@/components/ui/BackHome";
 
 /** Разделы нижней навигации — на них «Назад» не нужен. */
@@ -21,10 +22,16 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 /**
- * Каркас кабинета лейбла — единый мобильный макет, как в кабинете артиста:
- * колонка 720px по центру, топбар сверху, навигация снизу.
- * Плотный сайдбар на 212px был рабочим столом для десктопа, но на
- * телефоне съедал больше половины ширины.
+ * Каркас кабинета лейбла. Две раскладки в одном компоненте:
+ *
+ * - до lg (1024px) — мобильная: колонка 720px, топбар сверху, пять
+ *   разделов в нижней панели, остальное в «Ещё»;
+ * - от lg — рабочий стол: боковая панель со всеми разделами, заголовок
+ *   и кнопки страницы в одну строку, контент до 1200px.
+ *
+ * Менеджер лейбла работает за компьютером: ростер, заявки и переписка —
+ * это таблицы и очереди, которые на широком экране читаются в разы
+ * быстрее, чем стопка карточек в колонку.
  */
 function LabelShellInner({
   org,
@@ -40,37 +47,49 @@ function LabelShellInner({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#FAFAF9] dark:bg-[#141316]">
-      <div className="max-w-[720px] mx-auto px-5 py-7 pb-[92px]">
-        {/* Топбар */}
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <Link
-            href="/label/roster"
-            className="font-semibold tracking-[0.16em] text-[17px] dark:text-[#F5F4F2] shrink-0"
-          >
-            UNIT
-          </Link>
-          <div className="text-right min-w-0">
-            <div className="text-[12.5px] font-medium truncate dark:text-[#F5F4F2]">{org.name}</div>
-            <div className="text-[11px] text-[#A6A5AB] dark:text-[#6E6D73]">
-              {ROLE_LABEL[org.role] ?? org.role}
+    <div className="min-h-screen bg-[#FAFAF9] dark:bg-[#141316] lg:flex">
+      <LabelSidebar org={org} />
+
+      <div className="flex-1 min-w-0">
+        <div className="max-w-[720px] lg:max-w-[1200px] mx-auto px-5 lg:px-10 py-7 lg:py-8 pb-[92px] lg:pb-10">
+          {/* Топбар — только на телефоне: на десктопе бренд и организация в сайдбаре */}
+          <div className="flex items-center justify-between gap-4 mb-6 lg:hidden">
+            <Link
+              href="/label/roster"
+              className="font-semibold tracking-[0.16em] text-[17px] dark:text-[#F5F4F2] shrink-0"
+            >
+              UNIT
+            </Link>
+            <div className="text-right min-w-0">
+              <div className="text-[12.5px] font-medium truncate dark:text-[#F5F4F2]">{org.name}</div>
+              <div className="text-[11px] text-[#A6A5AB] dark:text-[#6E6D73]">
+                {ROLE_LABEL[org.role] ?? org.role}
+              </div>
             </div>
           </div>
+
+          <BackHome homeHref="/label/roster" roots={LABEL_ROOTS} />
+
+          {/* Заголовок страницы. На телефоне кнопки уходят под него — в строку
+              не помещаются; на десктопе встают справа. */}
+          <div className="mb-4 lg:mb-6 lg:flex lg:items-end lg:justify-between lg:gap-6">
+            <div className="min-w-0">
+              <h1 className="text-[22px] lg:text-[26px] font-medium tracking-[-0.01em] dark:text-[#F5F4F2]">
+                {title}
+              </h1>
+              {subtitle && (
+                <p className="text-[13.5px] text-[#6E6D73] dark:text-[#9A98A0] mt-[3px]">{subtitle}</p>
+              )}
+            </div>
+            {actions && (
+              <div className="flex flex-wrap items-center gap-2 mt-3 lg:mt-0 lg:shrink-0 lg:justify-end">
+                {actions}
+              </div>
+            )}
+          </div>
+
+          {children}
         </div>
-
-        <BackHome homeHref="/label/roster" roots={LABEL_ROOTS} />
-
-        {/* Заголовок страницы. Кнопки уходят под него: в строке с заголовком
-            они на узком экране не помещаются. */}
-        <div className="mb-4">
-          <h1 className="text-[22px] font-medium tracking-[-0.01em] dark:text-[#F5F4F2]">{title}</h1>
-          {subtitle && (
-            <p className="text-[13.5px] text-[#6E6D73] dark:text-[#9A98A0] mt-[3px]">{subtitle}</p>
-          )}
-          {actions && <div className="flex flex-wrap items-center gap-2 mt-3">{actions}</div>}
-        </div>
-
-        {children}
       </div>
 
       <LabelNav />
@@ -113,20 +132,31 @@ export function Badge({
 /**
  * Список карточек вместо таблицы. Плотные таблицы с whitespace-nowrap
  * на телефоне уезжали вбок, поэтому строка стала карточкой.
+ * На десктопе карточки встают в две колонки — одна колонка на 1200px
+ * превращала каждую в длинную полосу с пустотой посередине.
  */
 export function CardList({
   children,
   empty,
+  columns = 2,
 }: {
   children?: React.ReactNode;
   empty?: string | null;
+  /** Колонок на десктопе. 1 — для списков, которые читаются сверху вниз (рейтинг). */
+  columns?: 1 | 2;
 }) {
   return (
-    <div className="space-y-2">
+    <div
+      className={
+        columns === 2
+          ? "space-y-2 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-3 lg:items-start"
+          : "space-y-2"
+      }
+    >
       {children}
       {empty && (
         <div
-          className={`${panelCls} px-4 py-8 text-center text-[13px] text-[#A6A5AB] dark:text-[#6E6D73]`}
+          className={`${panelCls} px-4 py-8 text-center text-[13px] text-[#A6A5AB] dark:text-[#6E6D73] lg:col-span-2`}
         >
           {empty}
         </div>

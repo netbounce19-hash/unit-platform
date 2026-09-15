@@ -93,7 +93,7 @@ function DataUploadInner({ org }: { org: MyOrg }) {
           В ростере пока нет артистов
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-3 lg:items-start">
           {artists.map((a) => {
             const cur = stats.get(a.id);
             const d = draftOf(a.id);
