@@ -45,17 +45,20 @@ const statusHint: Record<ReleaseStatus, string> = {
 };
 
 /** Этапы, которые проходит релиз. «Принят» и «в работе» — один этап для артиста. */
-const STAGES = ["Черновик", "Согласование", "В работе", "Вышел"] as const;
+const STAGES = ["Согласование", "Модерация", "В работе", "Вышел"] as const;
 
-/** Индекс текущего этапа. Отклонённый релиз остаётся на согласовании. */
-function stageOf(status: ReleaseStatus): number {
-  switch (status) {
+/**
+ * Индекс текущего этапа. Отклонённый релиз остаётся на согласовании;
+ * принятый стоит на модерации, пока лейбл её не проведёт.
+ */
+function stageOf(r: ReleaseView): number {
+  switch (r.status) {
     case "draft":
-      return 0;
     case "pending_approval":
     case "rejected":
-      return 1;
+      return 0;
     case "approved":
+      return r.moderation_status === "passed" ? 2 : 1;
     case "in_progress":
       return 2;
     case "released":
@@ -224,8 +227,10 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
           <div className="mb-4">
             <div className="grid grid-cols-4 gap-1.5">
               {STAGES.map((label, i) => {
-                const current = stageOf(release.status);
-                const rejected = release.status === "rejected" && i === current;
+                const current = stageOf(release);
+                const rejected =
+                  (release.status === "rejected" && i === 0) ||
+                  (release.moderation_status === "needs_changes" && i === 1);
                 return (
                   <div key={label} className="min-w-0">
                     <div
@@ -248,7 +253,13 @@ export default function ReleaseCarousel({ refreshKey = 0 }: ReleaseCarouselProps
                 );
               })}
             </div>
-            <p className="text-[12.5px] text-[#6E6D73] mt-2">{statusHint[release.status]}</p>
+            <p className="text-[12.5px] text-[#6E6D73] mt-2">
+              {release.moderation_status === "needs_changes" && release.status !== "rejected"
+                ? "Модерация просит правки — откройте релиз"
+                : release.status === "approved" && release.moderation_status !== "passed"
+                  ? "Принят — лейбл проверяет трек перед отгрузкой"
+                  : statusHint[release.status]}
+            </p>
           </div>
 
           <div className="flex items-center justify-end">

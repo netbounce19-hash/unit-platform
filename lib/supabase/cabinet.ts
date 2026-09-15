@@ -290,12 +290,13 @@ export async function addReleaseAsset(
   releaseId: string,
   file: File,
   kind: AssetKind,
-  onProgress?: (percent: number) => void
+  onProgress?: (percent: number) => void,
+  options: { clean?: boolean } = {}
 ): Promise<void> {
   const asset = await uploadAsset({ file, kind, title: file.name, onProgress });
   const { error } = await getSupabase()
     .from("assets")
-    .update({ release_id: releaseId })
+    .update({ release_id: releaseId, is_clean_version: options.clean === true })
     .eq("id", asset.id);
   if (error) throw error;
 }

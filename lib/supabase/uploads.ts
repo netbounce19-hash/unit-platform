@@ -19,6 +19,8 @@ export interface Asset {
   mime_type: string | null;
   size_bytes: number | null;
   created_at: string;
+  /** цензурная версия трека — её запрашивает модерация лейбла */
+  is_clean_version?: boolean;
 }
 
 /** Приводит имя файла к безопасному для ключа хранилища виду. */

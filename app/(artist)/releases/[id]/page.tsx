@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Check,
   CircleAlert,
+  ShieldCheck,
 } from "lucide-react";
 import { formatPlannedDate } from "@/components/artist/ReleaseCarousel";
 import {
@@ -59,6 +60,8 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const cleanRef = useRef<HTMLInputElement>(null);
+  const [cleanProgress, setCleanProgress] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -94,6 +97,23 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
       setError(err instanceof Error ? err.message : "Не удалось сохранить дату");
     } finally {
       setSavingDate(false);
+    }
+  };
+
+  // Цензурная версия по запросу модерации — отдельный аудиофайл с отметкой
+  const onPickClean = async (file: File | null) => {
+    if (!file) return;
+    setError(null);
+    setCleanProgress(0);
+    try {
+      await addReleaseAsset(id, file, "audio", setCleanProgress, { clean: true });
+      setAssets(await listReleaseAssets(id));
+      setToast("Цензурная версия отправлена лейблу");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Загрузка не удалась");
+    } finally {
+      setCleanProgress(null);
+      if (cleanRef.current) cleanRef.current.value = "";
     }
   };
 
@@ -209,6 +229,87 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
         )}
       </div>
 
+      {/* Модерация — после приёмки лейбл проверяет трек перед отгрузкой */}
+      {(release.status === "approved" || release.status === "in_progress" || release.status === "released") &&
+        release.org_id && (
+          <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <div className="flex items-center gap-2 text-[16px] font-semibold tracking-[-0.01em]">
+                <ShieldCheck className="w-[17px] h-[17px] text-[#6E6D73]" strokeWidth={1.75} />
+                Модерация
+              </div>
+              <span
+                className={`text-[12px] font-medium px-[10px] py-[4px] rounded-full shrink-0 ${
+                  release.moderation_status === "passed"
+                    ? "bg-[#E9F6EF] text-[#166B49]"
+                    : release.moderation_status === "needs_changes"
+                      ? "bg-[#F0EEEA] text-[#17161A]"
+                      : "bg-[#FBF1DE] text-[#8A5A16]"
+                }`}
+              >
+                {release.moderation_status === "passed"
+                  ? "Пройдена"
+                  : release.moderation_status === "needs_changes"
+                    ? "Нужны правки"
+                    : "Идёт проверка"}
+              </span>
+            </div>
+
+            {release.moderation_status === "pending" && (
+              <p className="text-[13px] text-[#6E6D73] leading-[1.5]">
+                Перед отгрузкой лейбл прослушивает трек и проверяет его на ограничения закона. Если что-то
+                нужно поправить, здесь появится комментарий.
+              </p>
+            )}
+
+            {release.moderation_status === "passed" && (
+              <p className="text-[13px] text-[#6E6D73] leading-[1.5]">
+                Трек проверен
+                {release.moderated_at ? ` ${formatPlannedDate(release.moderated_at.slice(0, 10))}` : ""}
+                {release.is_explicit ? " и отмечен знаком 18+." : "."}
+              </p>
+            )}
+
+            {release.moderation_status === "needs_changes" && (
+              <>
+                {release.moderation_comment && (
+                  <div className="rounded-[12px] bg-[#FAFAF9] border-[0.5px] border-[#ECEAE5] px-[14px] py-[11px] text-[13px] leading-[1.5] mb-3">
+                    <div className="text-[11.5px] text-[#A6A5AB] mb-1">Комментарий лейбла</div>
+                    {release.moderation_comment}
+                  </div>
+                )}
+                <input
+                  ref={cleanRef}
+                  type="file"
+                  accept="audio/*,.wav,.flac,.mp3,.aiff"
+                  className="hidden"
+                  onChange={(e) => onPickClean(e.target.files?.[0] ?? null)}
+                />
+                <button
+                  onClick={() => cleanRef.current?.click()}
+                  disabled={cleanProgress !== null}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#17161A] text-white font-medium text-[14px] px-[18px] py-[10px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-60"
+                >
+                  {cleanProgress !== null ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Загрузка… {cleanProgress}%
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" strokeWidth={2} />
+                      Загрузить цензурную версию
+                    </>
+                  )}
+                </button>
+                <p className="text-[12px] text-[#A6A5AB] mt-2">
+                  Если правки не про цензурную версию — ответьте менеджеру в чате.
+                </p>
+              </>
+            )}
+          </div>
+        )}
+
       {/* Дата релиза */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">
         <div className="text-[16px] font-semibold tracking-[-0.01em] mb-1">Дата релиза</div>
@@ -310,7 +411,14 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
                 {KINDS.find((k) => k.key === a.kind)?.icon}
               </span>
               <div className="min-w-0 flex-1">
-                <div className="text-[14px] font-medium truncate">{a.title}</div>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[14px] font-medium truncate">{a.title}</span>
+                  {a.is_clean_version && (
+                    <span className="text-[11px] font-medium px-[8px] py-[2px] rounded-full bg-[#F0EEEA] text-[#17161A] shrink-0">
+                      цензурная
+                    </span>
+                  )}
+                </div>
                 <div className="text-[12px] text-[#A6A5AB] mt-[2px]">
                   {formatBytes(a.size_bytes)} · {new Date(a.created_at).toLocaleDateString("ru-RU")}
                 </div>

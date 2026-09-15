@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Plus, Trash2, Check, CalendarDays } from "lucide-react";
 import BudgetRequestModal, { NewBudgetRequest } from "@/components/artist/BudgetRequestModal";
 import SwipeToDelete from "@/components/artist/SwipeToDelete";
+import RoyaltySection from "@/components/artist/RoyaltySection";
 import {
   listBudgetRequests,
   createBudgetRequest,
@@ -110,7 +111,7 @@ export default function FinancePage() {
         <div className="min-w-0">
           <div className="text-[22px] font-medium tracking-[-0.01em]">Финансы</div>
           <div className="text-[14px] text-[#6E6D73] mt-[3px]">
-            {pending > 0 ? `${pending} на рассмотрении` : "Заявки на финансирование"}
+            {pending > 0 ? `Роялти и заявки · ${pending} на рассмотрении` : "Роялти, авансы и заявки на бюджет"}
           </div>
         </div>
         <button
@@ -122,6 +123,9 @@ export default function FinancePage() {
         </button>
       </div>
 
+      <RoyaltySection />
+
+      <div className="text-[13px] font-medium text-[#6E6D73] mb-2 px-1">Заявки на бюджет</div>
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] px-[22px] pt-[6px] pb-[14px]">
         <AnimatePresence initial={false}>
           {requests.map((r, i) => (

@@ -249,6 +249,12 @@ export function advanceBalance(artistId: string, advances: Advance[], statements
 
 // ── Артист ─────────────────────────────────────────────────────────────────
 
+/** Название своего лейбла — для шапки PDF. */
+export async function fetchOrgName(orgId: string): Promise<string | null> {
+  const { data } = await getSupabase().from("organizations").select("name").eq("id", orgId).maybeSingle();
+  return (data?.name as string | undefined) ?? null;
+}
+
 /** Свои опубликованные отчёты — черновики RLS не отдаёт. */
 export async function fetchMyStatements(): Promise<RoyaltyStatement[]> {
   const { data, error } = await getSupabase()
