@@ -125,6 +125,10 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* На десктопе — две колонки: работа слева, связь и новости справа.
+          Порядок блоков в разметке тот же, что на телефоне. */}
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-6 lg:items-start">
+      <div className="min-w-0">
       {/* Следующий шаг — одно приоритетное действие */}
       {nextStep && (
         <div className="bg-[#17161A] text-white rounded-[16px] p-[22px] mb-4">
@@ -209,6 +213,9 @@ export default function DashboardPage() {
 
       {/* Показатели */}
       <StatsSection />
+      </div>
+
+      <div className="min-w-0">
 
       {/* Стратегия и заявки — две плитки в строку.
           Заявки показываем только когда есть что ждать; тогда стратегия
@@ -246,6 +253,8 @@ export default function DashboardPage() {
 
       {/* Новости и мероприятия */}
       <EventsFeed />
+      </div>
+      </div>
     </>
   );
 }

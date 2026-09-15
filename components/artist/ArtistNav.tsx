@@ -21,7 +21,7 @@ export default function ArtistNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-t-[0.5px] border-[#ECEAE5]">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-t-[0.5px] border-[#ECEAE5]">
       <div className="max-w-[720px] mx-auto px-2 flex items-stretch">
         {ITEMS.map((item) => {
           const Icon = item.icon;

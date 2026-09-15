@@ -99,6 +99,8 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* На десктопе анкета слева, вопросы справа */}
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-6 lg:items-start">
       {/* Данные артиста */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4 space-y-5">
         {/* Фото */}
@@ -228,14 +230,19 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <FaqSection />
+      {/* У FAQ свой отступ сверху — в сетке он сбивал выравнивание колонок */}
+      <div className="min-w-0 mb-4 lg:[&>div]:mt-0">
+        <FaqSection />
+      </div>
+      </div>
 
+      {/* На десктопе выход — в боковой панели */}
       <button
         onClick={async () => {
           await getSupabase().auth.signOut();
           router.push("/");
         }}
-        className="w-full flex items-center justify-center gap-[7px] text-[14px] font-medium text-[#6E6D73] bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[13px] hover:text-[#17161A] hover:border-[#D2D0CB] transition"
+        className="lg:hidden w-full flex items-center justify-center gap-[7px] text-[14px] font-medium text-[#6E6D73] bg-white border-[0.5px] border-[#ECEAE5] rounded-[12px] px-4 py-[13px] hover:text-[#17161A] hover:border-[#D2D0CB] transition"
       >
         <LogOut className="w-[16px] h-[16px]" strokeWidth={1.75} />
         Выйти из аккаунта

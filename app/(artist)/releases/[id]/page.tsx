@@ -144,7 +144,10 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
 
   return (
     <>
-
+      {/* На десктопе: слева статус и дата, справа загрузка и файлы.
+          Порядок блоков тот же, что на телефоне. */}
+      <div className="lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
+      <div className="min-w-0">
       {/* Шапка релиза */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">
         <div className="flex items-center gap-4">
@@ -229,6 +232,9 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
         </div>
       </div>
 
+      </div>
+
+      <div className="min-w-0">
       {/* Догрузить данные */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">
         <div className="text-[16px] font-semibold tracking-[-0.01em] mb-1">Догрузить данные</div>
@@ -323,6 +329,9 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
             </div>
           ))
         )}
+      </div>
+
+      </div>
       </div>
 
       {error && (

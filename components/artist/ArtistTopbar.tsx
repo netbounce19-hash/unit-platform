@@ -32,7 +32,8 @@ export default function ArtistTopbar() {
 
   return (
     <>
-    <div className="flex items-center justify-between mb-6">
+    {/* На десктопе бренд и профиль — в боковой панели */}
+    <div className="flex items-center justify-between mb-6 lg:hidden">
       <Link href="/dashboard" className="font-semibold tracking-[0.16em] text-[17px]">
         UNIT
       </Link>
