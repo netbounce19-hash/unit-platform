@@ -10,6 +10,8 @@ import {
   LifeBuoy,
   LogOut,
   ChevronRight,
+  ShieldCheck,
+  HandCoins,
   type LucideIcon,
 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
@@ -18,6 +20,18 @@ import { getSupabase } from "@/lib/supabase/client";
 import type { MyOrg } from "@/lib/supabase/label";
 
 const ITEMS: { href: string; label: string; hint: string; icon: LucideIcon }[] = [
+  {
+    href: "/label/royalties",
+    label: "Роялти",
+    hint: "Отчёты артистам, авансы, график выплат",
+    icon: HandCoins,
+  },
+  {
+    href: "/label/moderation",
+    label: "Модерация",
+    hint: "Проверка треков перед отгрузкой",
+    icon: ShieldCheck,
+  },
   {
     href: "/label/data-upload",
     label: "Загрузка данных",

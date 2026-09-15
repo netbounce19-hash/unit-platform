@@ -101,6 +101,11 @@ export interface ReleaseRow {
   approved_at: string | null;
   cover_path: string | null;
   created_at: string;
+  moderation_status: "pending" | "passed" | "needs_changes";
+  moderation_checks: Partial<Record<"lyrics" | "drugs" | "violence" | "profanity", boolean>>;
+  is_explicit: boolean;
+  moderation_comment: string | null;
+  moderated_at: string | null;
 }
 
 export interface ReleaseView extends ReleaseRow {
@@ -112,9 +117,9 @@ export const releaseStatusLabels: Record<ReleaseStatus, { label: string; cls: st
   draft: { label: "Черновик", cls: "bg-[#F0EEEA] text-[#6E6D73]" },
   pending_approval: { label: "На согласовании", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
   approved: { label: "Принят менеджером", cls: "bg-[#E9F6EF] text-[#166B49]" },
-  in_progress: { label: "В работе", cls: "bg-[#EAF1FB] text-[#1B4F9C]" },
+  in_progress: { label: "В работе", cls: "bg-[#F0EEEA] text-[#17161A]" },
   released: { label: "Вышел", cls: "bg-[#E9F6EF] text-[#166B49]" },
-  rejected: { label: "Отклонён", cls: "bg-[#FDEDEB] text-[#A62018]" },
+  rejected: { label: "Отклонён", cls: "bg-[#F0EEEA] text-[#17161A]" },
 };
 
 /** Связка текущего пользователя с артистом лейбла — нужна, чтобы релиз дошёл до менеджера. */
@@ -368,7 +373,7 @@ export interface PromoReportRow {
 export const promoStatusLabels: Record<PromoStatus, { label: string; cls: string }> = {
   submitted: { label: "На проверке", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
   accepted: { label: "Принято", cls: "bg-[#E9F6EF] text-[#166B49]" },
-  needs_changes: { label: "Нужны правки", cls: "bg-[#FDEDEB] text-[#A62018]" },
+  needs_changes: { label: "Нужны правки", cls: "bg-[#F0EEEA] text-[#17161A]" },
 };
 
 /** Площадки, на которых артист отчитывается о промо. */

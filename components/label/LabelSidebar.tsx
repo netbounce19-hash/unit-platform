@@ -13,6 +13,8 @@ import {
   Settings,
   LifeBuoy,
   LogOut,
+  ShieldCheck,
+  HandCoins,
   type LucideIcon,
 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase/client";
@@ -36,6 +38,8 @@ const WORK: Item[] = [
 ];
 
 const TOOLS: Item[] = [
+  { href: "/label/royalties", label: "Роялти", icon: HandCoins, match: ["/label/royalties"] },
+  { href: "/label/moderation", label: "Модерация", icon: ShieldCheck, match: ["/label/moderation"] },
   { href: "/label/promo", label: "Промо-отчёты", icon: Megaphone, match: ["/label/promo"] },
   { href: "/label/data-upload", label: "Загрузка данных", icon: UploadCloud, match: ["/label/data-upload"] },
   { href: "/label/invites", label: "Приглашения", icon: Mail, match: ["/label/invites"] },

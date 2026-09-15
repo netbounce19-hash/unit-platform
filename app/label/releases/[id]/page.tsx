@@ -10,12 +10,13 @@ import {
   Calendar,
   Clock,
   CheckCircle2,
-  FileAudio,
   Radio,
-  FileEdit,
-  Sparkles,
+  ShieldCheck,
+  Truck,
   FileText,
 } from "lucide-react";
+import ModerationPanel from "@/components/label/ModerationPanel";
+import { setReleaseStage } from "@/lib/supabase/moderation";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { Badge } from "@/components/label/LabelShell";
 import {
@@ -30,25 +31,29 @@ import {
   type ArtistRow,
 } from "@/lib/supabase/label";
 
+/**
+ * Путь релиза в лейбле. Модерация — отдельный этап между согласованием и
+ * отгрузкой: база не даст отгрузить релиз, пока проверка не пройдена.
+ */
 const PIPELINE_STEPS = [
-  { key: "draft", label: "Черновик", icon: FileEdit },
-  { key: "pending_master", label: "Мастер", icon: FileAudio },
-  { key: "approved", label: "Утверждён", icon: CheckCircle2 },
-  { key: "released", label: "Выпущен", icon: Radio },
+  { key: "approval", label: "Согласование", icon: CheckCircle2 },
+  { key: "moderation", label: "Модерация", icon: ShieldCheck },
+  { key: "delivery", label: "Отгрузка", icon: Truck },
+  { key: "released", label: "Вышел", icon: Radio },
 ];
 
-function getStepIndex(status: string) {
-  switch (status) {
+function getStepIndex(r: ReleaseRow) {
+  switch (r.status) {
     case "draft":
+    case "pending_approval":
+    case "rejected":
       return 0;
-    case "pending_master":
-      return 1;
     case "approved":
+      return r.moderation_status === "passed" ? 2 : 1;
+    case "in_progress":
       return 2;
     case "released":
       return 3;
-    case "rejected":
-      return 1; // отклонен на этапе проверки
     default:
       return 0;
   }
@@ -60,7 +65,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
   const [strategy, setStrategy] = useState("");
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState<"approve" | "reject" | "save" | null>(null);
+  const [busy, setBusy] = useState<"approve" | "reject" | "save" | "stage" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
@@ -113,6 +118,19 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
     }
   };
 
+  const moveTo = async (status: "in_progress" | "released") => {
+    setBusy("stage");
+    setError(null);
+    try {
+      await setReleaseStage(releaseId, status);
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Не удалось сменить этап");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   if (loading) {
     return (
       <LabelShell org={org} title="Релиз">
@@ -138,7 +156,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
     cls: "bg-[#F0EEEA] dark:bg-[#232227] text-[#6E6D73] dark:text-[#9A98A0]",
   };
   const decided = release.status === "approved" || release.status === "rejected";
-  const currentStep = getStepIndex(release.status);
+  const currentStep = getStepIndex(release);
 
   return (
     <LabelShell
@@ -160,16 +178,24 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
             Этапы производства
           </span>
           <span className="text-[11px] font-normal normal-case text-[#A6A5AB] dark:text-[#6E6D73]">
-            {release.status === "rejected" ? "Отклонён на доработку" : `Шаг ${currentStep + 1} из 4`}
+            {release.status === "rejected"
+              ? "Отклонён на доработку"
+              : release.status === "released" && release.moderation_status !== "passed"
+                ? "Вышел, но не прошёл модерацию"
+                : `Шаг ${currentStep + 1} из 4`}
           </span>
         </div>
 
         <div className="grid grid-cols-4 gap-2 relative">
           {PIPELINE_STEPS.map((step, idx) => {
             const Icon = step.icon;
-            const isCompleted = idx < currentStep || (idx === currentStep && release.status === "released");
+            const isCompleted =
+              (idx < currentStep || (idx === currentStep && release.status === "released")) &&
+              !(idx === 1 && release.moderation_status !== "passed");
             const isCurrent = idx === currentStep && release.status !== "released";
-            const isRejected = release.status === "rejected" && idx === 1;
+            const isRejected =
+              (release.status === "rejected" && idx === 0) ||
+              (release.moderation_status === "needs_changes" && idx === 1);
 
             return (
               <div key={step.key} className="flex flex-col items-center text-center">
@@ -239,6 +265,42 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
 
         {/* Решение и Метаданные */}
         <aside className="space-y-4 lg:sticky lg:top-8 self-start">
+          {(release.status === "approved" || release.status === "in_progress" || release.status === "released") && (
+            <ModerationPanel key={`${release.moderation_status}-${release.moderated_at}`} release={release} onChanged={load} />
+          )}
+
+          {(release.status === "approved" || release.status === "in_progress") && (
+            <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
+              <h2 className="text-[12.5px] font-semibold text-[#6E6D73] dark:text-[#9A98A0] uppercase tracking-[0.05em] mb-3">
+                Отгрузка
+              </h2>
+              {release.moderation_status !== "passed" && (
+                <p className="text-[12.5px] text-[#6E6D73] dark:text-[#9A98A0] mb-3">
+                  Передать на площадки можно после модерации.
+                </p>
+              )}
+              {release.status === "approved" ? (
+                <button
+                  onClick={() => moveTo("in_progress")}
+                  disabled={busy !== null || release.moderation_status !== "passed"}
+                  className="w-full inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#17161A] dark:bg-[#F5F4F2] text-white dark:text-[#17161A] px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {busy === "stage" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Truck className="w-4 h-4" />}
+                  Передать в отгрузку
+                </button>
+              ) : (
+                <button
+                  onClick={() => moveTo("released")}
+                  disabled={busy !== null}
+                  className="w-full inline-flex items-center justify-center gap-2 text-[13px] font-medium bg-[#17161A] dark:bg-[#F5F4F2] text-white dark:text-[#17161A] px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40"
+                >
+                  {busy === "stage" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Radio className="w-4 h-4" />}
+                  Отметить вышедшим
+                </button>
+              )}
+            </div>
+          )}
+
           <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
             <h2 className="text-[12.5px] font-semibold text-[#6E6D73] dark:text-[#9A98A0] uppercase tracking-[0.05em] mb-3">
               Статус и даты

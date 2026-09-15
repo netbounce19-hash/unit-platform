@@ -48,6 +48,11 @@ export interface ReleaseRow {
   approved_by: string | null;
   approved_at: string | null;
   created_at: string;
+  moderation_status: "pending" | "passed" | "needs_changes";
+  moderation_checks: Partial<Record<"lyrics" | "drugs" | "violence" | "profanity", boolean>>;
+  is_explicit: boolean;
+  moderation_comment: string | null;
+  moderated_at: string | null;
 }
 
 export interface TaskRow {
@@ -435,9 +440,9 @@ export const releaseStatusLabels: Record<ReleaseStatus, { label: string; cls: st
   draft: { label: "Черновик", cls: "bg-[#F0EEEA] text-[#6E6D73]" },
   pending_approval: { label: "На утверждении", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
   approved: { label: "Утверждён", cls: "bg-[#E9F6EF] text-[#166B49]" },
-  in_progress: { label: "В работе", cls: "bg-[#FDEDEB] text-[#A62018]" },
+  in_progress: { label: "В отгрузке", cls: "bg-[#F0EEEA] text-[#17161A]" },
   released: { label: "Вышел", cls: "bg-[#E9F6EF] text-[#166B49]" },
-  rejected: { label: "Отклонён", cls: "bg-[#FDEDEB] text-[#A62018]" },
+  rejected: { label: "Отклонён", cls: "bg-[#F0EEEA] text-[#17161A]" },
   // legacy из артистского кабинета
   upcoming: { label: "Готовится", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
   live: { label: "Вышел", cls: "bg-[#E9F6EF] text-[#166B49]" },
@@ -446,8 +451,8 @@ export const releaseStatusLabels: Record<ReleaseStatus, { label: string; cls: st
 export const budgetStatusLabels: Record<BudgetStatus, { label: string; cls: string }> = {
   pending: { label: "Ждёт решения", cls: "bg-[#FBF1DE] text-[#8A5A16]" },
   approved: { label: "Одобрена", cls: "bg-[#E9F6EF] text-[#166B49]" },
-  rejected: { label: "Отклонена", cls: "bg-[#FDEDEB] text-[#A62018]" },
-  declined: { label: "Отклонена", cls: "bg-[#FDEDEB] text-[#A62018]" },
+  rejected: { label: "Отклонена", cls: "bg-[#F0EEEA] text-[#17161A]" },
+  declined: { label: "Отклонена", cls: "bg-[#F0EEEA] text-[#17161A]" },
 };
 
 export function formatMoney(n: number): string {

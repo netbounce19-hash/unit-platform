@@ -13,7 +13,7 @@ import {
 // Демо = аудио-ассет без привязки к релизу (release_id is null).
 
 const GRADIENTS = [
-  "linear-gradient(135deg,#E23A34,#8b1e1a)",
+  "linear-gradient(135deg,#17161A,#8b1e1a)",
   "linear-gradient(135deg,#415A77,#17161A)",
   "linear-gradient(135deg,#8A5A16,#3a2606)",
   "linear-gradient(135deg,#1F9D6B,#0d3d2a)",
