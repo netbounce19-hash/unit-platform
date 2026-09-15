@@ -104,6 +104,8 @@ export default function FinancePage() {
 
   return (
     <>
+      {/* Список заявок на всю ширину монитора растягивал сумму и статус по краям */}
+      <div className="lg:max-w-[760px]">
       <div className="flex items-start justify-between gap-4 mb-4">
         <div className="min-w-0">
           <div className="text-[22px] font-medium tracking-[-0.01em]">Финансы</div>
@@ -181,6 +183,7 @@ export default function FinancePage() {
             Заявок нет. Опишите, на что нужен бюджет — менеджер рассмотрит.
           </div>
         )}
+      </div>
       </div>
 
       <BudgetRequestModal

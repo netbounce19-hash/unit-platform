@@ -198,9 +198,12 @@ function BlacklistSection({ org }: { org: MyOrg }) {
 function SettingsInner({ org }: { org: MyOrg }) {
   return (
     <LabelShell org={org} title="Настройки" subtitle="Тема, уведомления и доступ артистов">
-      <ThemeSection />
-      <TelegramSection />
-      <BlacklistSection org={org} />
+      {/* Формы и переключатели на всю ширину монитора читаются плохо */}
+      <div className="lg:max-w-[760px]">
+        <ThemeSection />
+        <TelegramSection />
+        <BlacklistSection org={org} />
+      </div>
     </LabelShell>
   );
 }
