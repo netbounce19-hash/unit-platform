@@ -27,6 +27,8 @@ import {
 import { fetchOrgStreamStats, type StreamStat } from "@/lib/supabase/streamStats";
 import { computeScores, sortByMetric, fmtStreams, type Metric } from "@/lib/label/ranking";
 import { downloadStatsPdf } from "@/lib/label/statsPdf";
+import StreamTrendCard from "@/components/charts/StreamTrendCard";
+import GrowthList from "@/components/label/GrowthList";
 
 const METRICS: { key: Metric; label: string; icon: typeof TrendingUp }[] = [
   { key: "efficiency", label: "Эффективность", icon: Zap },
@@ -122,6 +124,12 @@ function StatsInner({ org }: { org: MyOrg }) {
           {error}
         </div>
       )}
+
+      {/* Динамика ростера: сумма по всем артистам и кто растёт быстрее */}
+      <div className="mb-4 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-4 lg:items-start space-y-4 lg:space-y-0">
+        <StreamTrendCard orgId={org.org_id} title="Динамика ростера" />
+        <GrowthList orgId={org.org_id} artists={artists} />
+      </div>
 
       {/* Инфографическая плашка формулы эффективности */}
       {metric === "efficiency" && (

@@ -7,6 +7,7 @@ import EventsFeed from "@/components/artist/EventsFeed";
 import ReleaseCarousel from "@/components/artist/ReleaseCarousel";
 import ManagerMessenger from "@/components/artist/ManagerMessenger";
 import StatsSection from "@/components/artist/StatsSection";
+import MyStreamTrend from "@/components/artist/MyStreamTrend";
 import PromoConfirm from "@/components/artist/PromoConfirm";
 import { fetchMyProfile, displayNameOf } from "@/lib/supabase/profile";
 import {
@@ -232,6 +233,9 @@ export default function DashboardPage() {
 
           {/* Показатели */}
           <StatsSection />
+
+          {/* Динамика — по месяцам, из отчётов площадок */}
+          <MyStreamTrend />
         </div>
 
         <div className="min-w-0 space-y-4 mt-5 lg:mt-0">

@@ -24,6 +24,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
+import StreamTrendCard from "@/components/charts/StreamTrendCard";
 import LabelShell, { CardList, ListCard, Field, Badge } from "@/components/label/LabelShell";
 import {
   fetchArtist,
@@ -255,6 +256,8 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
 
       <div className="space-y-5 lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6 lg:items-start">
         <div className="min-w-0">
+          <StreamTrendCard artistId={artistId} className="mb-5" />
+
           {/* Релизы */}
           <Panel title="Релизы" icon={Disc3} count={releases.length}>
             <CardList empty={releases.length === 0 ? "Релизов нет" : null}>
