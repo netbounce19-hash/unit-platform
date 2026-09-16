@@ -22,6 +22,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
+import { canDecideBudget } from "@/lib/label/roles";
 import LabelShell, { panelCls } from "@/components/label/LabelShell";
 import {
   fetchBudgets,
@@ -439,7 +440,7 @@ function BudgetsInner({ org }: { org: MyOrg }) {
                 )}
 
                 {/* ── Actions for Pending Requests ── */}
-                {b.status === "pending" && (
+                {b.status === "pending" && canDecideBudget(org.role) && (
                   <div className="pt-2 border-t-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
                     {isOpen ? (
                       <div className="space-y-2.5">

@@ -16,6 +16,7 @@ import {
   Percent,
 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
+import { canAccess } from "@/lib/label/roles";
 import LabelShell, { CardList, ListCard, Badge } from "@/components/label/LabelShell";
 import ScoreMeter from "@/components/label/ScoreMeter";
 import {
@@ -93,6 +94,7 @@ function RosterInner({ org }: { org: MyOrg }) {
       subtitle={`${rows.length} ${rows.length === 1 ? "артист" : "артистов"} в ростере лейбла`}
       actions={
         <>
+          {canAccess(org.role, "invites") && (
           <Link
             href="/label/invites"
             className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-[14px] py-[8px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition"
@@ -100,6 +102,7 @@ function RosterInner({ org }: { org: MyOrg }) {
             <UserPlus className="w-[15px] h-[15px]" strokeWidth={1.75} />
             Пригласить
           </Link>
+          )}
           <button
             onClick={() => setAdding((v) => !v)}
             className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition"

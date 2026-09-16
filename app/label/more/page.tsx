@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   LogOut,
   ChevronRight,
+  UsersRound,
   ShieldCheck,
   HandCoins,
   Radar,
@@ -19,55 +20,71 @@ import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { panelCls } from "@/components/label/LabelShell";
 import { getSupabase } from "@/lib/supabase/client";
 import type { MyOrg } from "@/lib/supabase/label";
+import { canAccess, type Section } from "@/lib/label/roles";
 
-const ITEMS: { href: string; label: string; hint: string; icon: LucideIcon }[] = [
+const ITEMS: { href: string; label: string; hint: string; icon: LucideIcon; section: Section }[] = [
   {
     href: "/label/scouting",
     label: "Скаутинг",
     hint: "Демо от артистов и находки команды",
     icon: Radar,
+    section: "scouting",
   },
   {
     href: "/label/royalties",
     label: "Роялти",
     hint: "Отчёты артистам, авансы, график выплат",
     icon: HandCoins,
+    section: "royalties",
   },
   {
     href: "/label/moderation",
     label: "Модерация",
     hint: "Проверка треков перед отгрузкой",
     icon: ShieldCheck,
+    section: "moderation",
   },
   {
     href: "/label/data-upload",
     label: "Загрузка данных",
     hint: "Стримы по артистам вручную",
     icon: UploadCloud,
+    section: "dataUpload",
   },
   {
     href: "/label/promo",
     label: "Промо-отчёты",
     hint: "Ссылки на публикации от артистов",
     icon: Megaphone,
+    section: "promo",
   },
   {
     href: "/label/invites",
     label: "Приглашения",
     hint: "Позвать артиста в ростер",
     icon: Mail,
+    section: "invites",
+  },
+  {
+    href: "/label/team",
+    label: "Команда",
+    hint: "Сотрудники лейбла и их роли",
+    icon: UsersRound,
+    section: "team",
   },
   {
     href: "/label/settings",
     label: "Настройки",
     hint: "Тема, уведомления, чёрный список",
     icon: Settings,
+    section: "settings",
   },
   {
     href: "/label/support",
     label: "Поддержка",
     hint: "Частые вопросы и связь с нами",
     icon: LifeBuoy,
+    section: "support",
   },
 ];
 
@@ -77,7 +94,7 @@ function MoreInner({ org }: { org: MyOrg }) {
   return (
     <LabelShell org={org} title="Ещё" subtitle="Разделы, которые не поместились в навигацию">
       <div className={`${panelCls} overflow-hidden mb-4`}>
-        {ITEMS.map((item, i) => {
+        {ITEMS.filter((item) => canAccess(org.role, item.section)).map((item, i) => {
           const Icon = item.icon;
           return (
             <Link

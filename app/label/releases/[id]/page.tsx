@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import ModerationPanel from "@/components/label/ModerationPanel";
 import { setReleaseStage } from "@/lib/supabase/moderation";
+import { canDecideRelease, canShip } from "@/lib/label/roles";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { Badge } from "@/components/label/LabelShell";
 import {
@@ -265,11 +266,11 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
 
         {/* Решение и Метаданные */}
         <aside className="space-y-4 lg:sticky lg:top-8 self-start">
-          {(release.status === "approved" || release.status === "in_progress" || release.status === "released") && (
+          {canShip(org.role) && (release.status === "approved" || release.status === "in_progress" || release.status === "released") && (
             <ModerationPanel key={`${release.moderation_status}-${release.moderated_at}`} release={release} onChanged={load} />
           )}
 
-          {(release.status === "approved" || release.status === "in_progress") && (
+          {canShip(org.role) && (release.status === "approved" || release.status === "in_progress") && (
             <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
               <h2 className="text-[12.5px] font-semibold text-[#6E6D73] dark:text-[#9A98A0] uppercase tracking-[0.05em] mb-3">
                 Отгрузка
@@ -338,6 +339,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
             </dl>
           </div>
 
+          {canDecideRelease(org.role) && (
           <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
             <h2 className="text-[12.5px] font-semibold text-[#6E6D73] dark:text-[#9A98A0] uppercase tracking-[0.05em] mb-3">
               Решение лейбла
@@ -385,6 +387,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
               </button>
             </div>
           </div>
+          )}
         </aside>
       </div>
     </LabelShell>

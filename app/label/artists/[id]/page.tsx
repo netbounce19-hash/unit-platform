@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import StreamTrendCard from "@/components/charts/StreamTrendCard";
+import ArtistManagerPicker from "@/components/label/ArtistManagerPicker";
+import { canAccess } from "@/lib/label/roles";
 import LabelShell, { CardList, ListCard, Field, Badge } from "@/components/label/LabelShell";
 import {
   fetchArtist,
@@ -197,6 +199,8 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
       subtitle={artist.user_id ? "Аккаунт артиста привязан" : "Приглашение ожидает принятия"}
       actions={
         <>
+          <ArtistManagerPicker org={org} artist={artist} onChanged={(managerId) => setArtist({ ...artist, manager_id: managerId })} />
+          {canAccess(org.role, "tasks") && (
           <Link
             href={`/label/tasks/new?artist=${artist.id}`}
             className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#17161A] text-white px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition"
@@ -204,6 +208,7 @@ function ArtistInner({ org, artistId }: { org: MyOrg; artistId: string }) {
             <Plus className="w-[15px] h-[15px]" strokeWidth={2} />
             Задача
           </Link>
+          )}
         </>
       }
     >

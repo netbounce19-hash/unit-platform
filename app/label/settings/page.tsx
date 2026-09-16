@@ -9,6 +9,7 @@ import { fetchRoster, type MyOrg, type RosterArtist } from "@/lib/supabase/label
 import { toggleBlacklisted } from "@/lib/label/mockBlacklist";
 import { useBlacklist } from "@/lib/label/useBlacklist";
 import { fetchSubmissionSettings, saveSubmissionSettings, submitUrl } from "@/lib/supabase/scouting";
+import { isAdmin } from "@/lib/label/roles";
 
 const TELEGRAM_STORAGE_KEY = "unit-label-telegram-chat";
 
@@ -312,10 +313,11 @@ function SettingsInner({ org }: { org: MyOrg }) {
     <LabelShell org={org} title="Настройки" subtitle="Тема, уведомления и доступ артистов">
       {/* Формы и переключатели на всю ширину монитора читаются плохо */}
       <div className="lg:max-w-[760px]">
-        <SubmissionsSection org={org} />
+        {/* Настройки лейбла меняет только администратор (так же и в базе) */}
+        {isAdmin(org.role) && <SubmissionsSection org={org} />}
         <ThemeSection />
         <TelegramSection />
-        <BlacklistSection org={org} />
+        {isAdmin(org.role) && <BlacklistSection org={org} />}
       </div>
     </LabelShell>
   );

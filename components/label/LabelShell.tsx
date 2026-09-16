@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Lock } from "lucide-react";
+import { canAccess, roleLabel, sectionOfPath } from "@/lib/label/roles";
 import type { MyOrg } from "@/lib/supabase/label";
 import { LabelThemeProvider } from "./LabelThemeProvider";
 import LabelNav from "./LabelNav";
@@ -15,11 +18,6 @@ const LABEL_ROOTS = [
   "/label/stats",
   "/label/more",
 ];
-
-const ROLE_LABEL: Record<string, string> = {
-  label_admin: "Администратор",
-  label_manager: "Менеджер",
-};
 
 /**
  * Каркас кабинета лейбла. Две раскладки в одном компоненте:
@@ -46,6 +44,10 @@ function LabelShellInner({
   actions?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const section = sectionOfPath(pathname);
+  const allowed = !section || canAccess(org.role, section);
+
   return (
     <div className="min-h-screen bg-[#FAFAF9] dark:bg-[#141316] lg:flex">
       <LabelSidebar org={org} />
@@ -63,7 +65,7 @@ function LabelShellInner({
             <div className="text-right min-w-0">
               <div className="text-[12.5px] font-medium truncate dark:text-[#F5F4F2]">{org.name}</div>
               <div className="text-[11px] text-[#A6A5AB] dark:text-[#6E6D73]">
-                {ROLE_LABEL[org.role] ?? org.role}
+                {roleLabel(org.role)}
               </div>
             </div>
           </div>
@@ -81,18 +83,29 @@ function LabelShellInner({
                 <p className="text-[13.5px] text-[#6E6D73] dark:text-[#9A98A0] mt-[3px]">{subtitle}</p>
               )}
             </div>
-            {actions && (
+            {actions && allowed && (
               <div className="flex flex-wrap items-center gap-2 mt-3 lg:mt-0 lg:shrink-0 lg:justify-end">
                 {actions}
               </div>
             )}
           </div>
 
-          {children}
+          {allowed ? (
+            children
+          ) : (
+            // Раздел не для этой роли. Данные закрыты и в базе — это экран-объяснение.
+            <div className={`${panelCls} px-6 py-10 text-center`}>
+              <Lock className="w-6 h-6 mx-auto text-[#A6A5AB]" strokeWidth={1.75} />
+              <div className="text-[15px] font-medium mt-2 dark:text-[#F5F4F2]">Раздел недоступен для роли «{roleLabel(org.role)}»</div>
+              <p className="text-[13px] text-[#6E6D73] dark:text-[#9A98A0] mt-1">
+                Если он нужен в работе, попросите администратора лейбла поменять роль в разделе «Команда».
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
-      <LabelNav />
+      <LabelNav role={org.role} />
     </div>
   );
 }

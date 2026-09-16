@@ -4,7 +4,7 @@ import { getSupabase } from "./client";
 
 // ── Типы ────────────────────────────────────────────────────────────────────
 
-export type MemberRole = "label_admin" | "label_manager";
+export type MemberRole = import("@/lib/label/roles").TeamRole;
 export type TaskStatus = "todo" | "done";
 export type BudgetStatus = "pending" | "approved" | "rejected" | "declined";
 export type PromoStatus = "submitted" | "accepted" | "needs_changes";
@@ -34,6 +34,8 @@ export interface ArtistRow {
   terms: ArtistTerms;
   status: string;
   created_at: string;
+  /** ответственный проджект в команде лейбла */
+  manager_id?: string | null;
 }
 
 export interface ReleaseRow {

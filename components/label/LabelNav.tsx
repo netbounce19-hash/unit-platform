@@ -10,32 +10,44 @@ import {
   MoreHorizontal,
   type LucideIcon,
 } from "lucide-react";
+import { canAccess, type Section } from "@/lib/label/roles";
 
 /**
  * Нижняя навигация кабинета лейбла — как в кабинете артиста.
  * Разделов восемь, в панель влезает пять: четыре рабочих плюс «Ещё»,
  * куда уходят загрузка данных, приглашения, настройки и поддержка.
  */
-const ITEMS: { href: string; label: string; icon: LucideIcon; match: string[] }[] = [
+const ITEMS: { href: string; label: string; icon: LucideIcon; match: string[]; section?: Section }[] = [
   { href: "/label/roster", label: "Ростер", icon: Users, match: ["/label/roster", "/label/artists"] },
-  { href: "/label/budgets", label: "Заявки", icon: Wallet, match: ["/label/budgets"] },
-  { href: "/label/messages", label: "Чаты", icon: MessagesSquare, match: ["/label/messages"] },
+  { href: "/label/budgets", label: "Заявки", icon: Wallet, match: ["/label/budgets"], section: "budgets" },
+  { href: "/label/messages", label: "Чаты", icon: MessagesSquare, match: ["/label/messages"], section: "messages" },
   { href: "/label/stats", label: "Статистика", icon: BarChart3, match: ["/label/stats"] },
   {
     href: "/label/more",
     label: "Ещё",
     icon: MoreHorizontal,
-    match: ["/label/more", "/label/data-upload", "/label/invites", "/label/promo", "/label/settings", "/label/support"],
+    match: [
+      "/label/more",
+      "/label/data-upload",
+      "/label/invites",
+      "/label/promo",
+      "/label/settings",
+      "/label/support",
+      "/label/scouting",
+      "/label/royalties",
+      "/label/moderation",
+      "/label/team",
+    ],
   },
 ];
 
-export default function LabelNav() {
+export default function LabelNav({ role }: { role: string }) {
   const pathname = usePathname();
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#1A191D]/95 backdrop-blur-sm border-t-[0.5px] border-[#ECEAE5] dark:border-[#242327]">
       <div className="max-w-[720px] mx-auto px-2 flex items-stretch">
-        {ITEMS.map((item) => {
+        {ITEMS.filter((i) => !i.section || canAccess(role, i.section)).map((item) => {
           const Icon = item.icon;
           const active = item.match.some(
             (m) => pathname === m || pathname.startsWith(m + "/")
