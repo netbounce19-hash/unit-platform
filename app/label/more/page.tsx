@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   LogOut,
   ChevronRight,
+  ClipboardCheck,
   UsersRound,
   ShieldCheck,
   HandCoins,
@@ -29,6 +30,13 @@ const ITEMS: { href: string; label: string; hint: string; icon: LucideIcon; sect
     hint: "Демо от артистов и находки команды",
     icon: Radar,
     section: "scouting",
+  },
+  {
+    href: "/label/campaigns",
+    label: "Промо и питчинг",
+    hint: "Кампании, инфлюенсеры, питчинг в редакции",
+    icon: Megaphone,
+    section: "campaigns",
   },
   {
     href: "/label/royalties",
@@ -53,9 +61,9 @@ const ITEMS: { href: string; label: string; hint: string; icon: LucideIcon; sect
   },
   {
     href: "/label/promo",
-    label: "Промо-отчёты",
+    label: "Отчёты артистов",
     hint: "Ссылки на публикации от артистов",
-    icon: Megaphone,
+    icon: ClipboardCheck,
     section: "promo",
   },
   {

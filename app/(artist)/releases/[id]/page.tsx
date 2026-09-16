@@ -15,6 +15,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { formatPlannedDate } from "@/components/artist/ReleaseCarousel";
+import ReleasePromoCard from "@/components/artist/ReleasePromoCard";
 import {
   fetchRelease,
   updateRelease,
@@ -309,6 +310,9 @@ export default function ReleasePage({ params }: { params: Promise<{ id: string }
             )}
           </div>
         )}
+
+      {/* Питчинг и кампании лейбла по этому релизу */}
+      {release.org_id && <ReleasePromoCard releaseId={release.id} />}
 
       {/* Дата релиза */}
       <div className="bg-white border-[0.5px] border-[#ECEAE5] rounded-[16px] p-[22px] mb-4">

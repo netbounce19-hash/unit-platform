@@ -16,8 +16,9 @@ import {
   FileText,
 } from "lucide-react";
 import ModerationPanel from "@/components/label/ModerationPanel";
+import PitchPanel from "@/components/label/PitchPanel";
 import { setReleaseStage } from "@/lib/supabase/moderation";
-import { canDecideRelease, canShip } from "@/lib/label/roles";
+import { canAccess, canDecideRelease, canShip } from "@/lib/label/roles";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { Badge } from "@/components/label/LabelShell";
 import {
@@ -233,6 +234,7 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
       </div>
 
       <div className="space-y-5 lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6 lg:items-start">
+        <div className="min-w-0 space-y-5">
         {/* Стратегия */}
         <div className="bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-4">
           <div className="flex items-center justify-between mb-3">
@@ -262,6 +264,19 @@ function ReleaseInner({ org, releaseId }: { org: MyOrg; releaseId: string }) {
             placeholder="План продвижения, площадки, даты, бюджет…"
             className="w-full resize-y text-[13.5px] leading-[1.55] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[10px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]"
           />
+        </div>
+
+        {canAccess(org.role, "campaigns") && release.org_id && (
+          <>
+            <PitchPanel orgId={release.org_id} releaseId={release.id} />
+            <Link
+              href={`/label/campaigns?release=${release.id}`}
+              className="inline-flex items-center gap-1 text-[12.5px] font-medium text-[#6E6D73] dark:text-[#9A98A0] hover:text-[#17161A] dark:hover:text-[#F5F4F2]"
+            >
+              Промо-кампании этого релиза →
+            </Link>
+          </>
+        )}
         </div>
 
         {/* Решение и Метаданные */}

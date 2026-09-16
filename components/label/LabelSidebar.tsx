@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   HandCoins,
   Radar,
+  ClipboardCheck,
   type LucideIcon,
 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase/client";
@@ -44,7 +45,8 @@ const TOOLS: Item[] = [
   { href: "/label/scouting", label: "Скаутинг", icon: Radar, match: ["/label/scouting"], section: "scouting" },
   { href: "/label/royalties", label: "Роялти", icon: HandCoins, match: ["/label/royalties"], section: "royalties" },
   { href: "/label/moderation", label: "Модерация", icon: ShieldCheck, match: ["/label/moderation"], section: "moderation" },
-  { href: "/label/promo", label: "Промо-отчёты", icon: Megaphone, match: ["/label/promo"], section: "promo" },
+  { href: "/label/campaigns", label: "Промо и питчинг", icon: Megaphone, match: ["/label/campaigns"], section: "campaigns" },
+  { href: "/label/promo", label: "Отчёты артистов", icon: ClipboardCheck, match: ["/label/promo"], section: "promo" },
   { href: "/label/data-upload", label: "Загрузка данных", icon: UploadCloud, match: ["/label/data-upload"], section: "dataUpload" },
   { href: "/label/invites", label: "Приглашения", icon: Mail, match: ["/label/invites"], section: "invites" },
 ];

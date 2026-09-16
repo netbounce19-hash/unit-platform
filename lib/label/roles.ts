@@ -29,6 +29,7 @@ export type Section =
   | "royalties"
   | "moderation"
   | "promo"
+  | "campaigns"
   | "dataUpload"
   | "invites"
   | "tasks"
@@ -50,6 +51,7 @@ export const SECTION_ROLES: Record<Section, TeamRole[]> = {
   royalties: ["label_admin", "label_manager", "finance"],
   moderation: ["label_admin", "label_manager", "delivery"],
   promo: ["label_admin", "label_manager", "project", "marketing"],
+  campaigns: ["label_admin", "label_manager", "project", "marketing"],
   dataUpload: ["label_admin", "label_manager", "delivery", "marketing", "finance"],
   invites: ["label_admin", "label_manager", "project", "scout"],
   tasks: ["label_admin", "label_manager", "project"],
@@ -82,6 +84,7 @@ export function sectionOfPath(path: string): Section | null {
     ["/label/royalties", "royalties"],
     ["/label/moderation", "moderation"],
     ["/label/promo", "promo"],
+    ["/label/campaigns", "campaigns"],
     ["/label/data-upload", "dataUpload"],
     ["/label/invites", "invites"],
     ["/label/team", "team"],

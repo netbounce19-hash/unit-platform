@@ -87,7 +87,7 @@ function PromoInner({ org }: { org: MyOrg }) {
   return (
     <LabelShell
       org={org}
-      title="Промо-отчёты"
+      title="Отчёты артистов"
       subtitle="Ссылки на публикации, сниппеты и промо-кампании от артистов"
       actions={
         <div className="flex items-center gap-1 bg-white dark:bg-[#1A191D] border-[0.5px] border-[#ECEAE5] dark:border-[#242327] rounded-[12px] p-[3px]">

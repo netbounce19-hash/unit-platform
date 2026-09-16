@@ -37,6 +37,7 @@ const ITEMS: { href: string; label: string; icon: LucideIcon; match: string[]; s
       "/label/royalties",
       "/label/moderation",
       "/label/team",
+      "/label/campaigns",
     ],
   },
 ];
