@@ -15,6 +15,7 @@ import {
   LogOut,
   ShieldCheck,
   HandCoins,
+  Radar,
   type LucideIcon,
 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase/client";
@@ -38,6 +39,7 @@ const WORK: Item[] = [
 ];
 
 const TOOLS: Item[] = [
+  { href: "/label/scouting", label: "Скаутинг", icon: Radar, match: ["/label/scouting"] },
   { href: "/label/royalties", label: "Роялти", icon: HandCoins, match: ["/label/royalties"] },
   { href: "/label/moderation", label: "Модерация", icon: ShieldCheck, match: ["/label/moderation"] },
   { href: "/label/promo", label: "Промо-отчёты", icon: Megaphone, match: ["/label/promo"] },

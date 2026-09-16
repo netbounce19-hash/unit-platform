@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Info, Sun, Moon, Send, Ban, Check } from "lucide-react";
+import { Loader2, Info, Sun, Moon, Send, Ban, Check, Copy } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { panelCls } from "@/components/label/LabelShell";
 import { useLabelTheme } from "@/components/label/LabelThemeProvider";
 import { fetchRoster, type MyOrg, type RosterArtist } from "@/lib/supabase/label";
 import { toggleBlacklisted } from "@/lib/label/mockBlacklist";
 import { useBlacklist } from "@/lib/label/useBlacklist";
+import { fetchSubmissionSettings, saveSubmissionSettings, submitUrl } from "@/lib/supabase/scouting";
 
 const TELEGRAM_STORAGE_KEY = "unit-label-telegram-chat";
 
@@ -18,6 +19,117 @@ function SectionCard({ title, hint, children }: { title: string; hint?: string; 
       {hint && <p className="text-[12.5px] text-[#6E6D73] dark:text-[#9A98A0] mb-4">{hint}</p>}
       {children}
     </div>
+  );
+}
+
+/** Публичная страница «Прислать демо»: адрес, открыт ли приём, текст для артистов. */
+function SubmissionsSection({ org }: { org: MyOrg }) {
+  const [slug, setSlug] = useState("");
+  const [open, setOpen] = useState(false);
+  const [intro, setIntro] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [savedSlug, setSavedSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchSubmissionSettings(org.org_id)
+      .then((s) => {
+        setSlug(s.slug ?? "");
+        setSavedSlug(s.slug);
+        setOpen(s.submissions_open);
+        setIntro(s.submissions_intro ?? "");
+      })
+      .catch(() => {})
+      .finally(() => setLoaded(true));
+  }, [org.org_id]);
+
+  const save = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await saveSubmissionSettings(org.org_id, { slug, submissions_open: open, submissions_intro: intro });
+      setSavedSlug(slug.trim().toLowerCase() || null);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1600);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Не удалось сохранить");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const inputCls =
+    "w-full text-[13.5px] rounded-[12px] border border-[#E5E3DE] dark:border-[#33323A] bg-white dark:bg-[#1A191D] px-3 py-[9px] outline-none focus:border-[#17161A] transition placeholder:text-[#C4C3C8]";
+
+  return (
+    <SectionCard
+      title="Приём демо"
+      hint="Публичная страница, через которую артисты без приглашения присылают треки. Заявки попадают в «Скаутинг»."
+    >
+      {!loaded ? (
+        <Loader2 className="w-4 h-4 animate-spin text-[#A6A5AB]" />
+      ) : (
+        <div className="space-y-3">
+          <label className="block">
+            <span className="block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">Адрес страницы</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] text-[#A6A5AB] dark:text-[#6E6D73] shrink-0">/submit/</span>
+              <input
+                value={slug}
+                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                maxLength={40}
+                placeholder="unit-records"
+                className={inputCls}
+              />
+            </div>
+          </label>
+          <label className="flex items-center justify-between gap-3 rounded-[12px] bg-[#FAFAF9] dark:bg-[#141316] px-3 py-2.5 cursor-pointer">
+            <span className="text-[13px] text-[#17161A] dark:text-[#F5F4F2]">Принимать демо</span>
+            <input type="checkbox" checked={open} onChange={(e) => setOpen(e.target.checked)} className="w-4 h-4 accent-[#17161A]" />
+          </label>
+          <label className="block">
+            <span className="block text-[12px] font-medium text-[#6E6D73] dark:text-[#9A98A0] mb-[6px]">Текст для артистов</span>
+            <textarea
+              value={intro}
+              onChange={(e) => setIntro(e.target.value)}
+              rows={3}
+              maxLength={600}
+              placeholder="Кого ищем, какие жанры, когда отвечаем"
+              className={`${inputCls} resize-y`}
+            />
+          </label>
+          {error && <div className="text-[12.5px] bg-[#F0EEEA] dark:bg-[#242327] rounded-[12px] px-3 py-2">{error}</div>}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={save}
+              disabled={busy}
+              className="inline-flex items-center gap-[6px] text-[13px] font-medium bg-[#17161A] dark:bg-[#F5F4F2] text-white dark:text-[#17161A] px-[14px] py-[8px] rounded-full hover:bg-[#2A282E] transition disabled:opacity-40"
+            >
+              {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" strokeWidth={2.5} /> : null}
+              {saved ? "Сохранено" : "Сохранить"}
+            </button>
+            {savedSlug && open && (
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(submitUrl(savedSlug));
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1600);
+                  } catch {}
+                }}
+                className="inline-flex items-center gap-[6px] text-[13px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] hover:border-[#D2D0CB] px-[14px] py-[8px] rounded-full transition"
+              >
+                {copied ? <Check className="w-4 h-4" strokeWidth={2.5} /> : <Copy className="w-4 h-4" strokeWidth={1.75} />}
+                {copied ? "Скопировано" : "Скопировать ссылку"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </SectionCard>
   );
 }
 
@@ -200,6 +312,7 @@ function SettingsInner({ org }: { org: MyOrg }) {
     <LabelShell org={org} title="Настройки" subtitle="Тема, уведомления и доступ артистов">
       {/* Формы и переключатели на всю ширину монитора читаются плохо */}
       <div className="lg:max-w-[760px]">
+        <SubmissionsSection org={org} />
         <ThemeSection />
         <TelegramSection />
         <BlacklistSection org={org} />

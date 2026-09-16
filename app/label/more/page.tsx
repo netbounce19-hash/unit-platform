@@ -12,6 +12,7 @@ import {
   ChevronRight,
   ShieldCheck,
   HandCoins,
+  Radar,
   type LucideIcon,
 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
@@ -20,6 +21,12 @@ import { getSupabase } from "@/lib/supabase/client";
 import type { MyOrg } from "@/lib/supabase/label";
 
 const ITEMS: { href: string; label: string; hint: string; icon: LucideIcon }[] = [
+  {
+    href: "/label/scouting",
+    label: "Скаутинг",
+    hint: "Демо от артистов и находки команды",
+    icon: Radar,
+  },
   {
     href: "/label/royalties",
     label: "Роялти",
