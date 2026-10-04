@@ -15,6 +15,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
+import { mailtoLink } from "@/lib/siteUrl";
 import LabelShell, { CardList, ListCard, Field, Badge } from "@/components/label/LabelShell";
 import {
   fetchInvites,
@@ -230,7 +231,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
       )}
 
       <p className="text-[12.5px] text-[#A6A5AB] dark:text-[#6E6D73] mb-3">
-        Скопируйте ссылку и передайте артисту в мессенджере или почте.
+        Письмо само не уходит: отправьте ссылку артисту — кнопкой «Письмом» или скопируйте и пришлите в мессенджере.
       </p>
 
       {loading ? (
@@ -271,9 +272,21 @@ function InvitesInner({ org }: { org: MyOrg }) {
                 </Field>
 
                 {!inv.accepted_at && (
+                  <div className="flex items-center gap-2 mt-3">
+                  <a
+                    href={mailtoLink({
+                      to: inv.email,
+                      subject: `Приглашение в кабинет артиста ${org.name}`,
+                      body: `Привет!\n\n${org.name} приглашает вас в кабинет артиста UNIT: релизы, задачи, бюджеты и статистика в одном месте.\n\nСсылка для входа:\n${inviteLink(inv.token)}\n\nСсылка действует до ${formatDate(inv.expires_at)} и работает только для этой почты.`,
+                    })}
+                    className="flex-1 inline-flex items-center justify-center gap-[6px] text-[12.5px] font-medium bg-[#17161A] dark:bg-[#F5F4F2] text-white dark:text-[#17161A] px-[10px] py-[9px] rounded-full hover:bg-[#2A282E] transition"
+                  >
+                    <Send className="w-3.5 h-3.5" strokeWidth={1.75} />
+                    Письмом
+                  </a>
                   <button
                     onClick={() => copy(inv.token)}
-                    className="w-full mt-3 inline-flex items-center justify-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[10px] py-[9px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition cursor-pointer"
+                    className="flex-1 inline-flex items-center justify-center gap-[6px] text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] px-[10px] py-[9px] rounded-full hover:bg-[#F0EEEA] dark:hover:bg-[#232227] transition cursor-pointer"
                   >
                     {copied === inv.token ? (
                       <>
@@ -287,6 +300,7 @@ function InvitesInner({ org }: { org: MyOrg }) {
                       </>
                     )}
                   </button>
+                  </div>
                 )}
               </ListCard>
             );

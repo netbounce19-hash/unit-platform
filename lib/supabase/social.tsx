@@ -1,6 +1,7 @@
 "use client";
 
 import type { Provider } from "@supabase/supabase-js";
+import { siteUrl } from "@/lib/siteUrl";
 import { getSupabase } from "./client";
 import type { AccountRole } from "@/components/auth/AuthPanel";
 
@@ -82,7 +83,7 @@ export async function startSocialAuth(provider: SocialProvider, role: AccountRol
 
     const { error } = await getSupabase().auth.signInWithOAuth({
       provider: YANDEX_PROVIDER as Provider,
-      options: { redirectTo: `${window.location.origin}/account` },
+      options: { redirectTo: siteUrl("/account") },
     });
     if (error) throw error;
     return;

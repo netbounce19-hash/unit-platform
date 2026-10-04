@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Copy, Loader2, LogOut, Trash2, UserPlus } from "lucide-react";
+import { Check, Copy, Loader2, LogOut, Send, Trash2, UserPlus } from "lucide-react";
 import LabelGate from "@/components/label/LabelGate";
 import LabelShell, { panelCls } from "@/components/label/LabelShell";
 import { formatDate, type MyOrg } from "@/lib/supabase/label";
 import { getSupabase } from "@/lib/supabase/client";
+import { mailtoLink } from "@/lib/siteUrl";
 import { TEAM_ROLES, isAdmin, roleLabel, type TeamRole } from "@/lib/label/roles";
 import {
   createTeamInvite,
@@ -143,7 +144,8 @@ function TeamInner({ org }: { org: MyOrg }) {
                 </button>
               </div>
               <p className="text-[12px] text-[#A6A5AB] dark:text-[#6E6D73] mt-2">
-                Ссылка скопируется — отправьте её сотруднику. Принять приглашение можно только с этой почты; ссылка действует 14 дней.
+                Письмо само не уходит: ссылка скопируется, отправьте её сотруднику кнопкой «Письмом» или в мессенджере.
+                Принять приглашение можно только с этой почты; ссылка действует 14 дней.
               </p>
             </form>
           )}
@@ -231,6 +233,19 @@ function TeamInner({ org }: { org: MyOrg }) {
                         {roleLabel(inv.role)} · {expired ? "срок истёк" : `до ${formatDate(inv.expires_at)}`}
                       </div>
                     </div>
+                    {!expired && (
+                      <a
+                        href={mailtoLink({
+                          to: inv.email,
+                          subject: `Доступ в кабинет лейбла ${org.name}`,
+                          body: `Привет!\n\n${org.name} приглашает вас в кабинет лейбла UNIT, роль — «${roleLabel(inv.role)}».\n\nСсылка:\n${teamInviteLink(inv.token)}\n\nПринять можно только с этой почты, ссылка действует до ${formatDate(inv.expires_at)}.`,
+                        })}
+                        className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[#17161A] dark:text-[#F5F4F2] border border-[#E5E3DE] dark:border-[#33323A] hover:border-[#D2D0CB] px-[12px] py-[6px] rounded-full transition"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        Письмом
+                      </a>
+                    )}
                     {!expired && (
                       <button
                         onClick={() => copy(teamInviteLink(inv.token), inv.id)}

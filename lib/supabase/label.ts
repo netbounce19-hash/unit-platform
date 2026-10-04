@@ -1,6 +1,7 @@
 "use client";
 
 import { getSupabase } from "./client";
+import { siteUrl } from "@/lib/siteUrl";
 
 // ── Типы ────────────────────────────────────────────────────────────────────
 
@@ -426,8 +427,7 @@ export async function revokeInvite(id: string): Promise<void> {
 }
 
 export function inviteLink(token: string): string {
-  const origin = typeof window === "undefined" ? "" : window.location.origin;
-  return `${origin}/invite/${token}`;
+  return siteUrl(`/invite/${token}`);
 }
 
 /** Артист гасит приглашение: строку он не видит, всё делает функция в БД. */

@@ -11,6 +11,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { getSupabase } from "@/lib/supabase/client";
+import { siteUrl } from "@/lib/siteUrl";
 import { SOCIAL_PROVIDERS, startSocialAuth, type SocialProvider } from "@/lib/supabase/social";
 
 type Mode = "signin" | "signup" | "reset";
@@ -86,7 +87,7 @@ export default function AuthPanel({ inviteToken }: { inviteToken?: string } = {}
       if (isReset) {
         // Письмо со ссылкой на страницу установки нового пароля.
         const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-          redirectTo: `${window.location.origin}/reset-password`,
+          redirectTo: siteUrl("/reset-password"),
         });
         if (error) throw error;
         setDone(true);
@@ -106,9 +107,7 @@ export default function AuthPanel({ inviteToken }: { inviteToken?: string } = {}
             },
             // Сработает, если адрес есть в Redirect URLs проекта Supabase;
             // иначе письмо ведёт на Site URL — тогда выручит pending_invite_token
-            emailRedirectTo: inviteToken
-              ? `${window.location.origin}/invite/${inviteToken}`
-              : undefined,
+            emailRedirectTo: inviteToken ? siteUrl(`/invite/${inviteToken}`) : undefined,
           },
         });
         if (error) throw error;

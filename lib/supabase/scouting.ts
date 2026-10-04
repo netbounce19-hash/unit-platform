@@ -2,6 +2,7 @@
 
 import { getSupabase } from "./client";
 import { createInvite, type InviteRow } from "./label";
+import { siteUrl } from "@/lib/siteUrl";
 
 /**
  * Скаутинг: демо от артистов вне ростера и воронка A&R.
@@ -200,5 +201,4 @@ export async function saveSubmissionSettings(orgId: string, s: LabelSubmissionSe
   }
 }
 
-export const submitUrl = (slug: string) =>
-  `${typeof window !== "undefined" ? window.location.origin : ""}/submit/${slug}`;
+export const submitUrl = (slug: string) => siteUrl(`/submit/${slug}`);

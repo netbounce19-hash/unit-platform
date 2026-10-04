@@ -2,6 +2,7 @@
 
 import { getSupabase } from "./client";
 import type { TeamRole } from "@/lib/label/roles";
+import { siteUrl } from "@/lib/siteUrl";
 
 /**
  * Команда лейбла: состав, роли, приглашения сотрудников.
@@ -85,8 +86,7 @@ export async function revokeTeamInvite(id: string): Promise<void> {
   if (error) throw error;
 }
 
-export const teamInviteLink = (token: string) =>
-  `${typeof window !== "undefined" ? window.location.origin : ""}/join/${token}`;
+export const teamInviteLink = (token: string) => siteUrl(`/join/${token}`);
 
 export async function fetchTeamInviteInfo(
   token: string

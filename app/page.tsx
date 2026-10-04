@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Loader2, UserPlus, ArrowLeft } from "lucide-react";
 import { ArtistIcon, LabelIcon } from "@/components/ui/icons";
 import { getSupabase } from "@/lib/supabase/client";
+import { siteUrl } from "@/lib/siteUrl";
 
 type Role = "artist" | "label";
 
@@ -102,7 +103,7 @@ export default function Home() {
     }
     setError(null);
     const { error: resetErr } = await getSupabase().auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: siteUrl("/reset-password"),
     });
     if (resetErr) setError(resetErr.message);
     else setNotice(`Ссылка для сброса пароля отправлена на ${email.trim()}`);
