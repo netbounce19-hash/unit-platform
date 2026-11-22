@@ -34,6 +34,8 @@ tests run independently on macOS; that is not a deployed worker.
    token, expiry, source snapshot and physical Storage metadata before ready.
 6. Default concurrency one, FFmpeg thread one, capped attempts three, transient
    failures only, 30/60-second exponential delays plus 0–10 seconds jitter.
+   A lower attempt cap is persisted on the job at claim, including crash recovery
+   by a different worker; a higher worker setting cannot raise it afterward.
    Polling backs off from 2 to 30 seconds with jitter. A single process supports
    batch (default, idle exit) and `--continuous`; no Redis/queue service/ORM.
 7. No new npm dependencies. Built-in crypto/streams/fs/spawn/fetch suffice.
@@ -250,7 +252,8 @@ UNIT_PGLITE_MODULE=/path/to/pglite/dist/index.js node supabase/tests/asset-acces
 UNIT_AUDIO_PIPELINE_TEST=yes node supabase/tests/asset-access/disposable-local.mjs
 ```
 
-FFMPEG_PATH/FFPROBE_PATH optionally select provisioned absolute binaries. Native
+FFMPEG_PATH/FFPROBE_PATH optionally select provisioned absolute binaries. The
+native runner requires CLI 2.81.3 (UNIT_SUPABASE_CLI can select its binary). Native
 runner passes its fresh local test keys in memory and tears down its unique
 stack. HTTP test creates synthetic users/audio only and verifies all four input
 formats, actual Storage writes, original preservation, owner-only enqueue and

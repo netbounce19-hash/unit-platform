@@ -147,5 +147,19 @@ test('full SQL replay: ownership, deduplication, fencing, publication, retry, cl
       await identity('', 'service_role');
     }
     assert.equal(await rpc('media_claim',[worker]),null);
+    // A lower configured cap must survive crashes AND a different worker's
+    // higher default, not only the graceful media_fail path.
+    await db.exec('reset role');
+    await q("insert into storage.objects(bucket_id,name) values('artist-files',$1)",[owner+'/audio/crash.wav']);
+    await q('update public.assets set storage_path=$1 where id=$2',[owner+'/audio/crash.wav',asset]);
+    await identity(owner);
+    await rpc('request_playback_variant',[asset]);
+    await identity('', 'service_role');
+    const capped=await rpc('media_claim',[worker,1]);
+    assert.equal(capped.max_attempts,1);
+    await db.exec('reset role');
+    await q("update private_audio.media_jobs set locked_until=clock_timestamp()-interval '1 second' where id=$1",[capped.id]);
+    await identity('', 'service_role');
+    assert.equal(await rpc('media_claim',[worker,3]),null);
   } finally { await db.close(); }
 });

@@ -18,6 +18,7 @@ create table private_audio.media_jobs (
   output_profile_version text not null default 'mp3-192-v1' check(output_profile_version='mp3-192-v1'),
   status text not null default 'pending' check(status in ('pending','processing','completed','failed','cancelled')),
   attempt_count int not null default 0 check(attempt_count between 0 and 3),
+  max_attempts int not null default 3 check(max_attempts between 1 and 3),
   next_attempt_at timestamptz not null default now(),
   locked_until timestamptz,
   worker_id uuid,
@@ -109,7 +110,7 @@ begin
   return jsonb_build_object('job_id',j.id,'variant_id',j.variant_id,'status',j.status,'error_code',j.last_error_code);
 end $$;
 
-create function public.media_claim(p_worker uuid) returns jsonb
+create function public.media_claim(p_worker uuid,p_max_attempts int default 3) returns jsonb
 language plpgsql security definer set search_path='' as $$
 declare j private_audio.media_jobs; a public.assets;
 begin
@@ -117,15 +118,16 @@ begin
   -- Expired third attempts are terminal, not a fourth retry.
   update private_audio.media_jobs set status='failed',last_error_code='LEASE_EXPIRED',
     locked_until=null,worker_id=null,fence=null,completed_at=clock_timestamp(),updated_at=clock_timestamp()
-    where id in (select id from private_audio.media_jobs where status='processing'
-      and locked_until<clock_timestamp() and attempt_count>=3 limit 50 for update skip locked);
+    where id in (select id from private_audio.media_jobs where
+      ((status='processing' and locked_until<clock_timestamp()) or (status='pending' and next_attempt_at<=clock_timestamp()))
+      and attempt_count>=least(max_attempts,greatest(p_max_attempts,1),3) limit 50 for update skip locked);
   insert into private_audio.media_cleanup(storage_path,asset_id)
     select v.storage_path,v.asset_id from private_audio.audio_playback_variants v
     where v.status<>'ready' and exists(select 1 from private_audio.media_jobs mq where mq.variant_id=v.id and mq.status in ('failed','cancelled'))
       and not exists(select 1 from private_audio.media_jobs mq where mq.variant_id=v.id and mq.status in ('pending','processing'))
     on conflict do nothing;
   select * into j from private_audio.media_jobs
-    where attempt_count<3 and ((status='pending' and next_attempt_at<=clock_timestamp())
+    where attempt_count<least(max_attempts,greatest(p_max_attempts,1),3) and ((status='pending' and next_attempt_at<=clock_timestamp())
       or (status='processing' and locked_until<clock_timestamp()))
     order by next_attempt_at,created_at limit 1 for update skip locked;
   if not found then return null; end if;
@@ -136,6 +138,7 @@ begin
     return null;
   end if;
   update private_audio.media_jobs set status='processing',attempt_count=attempt_count+1,
+    max_attempts=least(max_attempts,greatest(p_max_attempts,1),3),
     fence=gen_random_uuid(),worker_id=p_worker,locked_until=clock_timestamp()+interval '90 seconds',
     updated_at=clock_timestamp() where id=j.id returning * into j;
   return to_jsonb(j)||jsonb_build_object('owner_id',a.owner_id);
@@ -247,7 +250,7 @@ begin
   select * into j from private_audio.media_jobs where id=p_job for update;
   if not found or j.status<>'processing' or j.fence is distinct from p_fence or j.locked_until<=clock_timestamp() then return false; end if;
   if p_code is null or p_code !~ '^[A-Z][A-Z0-9_]{0,63}$' then raise exception 'INVALID_ERROR_CODE'; end if;
-  again:=p_retry and j.attempt_count<least(greatest(p_max_attempts,1),3);
+  again:=p_retry and j.attempt_count<least(j.max_attempts,greatest(p_max_attempts,1),3);
   update private_audio.media_jobs set status=case when p_code='SOURCE_CHANGED' then 'cancelled' when again then 'pending' else 'failed' end,
     last_error_code=p_code,next_attempt_at=clock_timestamp()+make_interval(secs=>30*power(2,j.attempt_count-1)::int+floor(random()*11)::int),
     locked_until=null,worker_id=null,fence=null,updated_at=clock_timestamp(),
@@ -302,10 +305,10 @@ revoke all on function private_audio.source_revision(uuid),private_audio.queue_c
   from public,anon,authenticated,service_role,unit_audio_backend;
 revoke all on function public.request_playback_variant(uuid) from public,anon,service_role;
 grant execute on function public.request_playback_variant(uuid) to authenticated;
-revoke all on function public.media_claim(uuid),public.media_heartbeat(uuid,uuid),public.media_resolve(uuid,uuid,text,bigint,bigint),
+revoke all on function public.media_claim(uuid,int),public.media_heartbeat(uuid,uuid),public.media_resolve(uuid,uuid,text,bigint,bigint),
   public.media_complete(uuid,uuid,jsonb),public.media_fail(uuid,uuid,text,boolean,int,jsonb),public.media_cleanup_claim(),public.media_cleanup_done(text,uuid,boolean)
   from public,anon,authenticated;
-grant execute on function public.media_claim(uuid),public.media_heartbeat(uuid,uuid),public.media_resolve(uuid,uuid,text,bigint,bigint),
+grant execute on function public.media_claim(uuid,int),public.media_heartbeat(uuid,uuid),public.media_resolve(uuid,uuid,text,bigint,bigint),
   public.media_complete(uuid,uuid,jsonb),public.media_fail(uuid,uuid,text,boolean,int,jsonb),public.media_cleanup_claim(),public.media_cleanup_done(text,uuid,boolean)
   to service_role;
 commit;

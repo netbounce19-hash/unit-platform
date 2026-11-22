@@ -33,7 +33,7 @@ async function loop() {
   let idleDelay = 2000;
   while (!ctl.signal.aborted) {
     try {
-      const job = await io.rpc('media_claim', { p_worker: worker }, ctl.signal);
+      const job = await io.rpc('media_claim', { p_worker: worker, p_max_attempts: cfg.attempts }, ctl.signal);
       if (job) {
         idleSince = Date.now(); idleDelay = 2000;
         await processJob(job, io, cfg, ctl.signal);
