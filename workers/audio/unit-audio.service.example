@@ -1,0 +1,34 @@
+# Example only; NOT installed/enabled by this PR. Linux cgroup limits are the
+# hard CPU/RAM/PID/disk boundary. Local disposable stack on the same host only.
+[Unit]
+Description=UNIT disposable audio batch worker
+After=network.target
+
+[Service]
+Type=exec
+User=unit-audio
+Group=unit-audio
+WorkingDirectory=/opt/unit
+EnvironmentFile=/etc/unit/audio-disposable.env
+Environment=AUDIO_TEMP_ROOT=/tmp
+ExecStart=/usr/bin/node --max-old-space-size=128 workers/audio/index.mjs
+Restart=no
+RuntimeMaxSec=900
+TimeoutStopSec=10
+KillMode=control-group
+MemoryMax=768M
+MemorySwapMax=0
+CPUQuota=100%
+TasksMax=64
+LimitNOFILE=128
+LimitFSIZE=300M
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateDevices=yes
+TemporaryFileSystem=/tmp:rw,size=350M
+IPAddressDeny=any
+IPAddressAllow=localhost
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=

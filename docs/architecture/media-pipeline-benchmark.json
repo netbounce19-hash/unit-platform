@@ -1,0 +1,74 @@
+{
+  "ffmpeg": "ffmpeg version 9.1-tessus  https://evermeet.cx/ffmpeg/  Copyright (c) 2000-2026 the FFmpeg developers",
+  "note": "CPU/local disk only; Storage/queue mocked in lifecycle timings; excludes real network and retry backoff",
+  "rows": [
+    {
+      "format": "wav",
+      "input_bytes": 51840102,
+      "duration_ms": 180000,
+      "output_bytes": 4321488,
+      "strategy": "transcode",
+      "cpu_ms": 7306,
+      "elapsed_ms": 6855,
+      "processing_ratio": 0.0381,
+      "compression_ratio": 0.0834
+    },
+    {
+      "format": "flac",
+      "input_bytes": 20349514,
+      "duration_ms": 180000,
+      "output_bytes": 4321488,
+      "strategy": "transcode",
+      "cpu_ms": 6518,
+      "elapsed_ms": 6003,
+      "processing_ratio": 0.0334,
+      "compression_ratio": 0.2124
+    },
+    {
+      "format": "mp3",
+      "input_bytes": 4321533,
+      "duration_ms": 180000,
+      "output_bytes": 4321488,
+      "strategy": "stream_copy",
+      "cpu_ms": 505,
+      "elapsed_ms": 378,
+      "processing_ratio": 0.0021,
+      "compression_ratio": 1
+    }
+  ],
+  "timings": {
+    "initial": {
+      "elapsed_ms": 6456,
+      "reused": false,
+      "duration_ms": 180000,
+      "output_bytes": 4321488,
+      "strategy": "transcode",
+      "cpu_ms": 6612
+    },
+    "cache_same_bytes_new_revision": {
+      "elapsed_ms": 260,
+      "reused": true
+    },
+    "upload_failure": {
+      "elapsed_ms": 6226,
+      "error": "STORAGE_UNAVAILABLE"
+    },
+    "recovery": {
+      "elapsed_ms": 6255,
+      "reused": false,
+      "duration_ms": 180000,
+      "output_bytes": 4321488,
+      "strategy": "transcode",
+      "cpu_ms": 6376
+    }
+  },
+  "binary_sha256": {
+    "ffmpeg": "1e3026f19f8b8d67c5fa0987aa3bac376d45c7b0e0485dc22515fc011546f8c2",
+    "ffprobe": "272759075855b9d34a37b60dfef2274f599f12fe97735019aa5c763a2bf89e75"
+  },
+  "ready_request_wasm": {
+    "iterations": 50,
+    "mean_ms": 2.31980912,
+    "note": "Separate SQL/WASM microbenchmark, excludes HTTP/native Storage"
+  }
+}
