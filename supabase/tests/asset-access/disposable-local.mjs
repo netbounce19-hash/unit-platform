@@ -104,6 +104,14 @@ enabled = false
       UNIT_TEST_SUPABASE_ANON_KEY: status.ANON_KEY, UNIT_TEST_SUPABASE_SERVICE_ROLE_KEY: status.SERVICE_ROLE_KEY },
     stdio: 'inherit',
   });
+  if (process.env.UNIT_AUDIO_PIPELINE_TEST === 'yes') {
+    command(process.execPath, ['--test', path.join(root, 'tests/audio/supabase-http.mjs')], root, {
+      env: { ...env, UNIT_DISPOSABLE_SUPABASE: 'yes', UNIT_AUDIO_DISPOSABLE: 'yes', UNIT_AUDIO_PIPELINE_TEST: 'yes',
+        FFMPEG_PATH: process.env.FFMPEG_PATH || 'ffmpeg', FFPROBE_PATH: process.env.FFPROBE_PATH || 'ffprobe',
+        UNIT_TEST_SUPABASE_URL: status.API_URL, UNIT_TEST_SUPABASE_ANON_KEY: status.ANON_KEY,
+        UNIT_TEST_SUPABASE_SERVICE_ROLE_KEY: status.SERVICE_ROLE_KEY }, stdio: 'inherit',
+    });
+  }
 } catch (error) {
   console.error(`BLOCKED/FAIL: ${error.message}`);
   process.exitCode = 1;
