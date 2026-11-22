@@ -8,8 +8,9 @@ const { PGlite } = await import(moduleName);
 const db = new PGlite();
 try {
   await db.exec(await readFile(new URL('bootstrap.sql', import.meta.url), 'utf8'));
-  const files = (await readdir(path.join(root, 'supabase/migrations'))).filter(f => f.endsWith('.sql')).sort();
   const target = '20261122101423_private_audio_db_security.sql';
+  // This historical checkpoint intentionally reproduces the pre-hardening leak.
+  const files = (await readdir(path.join(root, 'supabase/migrations'))).filter(f => f.endsWith('.sql') && f <= target).sort();
   for (const file of files) {
     if (file === target) {
       await db.exec(`

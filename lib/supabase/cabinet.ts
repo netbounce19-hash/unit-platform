@@ -1,6 +1,7 @@
 "use client";
 
 import { getSupabase } from "./client";
+import { attachAssetToRelease } from "./assetGrants";
 import { BUCKET, buildStoragePath, uploadAsset, type Asset, type AssetKind } from "./uploads";
 
 // ── Заявки на финансирование ────────────────────────────────
@@ -221,12 +222,14 @@ export async function createRelease({
   // 3. Аудио: загруженный файл (resumable) как ассет релиза
   if (audio) {
     const asset = await uploadAsset({ file: audio, kind: "audio", title: audio.name, onProgress });
-    await supabase.from("assets").update({ release_id: release.id }).eq("id", asset.id);
+    await attachAssetToRelease(asset.id, release.id);
   }
 
   // 4. Выбранные демо привязываем к релизу
   if (demoAssetIds && demoAssetIds.length > 0) {
-    await supabase.from("assets").update({ release_id: release.id }).in("id", demoAssetIds);
+    for (const assetId of demoAssetIds) {
+      await attachAssetToRelease(assetId, release.id);
+    }
   }
 
   return { ...release, coverUrl: await signCover(release.cover_path) };
@@ -294,11 +297,7 @@ export async function addReleaseAsset(
   options: { clean?: boolean } = {}
 ): Promise<void> {
   const asset = await uploadAsset({ file, kind, title: file.name, onProgress });
-  const { error } = await getSupabase()
-    .from("assets")
-    .update({ release_id: releaseId, is_clean_version: options.clean === true })
-    .eq("id", asset.id);
-  if (error) throw error;
+  await attachAssetToRelease(asset.id, releaseId, options.clean === true);
 }
 
 // ── Задачи ──────────────────────────────────────────────────

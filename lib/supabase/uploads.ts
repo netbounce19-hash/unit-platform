@@ -166,9 +166,11 @@ export async function uploadAsset({
 
 /** Список загрузок текущего пользователя (RLS сам ограничит выборку). */
 export async function listAssets(): Promise<Asset[]> {
+  const user = await requireUser();
   const { data, error } = await getSupabase()
     .from("assets")
     .select("*")
+    .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) throw error;

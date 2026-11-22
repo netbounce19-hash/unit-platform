@@ -365,7 +365,7 @@ export interface ArtistAsset {
   created_at: string;
 }
 
-/** Файлы артиста: политика assets открывает их участникам org. */
+/** Только явно предоставленные файлы артиста; membership сама по себе доступа не даёт. */
 export async function fetchArtistAssets(artistUserId: string): Promise<ArtistAsset[]> {
   const { data, error } = await getSupabase()
     .from("assets")

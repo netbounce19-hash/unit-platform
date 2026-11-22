@@ -28,6 +28,13 @@ export function gradientForId(id: string): string {
   return GRADIENTS[h % GRADIENTS.length];
 }
 
+async function requireDemoUser() {
+  const { data: { user }, error } = await getSupabase().auth.getUser();
+  if (error) throw error;
+  if (!user) throw new Error("Нужно войти в аккаунт");
+  return user;
+}
+
 export interface Demo {
   id: string;
   title: string;
@@ -40,9 +47,11 @@ export interface Demo {
 type DemoRow = Asset & { cover_path: string | null; sort_order: number | null };
 
 export async function listDemos(): Promise<Demo[]> {
+  const user = await requireDemoUser();
   const { data, error } = await getSupabase()
     .from("assets")
     .select("*")
+    .eq("owner_id", user.id)
     .eq("kind", "audio")
     .is("release_id", null)
     .order("sort_order", { ascending: true, nullsFirst: false })
@@ -73,6 +82,7 @@ export async function listDemos(): Promise<Demo[]> {
 }
 
 export async function addDemo(file: File, onProgress?: (p: number) => void): Promise<void> {
+  const user = await requireDemoUser();
   const asset = await uploadAsset({ file, kind: "audio", onProgress });
 
   // Новое демо встаёт наверх списка.
@@ -80,6 +90,7 @@ export async function addDemo(file: File, onProgress?: (p: number) => void): Pro
   const { data } = await supabase
     .from("assets")
     .select("sort_order")
+    .eq("owner_id", user.id)
     .eq("kind", "audio")
     .is("release_id", null)
     .not("sort_order", "is", null)
@@ -95,7 +106,8 @@ export async function addDemo(file: File, onProgress?: (p: number) => void): Pro
 
 export async function removeDemo(id: string): Promise<void> {
   const supabase = getSupabase();
-  const { data, error } = await supabase.from("assets").select("*").eq("id", id).single();
+  const user = await requireDemoUser();
+  const { data, error } = await supabase.from("assets").select("*").eq("owner_id", user.id).eq("id", id).single();
   if (error) throw error;
 
   const row = data as DemoRow;
@@ -117,6 +129,7 @@ export async function setDemoCover(id: string, file: File): Promise<void> {
   const { data: row, error: e1 } = await supabase
     .from("assets")
     .select("cover_path")
+    .eq("owner_id", user.id)
     .eq("id", id)
     .single();
   if (e1) throw e1;
@@ -131,7 +144,10 @@ export async function setDemoCover(id: string, file: File): Promise<void> {
   const { error: updErr } = await supabase
     .from("assets")
     .update({ cover_path: newPath })
-    .eq("id", id);
+    .eq("owner_id", user.id)
+    .eq("id", id)
+    .select("id")
+    .single();
   if (updErr) {
     await supabase.storage.from(BUCKET).remove([newPath]);
     throw updErr;
@@ -142,10 +158,12 @@ export async function setDemoCover(id: string, file: File): Promise<void> {
 
 /** Поменять демо местами с соседом: dir -1 — выше, 1 — ниже. */
 export async function moveDemo(id: string, dir: -1 | 1): Promise<void> {
+  const user = await requireDemoUser();
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("assets")
     .select("id, sort_order")
+    .eq("owner_id", user.id)
     .eq("kind", "audio")
     .is("release_id", null)
     .order("sort_order", { ascending: true, nullsFirst: false })
@@ -197,6 +215,7 @@ export async function replaceDemoAudio(id: string, file: File): Promise<void> {
   const { data: row, error: e1 } = await supabase
     .from("assets")
     .select("storage_path")
+    .eq("owner_id", user.id)
     .eq("id", id)
     .single();
   if (e1) throw e1;
@@ -211,7 +230,10 @@ export async function replaceDemoAudio(id: string, file: File): Promise<void> {
   const { error: updErr } = await supabase
     .from("assets")
     .update({ storage_path: newPath, mime_type: file.type || null, size_bytes: file.size })
-    .eq("id", id);
+    .eq("owner_id", user.id)
+    .eq("id", id)
+    .select("id")
+    .single();
   if (updErr) {
     await supabase.storage.from(BUCKET).remove([newPath]);
     throw updErr;
