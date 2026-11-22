@@ -1,0 +1,158 @@
+{
+  "environment": "macOS x86_64, Node 22.11, actual loopback HTTP, real synthetic MP3, SQL-WASM/Auth fixture; NOT native Supabase/Vercel/browser",
+  "note": "Fast bulk readers, not real-time listeners; RSS is whole-process sampled high-water mark including fixture servers/DB; no statistical constant-time guarantee",
+  "rows": [
+    {
+      "minutes": 3,
+      "concurrent": 1,
+      "size_bytes": 4321488,
+      "authorization_mean_ms": 16.996680000000197,
+      "ttfb_mean_ms": 12.054770000000644,
+      "total_mean_ms": 61.69270500000039,
+      "batch_ms": 61.99704400000064,
+      "upstream_bytes": 4321488,
+      "served_bytes": 4321488,
+      "rss_baseline_bytes": 424849408,
+      "rss_peak_bytes": 441462784,
+      "rss_delta_bytes": 16613376,
+      "small_range_upstream_bytes": 1024
+    },
+    {
+      "minutes": 3,
+      "concurrent": 10,
+      "size_bytes": 4321488,
+      "authorization_mean_ms": 9.386955899999885,
+      "ttfb_mean_ms": 72.60356430000002,
+      "total_mean_ms": 382.2708222000002,
+      "batch_ms": 394.1659520000003,
+      "upstream_bytes": 43214880,
+      "served_bytes": 43214880,
+      "rss_baseline_bytes": 425766912,
+      "rss_peak_bytes": 463724544,
+      "rss_delta_bytes": 37957632,
+      "small_range_upstream_bytes": 1024
+    },
+    {
+      "minutes": 3,
+      "concurrent": 50,
+      "size_bytes": 4321488,
+      "authorization_mean_ms": 7.726811800000032,
+      "ttfb_mean_ms": 343.22611803999985,
+      "total_mean_ms": 1413.5412871199997,
+      "batch_ms": 1580.9657700000007,
+      "upstream_bytes": 216074400,
+      "served_bytes": 216074400,
+      "rss_baseline_bytes": 436047872,
+      "rss_peak_bytes": 525541376,
+      "rss_delta_bytes": 89493504,
+      "small_range_upstream_bytes": 1024
+    },
+    {
+      "minutes": 10,
+      "concurrent": 1,
+      "size_bytes": 14401409,
+      "authorization_mean_ms": 7.79095899999993,
+      "ttfb_mean_ms": 5.810457999999926,
+      "total_mean_ms": 78.5338380000012,
+      "batch_ms": 78.58672599999954,
+      "upstream_bytes": 14401409,
+      "served_bytes": 14401409,
+      "rss_baseline_bytes": 458010624,
+      "rss_peak_bytes": 470401024,
+      "rss_delta_bytes": 12390400,
+      "small_range_upstream_bytes": 1024
+    },
+    {
+      "minutes": 10,
+      "concurrent": 10,
+      "size_bytes": 14401409,
+      "authorization_mean_ms": 7.513768600000003,
+      "ttfb_mean_ms": 52.84469139999965,
+      "total_mean_ms": 848.5987247,
+      "batch_ms": 850.6864340000011,
+      "upstream_bytes": 144014090,
+      "served_bytes": 144014090,
+      "rss_baseline_bytes": 456445952,
+      "rss_peak_bytes": 479666176,
+      "rss_delta_bytes": 23220224,
+      "small_range_upstream_bytes": 1024
+    },
+    {
+      "minutes": 10,
+      "concurrent": 50,
+      "size_bytes": 14401409,
+      "authorization_mean_ms": 7.245693659999924,
+      "ttfb_mean_ms": 241.75188414000002,
+      "total_mean_ms": 4140.902308439999,
+      "batch_ms": 4153.075513,
+      "upstream_bytes": 720070450,
+      "served_bytes": 720070450,
+      "rss_baseline_bytes": 456986624,
+      "rss_peak_bytes": 558968832,
+      "rss_delta_bytes": 101982208,
+      "small_range_upstream_bytes": 1024
+    },
+    {
+      "minutes": 30,
+      "concurrent": 1,
+      "size_bytes": 43201722,
+      "authorization_mean_ms": 6.418154999999388,
+      "ttfb_mean_ms": 4.441671000000497,
+      "total_mean_ms": 207.4453709999998,
+      "batch_ms": 207.4894750000003,
+      "upstream_bytes": 43201722,
+      "served_bytes": 43201722,
+      "rss_baseline_bytes": 451870720,
+      "rss_peak_bytes": 484478976,
+      "rss_delta_bytes": 32608256,
+      "small_range_upstream_bytes": 1024
+    },
+    {
+      "minutes": 30,
+      "concurrent": 10,
+      "size_bytes": 43201722,
+      "authorization_mean_ms": 6.662883499999589,
+      "ttfb_mean_ms": 49.34682820000053,
+      "total_mean_ms": 2279.4003538999996,
+      "batch_ms": 2281.1442499999976,
+      "upstream_bytes": 432017220,
+      "served_bytes": 432017220,
+      "rss_baseline_bytes": 457986048,
+      "rss_peak_bytes": 483704832,
+      "rss_delta_bytes": 25718784,
+      "small_range_upstream_bytes": 1024
+    },
+    {
+      "minutes": 30,
+      "concurrent": 50,
+      "size_bytes": 43201722,
+      "authorization_mean_ms": 7.142749659999899,
+      "ttfb_mean_ms": 322.56352403999995,
+      "total_mean_ms": 12223.394080979999,
+      "batch_ms": 12381.212491999999,
+      "upstream_bytes": 2160086100,
+      "served_bytes": 2160086100,
+      "rss_baseline_bytes": 456179712,
+      "rss_peak_bytes": 556478464,
+      "rss_delta_bytes": 100298752,
+      "small_range_upstream_bytes": 1024
+    }
+  ],
+  "denied_timing": {
+    "wrong_pin": {
+      "median_ms": 212.0884909999986,
+      "min_ms": 204.9531610000049,
+      "max_ms": 223.8353129999996
+    },
+    "nonexistent": {
+      "median_ms": 213.18351099999563,
+      "min_ms": 205.39919999999984,
+      "max_ms": 219.96362599999702
+    },
+    "revoked": {
+      "median_ms": 219.60445700000128,
+      "min_ms": 204.31893800000398,
+      "max_ms": 222.44057600000087
+    }
+  }
+}
