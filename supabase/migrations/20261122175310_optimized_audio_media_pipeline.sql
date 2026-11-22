@@ -202,7 +202,7 @@ begin
   end if;
   update private_audio.media_jobs set variant_id=v.id where id=j.id;
   if v.status='ready' then
-    update private_audio.media_jobs set status='completed',reused_variant=true,completed_at=clock_timestamp(),
+    update private_audio.media_jobs set status='completed',last_error_code=null,reused_variant=true,completed_at=clock_timestamp(),
       input_bytes=p_input_bytes,downloaded_bytes=coalesce(downloaded_bytes,0)+p_input_bytes,output_bytes=v.size_bytes,duration_ms=v.duration_ms,
       processing_ms=coalesce(processing_ms,0)+p_elapsed_ms,cpu_ms=coalesce(cpu_ms,0),uploaded_bytes=coalesce(uploaded_bytes,0),
       locked_until=null,worker_id=null,fence=null where id=j.id;
@@ -227,7 +227,7 @@ begin
   update private_audio.audio_playback_variants set status='ready',error_code=null,
     bitrate_kbps=192,duration_ms=(p_metrics->>'duration_ms')::bigint,
     size_bytes=(p_metrics->>'output_bytes')::bigint,output_sha256=p_metrics->>'output_sha256' where id=v.id;
-  update private_audio.media_jobs set status='completed',locked_until=null,worker_id=null,fence=null,
+  update private_audio.media_jobs set status='completed',last_error_code=null,locked_until=null,worker_id=null,fence=null,
     input_bytes=(p_metrics->>'input_bytes')::bigint,output_bytes=(p_metrics->>'output_bytes')::bigint,
     duration_ms=(p_metrics->>'duration_ms')::bigint,processing_ms=coalesce(processing_ms,0)+(p_metrics->>'processing_ms')::bigint,
     cpu_ms=coalesce(cpu_ms,0)+(p_metrics->>'cpu_ms')::bigint,downloaded_bytes=coalesce(downloaded_bytes,0)+(p_metrics->>'downloaded_bytes')::bigint,

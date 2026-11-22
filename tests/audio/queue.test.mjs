@@ -50,12 +50,20 @@ test('full SQL replay: ownership, deduplication, fencing, publication, retry, cl
     assert.equal(await rpc('media_fail', [claim.id, claim.fence, 'NETWORK_ERROR', true, 3]), false);
     const same = await rpc('media_resolve', [newer.id, newer.fence, 'a'.repeat(64), 100000, 15]);
     assert.equal(same.variant_id, resolved.variant_id);
+    assert.equal(await rpc('media_fail',[newer.id,newer.fence,'STORAGE_UNAVAILABLE',true,3]),true);
+    await db.exec('reset role');
+    await q("update private_audio.media_jobs set next_attempt_at=clock_timestamp()-interval '1 second' where id=$1",[newer.id]);
+    await identity('', 'service_role');
+    const recovered=await rpc('media_claim',[worker]);
+    assert.equal(recovered.attempt_count,3);
+    await rpc('media_resolve',[recovered.id,recovered.fence,'a'.repeat(64),100000,15]);
     await db.exec('reset role');
     await q("insert into storage.objects(bucket_id,name) values('audio-playback',$1)", [same.storage_path]);
     await identity('', 'service_role');
-    assert.equal(await rpc('media_complete', [newer.id, newer.fence, metrics]), true);
+    assert.equal(await rpc('media_complete', [recovered.id, recovered.fence, metrics]), true);
     await identity(owner);
     assert.equal((await rpc('request_playback_variant', [asset])).status, 'completed');
+    assert.equal((await rpc('request_playback_variant', [asset])).error_code,null,'successful recovery clears stale error');
     const cacheStart=performance.now();
     for(let i=0;i<50;i++) assert.equal((await rpc('request_playback_variant',[asset])).job_id,claim.id);
     console.log(JSON.stringify({event:'wasm_ready_request_benchmark',iterations:50,mean_ms:(performance.now()-cacheStart)/50,
