@@ -1,0 +1,136 @@
+{
+  "project_ref": "nxdbpaayojzesezhcskb",
+  "preflight_date": "2026-11-22",
+  "status": "applied_and_reconciled",
+  "entries": [
+    {
+      "cloud_version": "20260725083607",
+      "repo_version": "20260725083607",
+      "name": "artist_cabinet",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260727101913",
+      "repo_version": "20260727101913",
+      "name": "profile_role_and_telegram",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260728133202",
+      "repo_version": "20260728133248",
+      "name": "releases_and_budget_requests",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260729145110",
+      "repo_version": "20260729145554",
+      "name": "demo_cover_and_sort_order",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260731062306",
+      "repo_version": "20260730000000",
+      "name": "label_cabinet",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260803085657",
+      "repo_version": "20260803120000",
+      "name": "release_approval_flow",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260803091849",
+      "repo_version": "20260803140000",
+      "name": "promo_reports_policies",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260803092845",
+      "repo_version": "20260803160000",
+      "name": "budget_needed_by",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260827092757",
+      "repo_version": "20260827120000",
+      "name": "artist_stream_stats",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260827094014",
+      "name": "guard_task_fields",
+      "repo_version": "20260827094014",
+      "evidence": "Original cloud statement imported without replay on production."
+    },
+    {
+      "cloud_version": "20260827110354",
+      "repo_version": "20260827160000",
+      "name": "messages",
+      "evidence": "Live attachment and CHECK already match; body default is aligned by 20261122124948 before metadata repair."
+    },
+    {
+      "cloud_version": "20260827123452",
+      "repo_version": "20260827180000",
+      "name": "create_label_org",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260827125452",
+      "repo_version": "20260827200000",
+      "name": "invite_uses_artist_name",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260915142231",
+      "repo_version": "20260915120000",
+      "name": "invite_email_match",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260915144351",
+      "repo_version": "20260915140000",
+      "name": "moderation_and_royalties",
+      "evidence": "Final royalty guard matches repository after the separately recorded royalty_paid_not_to_draft patch."
+    },
+    {
+      "cloud_version": "20260915144716",
+      "name": "royalty_paid_not_to_draft",
+      "repo_version": "20260915144716",
+      "evidence": "Original cloud statement imported without replay on production."
+    },
+    {
+      "cloud_version": "20260915214012",
+      "repo_version": "20260916120000",
+      "name": "stream_periods",
+      "evidence": "Only IF NOT EXISTS / DROP IF EXISTS wrappers differ; final object definitions are equivalent."
+    },
+    {
+      "cloud_version": "20260916082825",
+      "repo_version": "20260916140000",
+      "name": "scouting",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260916130756",
+      "repo_version": "20260916160000",
+      "name": "team_roles",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260916131816",
+      "repo_version": "20260916170000",
+      "name": "account_deletion",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    },
+    {
+      "cloud_version": "20260916132659",
+      "repo_version": "20260916180000",
+      "name": "pitching_campaigns",
+      "evidence": "SQL tokens equal after removing comments/whitespace and normalizing dollar-quote labels."
+    }
+  ],
+  "production_commit": "f1a1c2b4ff7ef5fea005ec75d411e0ab3f4510ce",
+  "production_deployment": "dpl_5Mq18KqfVJa4joYcEboZnpo2weiD",
+  "verified_history_rows": 25
+}
