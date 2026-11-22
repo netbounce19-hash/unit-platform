@@ -34,7 +34,7 @@ insert into storage.objects(bucket_id,name) values
 ('artist-files',pg_temp.uid('hard-a') || '/photo/neighbor.png'),
 ('artist-files',pg_temp.uid('hard-a') || '/photo/release.png');
 insert into public.assets(id,owner_id,kind,storage_path,title)
-values(pg_temp.uid('hard-track'),pg_temp.uid('hard-a'),'audio',pg_temp.uid('hard-a') || '/audio/personal.wav','Private');
+values(pg_temp.uid('hard-track'),pg_temp.uid('hard-a'),'audio',pg_temp.uid('hard-a') || '/audio/personal.wav','Private') returning id;
 select pg_temp.assert_true((select count(*)=1 from public.assets where id=pg_temp.uid('hard-track')),'independent artist reads own asset');
 select set_config('request.jwt.claim.sub',pg_temp.uid('hard-la')::text,true);
 select pg_temp.assert_true((select count(*)=0 from public.assets where id=pg_temp.uid('hard-track')),'independent artist hidden from Label A');

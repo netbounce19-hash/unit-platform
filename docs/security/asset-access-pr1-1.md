@@ -238,3 +238,14 @@ No UI, dependency, production data, deployment config or historical migration
 changes are included. SQL verification is a disposable WASM database, and the
 builds use the existing local deployment-preparation config without including
 that config in this PR.
+
+## Subsequent native verification
+
+The earlier NOT RUN/BLOCKED snapshot above is superseded by
+[asset-access-native-verification.md](asset-access-native-verification.md).
+A real disposable Supabase was started, the HTTP suite exposed an INSERT
+RETURNING regression, and separate migration 20261122115339 fixed it. The
+unchanged HTTP suite then passed. Native dry-run/backfill, repeat-run idempotence,
+asset preservation and the 22-file migration order also passed on synthetic data.
+The inactive project's real schema/data remain unverified; production cutover
+still requires that audit and explicit backfill approval.
