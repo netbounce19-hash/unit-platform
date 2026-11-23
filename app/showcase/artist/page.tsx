@@ -1,2 +1,4 @@
-import PublicCabinet from "@/components/showcase/PublicCabinet";
-export default function Page(){return <PublicCabinet role="artist"/>;}
+import { redirect } from "next/navigation";
+export default function Page() {
+  redirect("/dashboard");
+}

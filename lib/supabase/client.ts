@@ -1,5 +1,6 @@
 "use client";
 
+import { publicDemoClient } from "@/lib/demo/client";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -9,6 +10,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 let client: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
+  if (process.env.NEXT_PUBLIC_UNIT_PUBLIC_DEMO === "1") return publicDemoClient;
   if (client) return client;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

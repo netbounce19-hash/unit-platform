@@ -1,5 +1,36 @@
 import Link from "next/link";
 import { ArtistIcon, LabelIcon } from "@/components/ui/icons";
 export default function Home() {
- return <main className="min-h-screen flex items-center justify-center px-5 py-12"><div className="w-full max-w-[620px]"><div className="text-[18px] tracking-[0.16em] font-semibold">UNIT</div><h1 className="mt-8 text-[30px] font-medium">Познакомьтесь с UNIT</h1><p className="mt-3 text-[14px] text-[#6E6D73]">Выберите кабинет. Вход и регистрация не нужны — внутри демонстрационные данные.</p><div className="mt-6 grid gap-3 sm:grid-cols-2">{[{href:"/showcase/artist",label:"Кабинет артиста",Icon:ArtistIcon},{href:"/showcase/label",label:"Кабинет лейбла",Icon:LabelIcon}].map(({href,label,Icon})=><Link key={href} href={href} className="rounded-[16px] bg-white border-[0.5px] border-[#ECEAE5] p-6 hover:border-[#D2D0CB] focus-visible:outline-2 focus-visible:outline-offset-2"><Icon className="w-10 h-10"/><span className="block mt-4 text-[17px] font-medium">{label}</span><span className="block mt-2 text-[13px] text-[#6E6D73]">Открыть демо →</span></Link>)}</div></div></main>;
+  return (
+    <main className="min-h-screen flex items-center justify-center px-5 py-12">
+      <div className="w-full max-w-[620px]">
+        <div className="text-[18px] tracking-[0.16em] font-semibold">UNIT</div>
+        <h1 className="mt-8 text-[30px] font-medium">Познакомьтесь с UNIT</h1>
+        <p className="mt-3 text-[14px] text-[#6E6D73]">
+          Выберите кабинет. Вход и регистрация не нужны — внутри
+          демонстрационные данные.
+        </p>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {[
+            { href: "/dashboard", label: "Кабинет артиста", Icon: ArtistIcon },
+            { href: "/label/roster", label: "Кабинет лейбла", Icon: LabelIcon },
+          ].map(({ href, label, Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="rounded-[16px] bg-white border-[0.5px] border-[#ECEAE5] p-6 hover:border-[#D2D0CB] focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              <Icon className="w-10 h-10" />
+              <span className="block mt-4 text-[17px] font-medium">
+                {label}
+              </span>
+              <span className="block mt-2 text-[13px] text-[#6E6D73]">
+                Открыть демо →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
 }

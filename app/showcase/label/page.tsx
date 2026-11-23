@@ -1,2 +1,4 @@
-import PublicCabinet from "@/components/showcase/PublicCabinet";
-export default function Page(){return <PublicCabinet role="label"/>;}
+import { redirect } from "next/navigation";
+export default function Page() {
+  redirect("/label/roster");
+}

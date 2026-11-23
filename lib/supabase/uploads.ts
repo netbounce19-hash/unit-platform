@@ -122,7 +122,7 @@ export async function uploadAsset({
   const user = await requireUser();
   const storagePath = buildStoragePath(user.id, kind, file.name);
 
-  if (kind === "audio") {
+  if (kind === "audio" && process.env.NEXT_PUBLIC_UNIT_PUBLIC_DEMO !== "1") {
     const {
       data: { session },
     } = await supabase.auth.getSession();
